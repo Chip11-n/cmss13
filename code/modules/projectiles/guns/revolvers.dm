@@ -303,6 +303,7 @@
 		/obj/item/attachable/reflex,
 		/obj/item/attachable/flashlight,
 		/obj/item/attachable/heavy_barrel,
+		/obj/item/attachable/heavy_barrel/upgraded,
 		/obj/item/attachable/extended_barrel,
 		/obj/item/attachable/compensator,
 		/obj/item/attachable/stock/revolver,
@@ -465,6 +466,7 @@
 		/obj/item/attachable/bayonet, // Muzzle
 		/obj/item/attachable/bayonet/upp,
 		/obj/item/attachable/heavy_barrel,
+		/obj/item/attachable/heavy_barrel/upgraded,
 		/obj/item/attachable/extended_barrel,
 		/obj/item/attachable/lasersight, // Underbarrel
 		)
@@ -534,7 +536,7 @@
 	desc = "Used to swap the barrels of a mateba revolver."
 	icon = 'icons/obj/items/items.dmi'
 	icon_state = "matebakey"
-	flags_atom = FPRINT|QUICK_DRAWABLE|CONDUCT
+	flags_atom = FPRINT|CONDUCT
 	force = 5
 	w_class = SIZE_TINY
 	throwforce = 5
@@ -710,6 +712,7 @@
 		/obj/item/attachable/suppressor, // Muzzle
 		/obj/item/attachable/extended_barrel,
 		/obj/item/attachable/heavy_barrel,
+		/obj/item/attachable/heavy_barrel/upgraded,
 		/obj/item/attachable/compensator,
 		/obj/item/attachable/reddot, // Rail
 		/obj/item/attachable/reflex,

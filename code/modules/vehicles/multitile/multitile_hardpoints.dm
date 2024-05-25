@@ -103,7 +103,10 @@
 		if(HDPT_SECONDARY) num_delays = 3
 		if(HDPT_SUPPORT) num_delays = 2
 		if(HDPT_ARMOR) num_delays = 10
-		if(HDPT_TREADS, HDPT_WHEELS) num_delays = 7
+		if(HDPT_TREADS, HDPT_WHEELS)
+			num_delays = 7
+			//now reset the movement timer
+			next_move = world.time
 
 	if(!do_after(user, 30*num_delays * user.get_skill_duration_multiplier(SKILL_ENGINEER), INTERRUPT_ALL, BUSY_ICON_FRIENDLY, numticks = num_delays))
 		user.visible_message(SPAN_WARNING("[user] stops installing \the [HP] on \the [src]."), SPAN_WARNING("You stop installing \the [HP] on \the [src]."))
@@ -149,16 +152,13 @@
 		hps += H
 
 	var/chosen_hp = tgui_input_list(usr, "Select a hardpoint to remove", "Hardpoint Removal", (hps + "Cancel"))
-	if(chosen_hp == "Cancel" || !chosen_hp || (get_dist(src, user) > 2)) //get_dist uses 2 because the vehicle is 3x3
+	if(chosen_hp == "Cancel" || !chosen_hp || get_dist(src, user) > 2)
 		return
 
 	var/obj/item/hardpoint/old = chosen_hp
 
 	if(!old)
 		to_chat(user, SPAN_WARNING("There is nothing installed there."))
-		return
-
-	if(!old.can_be_removed(user))
 		return
 
 	// It's in a holder

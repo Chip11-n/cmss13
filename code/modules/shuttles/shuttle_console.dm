@@ -188,8 +188,8 @@ GLOBAL_LIST_EMPTY(shuttle_controls)
 		"gun_mission_allowed" = shuttle.can_do_gun_mission,
 		"shuttle_status_message" = shuttle_status_message,
 		"recharging" = shuttle.recharging,
-		"recharging_seconds" = floor(shuttle.recharging/10),
-		"flight_seconds" = floor(shuttle.in_transit_time_left/10),
+		"recharging_seconds" = round(shuttle.recharging/10),
+		"flight_seconds" = round(shuttle.in_transit_time_left/10),
 		"can_return_home" = shuttle.transit_gun_mission && shuttle.moving_status == SHUTTLE_INTRANSIT && shuttle.in_transit_time_left>abort_timer,
 		"recharge_time" = effective_recharge_time,
 		"recharge_status" = recharge_status,
@@ -231,7 +231,7 @@ GLOBAL_LIST_EMPTY(shuttle_controls)
 			return
 		//Comment to test
 		if(!skip_time_lock && world.time < SSticker.mode.round_time_lobby + SHUTTLE_TIME_LOCK && istype(shuttle, /datum/shuttle/ferry/marine))
-			to_chat(usr, SPAN_WARNING("The shuttle is still undergoing pre-flight fueling and cannot depart yet. Please wait another [floor((SSticker.mode.round_time_lobby + SHUTTLE_TIME_LOCK-world.time)/600)] minutes before trying again."))
+			to_chat(usr, SPAN_WARNING("The shuttle is still undergoing pre-flight fueling and cannot depart yet. Please wait another [round((SSticker.mode.round_time_lobby + SHUTTLE_TIME_LOCK-world.time)/600)] minutes before trying again."))
 			return
 		if(SSticker.mode.active_lz != src && !onboard && isqueen(usr))
 			to_chat(usr, SPAN_WARNING("The shuttle isn't responding to prompts, it looks like this isn't the primary shuttle."))
@@ -289,7 +289,7 @@ GLOBAL_LIST_EMPTY(shuttle_controls)
 					if(GLOB.round_statistics)
 						GLOB.round_statistics.track_hijack()
 
-					marine_announcement("Unscheduled dropship departure detected from operational area. Hijack likely. Shutting down autopilot.", "Dropship Alert", 'sound/AI/hijack.ogg', logging = ARES_LOG_SECURITY)
+					marine_announcement("Незапланированное отправление десантного судна зафиксировано в зоне операции. Высокая вероятность угона. Отключение автопилота.", "Уведомление Десантного Корабля", 'sound/AI/hijack.ogg', logging = ARES_LOG_SECURITY)
 					shuttle.alerts_allowed--
 					log_ares_flight("Unknown", "Unscheduled dropship departure detected from operational area. Hijack likely. Shutting down autopilot.")
 

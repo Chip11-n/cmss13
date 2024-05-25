@@ -206,7 +206,7 @@
 
 ///Percentage of fuel left in the cell
 /obj/item/fuel_cell/proc/get_fuel_percent()
-	return floor(100 * fuel_amount/max_fuel_amount)
+	return round(100 * fuel_amount/max_fuel_amount)
 
 ///Whether the fuel cell is full
 /obj/item/fuel_cell/proc/is_regenerated()

@@ -20,6 +20,8 @@
 
 	allowed_seat = VEHICLE_SUPPORT_GUNNER_ONE
 
+	origins = list(0, 0)
+
 	ammo = new /obj/item/ammo_magazine/hardpoint/firing_port_weapon
 	max_clips = 1
 

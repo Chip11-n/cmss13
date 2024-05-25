@@ -144,12 +144,15 @@
 
 /obj/effect/xenomorph/spray/Crossed(AM as mob|obj)
 	..()
-	if(isliving(AM))
-		var/mob/living/living_mob = AM
-		if(living_mob.ally_of_hivenumber(hivenumber))
-			living_mob.ExtinguishMob()
-		else
-			apply_spray(living_mob)
+	if(ishuman(AM))
+		var/mob/living/carbon/human/H = AM
+		if(H.ally_of_hivenumber(hivenumber))
+			return
+		apply_spray(AM)
+	else if (isxeno(AM))
+		var/mob/living/carbon/xenomorph/X = AM
+		if (X.hivenumber != hivenumber)
+			apply_spray(AM)
 	else if(isVehicleMultitile(AM))
 		var/obj/vehicle/multitile/V = AM
 		V.handle_acidic_environment(src)

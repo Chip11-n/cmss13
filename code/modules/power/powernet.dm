@@ -22,7 +22,7 @@
 
 	viewload = 0.8*viewload + 0.2*load
 
-	viewload = floor(viewload)
+	viewload = round(viewload)
 
 	var/numapc = 0
 

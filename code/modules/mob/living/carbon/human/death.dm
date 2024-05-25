@@ -10,16 +10,13 @@
 			// Override the current limb status
 			E.droplimb(0, 0, cause)
 
-
+	undefibbable = TRUE
 
 	GLOB.data_core.manifest_modify(real_name, WEAKREF(src), null, null, "*Deceased*")
 
 	if(is_a_synth)
 		spawn_gibs()
 		return
-
-	undefibbable = TRUE
-
 	..()
 
 /mob/living/carbon/human/gib_animation()
@@ -46,6 +43,10 @@
 		return
 
 	GLOB.alive_human_list -= src
+	if(heartpouncecooldown > 1)
+		src << sound(null, channel = SOUND_CHANNEL_HEART)
+	if(heartbeatingcooldown > 1)
+		src << sound(null, channel = SOUND_CHANNEL_HEART)
 
 	if(!gibbed)
 		if(HAS_TRAIT(src, TRAIT_HARDCORE) || MODE_HAS_TOGGLEABLE_FLAG(MODE_HARDCORE_PERMA))

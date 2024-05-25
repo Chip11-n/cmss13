@@ -22,11 +22,11 @@
 			if(JOB_XO) marine_rk = "xo"
 			if(JOB_CO) marine_rk = "co"
 			if(JOB_GENERAL) marine_rk = "general"
-			if(JOB_CAS_PILOT) marine_rk = "gp"
-			if(JOB_DROPSHIP_PILOT) marine_rk = "dp"
+			if(JOB_PILOT) marine_rk = "po"
 			if(JOB_INTEL) marine_rk = "io"
 			if(JOB_DROPSHIP_CREW_CHIEF) marine_rk = "dcc"
 			if(JOB_CREWMAN) marine_rk = "tc"
+			if(JOB_WALKER) marine_rk = "tc"
 			if(JOB_MARINE_RAIDER) marine_rk = "soc"
 			if(JOB_MARINE_RAIDER_SL) marine_rk = "soctl"
 			if(JOB_MARINE_RAIDER_CMD) marine_rk = "soccmd"
@@ -86,12 +86,14 @@
 				border_rk = "command"
 			if(JOB_INTEL)
 				marine_rk = "io"
-			if(JOB_CAS_PILOT)
-				marine_rk = "gp"
-			if(JOB_DROPSHIP_PILOT)
-				marine_rk = "dp"
+			if(JOB_PILOT)
+				marine_rk = "po"
 			if(JOB_DROPSHIP_CREW_CHIEF)
 				marine_rk = "dcc"
+			if(JOB_CREWMAN)
+				marine_rk = "tc"
+			if(JOB_WALKER)
+				marine_rk = "tc"
 			if(JOB_CHIEF_POLICE)
 				marine_rk = "cmp"
 				border_rk = "command"

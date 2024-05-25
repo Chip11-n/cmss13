@@ -68,10 +68,7 @@
 
 /obj/structure/machinery/reagentgrinder/Destroy()
 	cleanup()
-
-	QDEL_NULL(beaker)
-
-	return ..()
+	. = ..()
 
 /obj/structure/machinery/reagentgrinder/update_icon()
 	icon_state = "juicer"+num2text(!isnull(beaker))
@@ -270,7 +267,7 @@
 	else if(O.potency == -1)
 		return 5
 	else
-		return floor(O.potency)
+		return round(O.potency)
 
 /obj/structure/machinery/reagentgrinder/proc/get_juice_amount(obj/item/reagent_container/food/snacks/grown/O)
 	if(!istype(O))
@@ -278,7 +275,7 @@
 	else if(O.potency == -1)
 		return 5
 	else
-		return floor(5*sqrt(O.potency))
+		return round(5*sqrt(O.potency))
 
 /obj/structure/machinery/reagentgrinder/proc/remove_object(obj/item/O)
 	holdingitems -= O
@@ -348,7 +345,7 @@
 						O.reagents.remove_reagent("nutriment", min(O.reagents.get_reagent_amount("nutriment"), space))
 				else
 					if(O.reagents != null && O.reagents.has_reagent("nutriment"))
-						beaker.reagents.add_reagent(r_id, min(floor(O.reagents.get_reagent_amount("nutriment")*abs(amount)), space))
+						beaker.reagents.add_reagent(r_id, min(round(O.reagents.get_reagent_amount("nutriment")*abs(amount)), space))
 						O.reagents.remove_reagent("nutriment", min(O.reagents.get_reagent_amount("nutriment"), space))
 
 			else

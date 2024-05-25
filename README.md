@@ -1,85 +1,37 @@
-<p align="center">
-	<a href="#"><img src=".github/assets/logo.png" alt="CM-SS13" align="center"></a>
-</p>
-<hr />
+## RUCM-SS13 codebase (fork from CM-SS13)
 
-<p align="center">
-	<a href="https://github.com/cmss13-devs/cmss13/actions?query=workflow%3A%22CI+Suite%22"><img src="https://github.com/cmss13-devs/cmss13/workflows/CI%20Suite/badge.svg"></a>
- 	<a href="https://github.com/cmss13-devs/cmss13/actions/workflows/generate_documentation.yml"><img src="https://github.com/cmss13-devs/cmss13/actions/workflows/generate_documentation.yml/badge.svg"></a>
-</p>
+<a href="https://www.monkeyuser.com/assets/images/2019/131-bug-free.png"><img src="https://img.shields.io/badge/Built_with-Resentment-orange?style=for-the-badge&labelColor=%23D47439&color=%23C36436" width=260px></a> <a href="https://user-images.githubusercontent.com/8171642/50290880-ffef5500-043a-11e9-8270-a2e5b697c86c.png"><img src="https://img.shields.io/badge/Contains-Technical_Debt-blue?style=for-the-badge&color=5598D0&labelColor=62C1EE" width=280px></a> [![forinfinityandbyond](https://user-images.githubusercontent.com/5211576/29499758-4efff304-85e6-11e7-8267-62919c3688a9.gif)](https://www.reddit.com/r/SS13/comments/5oplxp/what_is_the_main_problem_with_byond_as_an_engine/dclbu1a)
 
-<p align="center">
-	<a href="https://www.monkeyuser.com/assets/images/2019/131-bug-free.png"><img src="https://img.shields.io/badge/Built_with-Resentment-orange?style=for-the-badge&labelColor=%23D47439&color=%23C36436" width=260px></a>
-	<a href="https://user-images.githubusercontent.com/8171642/50290880-ffef5500-043a-11e9-8270-a2e5b697c86c.png"><img src="https://img.shields.io/badge/Contains-Technical_Debt-blue?style=for-the-badge&color=5598D0&labelColor=62C1EE" width=280px></a>
-	<a href="https://www.reddit.com/r/SS13/comments/5oplxp/what_is_the_main_problem_with_byond_as_an_engine/dclbu1a"><img src="https://user-images.githubusercontent.com/5211576/29499758-4efff304-85e6-11e7-8267-62919c3688a9.gif"></a>
-</p>
+[![Build Status](https://github.com/cmss13-devs/cmss13/workflows/CI%20Suite/badge.svg)](https://github.com/cmss13-devs/cmss13/actions?query=workflow%3A%22CI+Suite%22)
+* **Вебсайт разработчиков оригинального кода:** https://forum.cm-ss13.com/
+* **Оригинальный код:** https://github.com/cmss13-devs/cmss13
+* **Оригинальная вики:** https://cm-ss13.com/wiki/Main_Page
 
-<p align="center">
-	<a href="https://discord.gg/cmss13">
-		<picture>
-			<source media="(prefers-color-scheme: dark)" srcset=".github/assets/discord-light.png">
-			<source media="(prefers-color-scheme: light)" srcset=".github/assets/discord-dark.png">
-			<img width="15%" alt="Discord" hspace="3%" src=".github/assets/discord-dark.png">
-		</picture>
-	</a>
-	<a href="https://docs.cm-ss13.com">
-		<picture>
-			<source media="(prefers-color-scheme: dark)" srcset=".github/assets/docs-light.png">
-			<source media="(prefers-color-scheme: light)" srcset=".github/assets/docs-dark.png">
-			<img alt="Code docs" width="15%" hspace="3%" src=".github/assets/docs-dark.png">
-		</picture>
-	</a>
-	<a href="https://cm-ss13.com">
-		<picture>
-			<source media="(prefers-color-scheme: dark)" srcset=".github/assets/website-light.png">
-			<source media="(prefers-color-scheme: light)" srcset=".github/assets/website-dark.png">
-			<img width="15%" alt="Website" hspace="3%" src=".github/assets/website-dark.png">
-		</picture>
-	</a>
-	<a href="https://cm-ss13.com/wiki">
-		<picture>
-			<source media="(prefers-color-scheme: dark)" srcset=".github/assets/wiki-light.png">
-			<source media="(prefers-color-scheme: light)" srcset=".github/assets/wiki-dark.png">
-			<img width="15%" alt="Game Wiki" hspace="3%" src=".github/assets/wiki-dark.png">
-		</picture>
-	</a>
-</p>
-<hr />
+Это репозиторий RUCM-SS13, форк кодбазы CM-SS13, которая в свою очередь форк игры SpaceStation 13...
 
-> [!IMPORTANT]
-> CM-SS13 cannot be compiled exclusively using BYOND - **you must use our build tool**.
-> Firstly, you need to install [BYOND](https://www.byond.com/download/), and run the `bin/server.cmd` file to start the server.
-> You can learn more in our [Installation Guide](tools/build/README.md). **Building colonialmarines in DreamMaker directly is now deprecated and will cause errors.**
+Space Station 13 - это параноидальная круговая ролевая игра, действие которой разворачивается на металлической коробке смерти, маскирующейся под космическую станцию, с очаровательной графикой, призванной отобразить научно-фантастическую обстановку и ее опасный подтекст. Данный билд - полная конверсия классической станции 13 под сеттинг мира серии научно фантастических фильмов ужасов "Чужой" в стиле "ролевой командный бой насмерть" 
 
-CM-SS13 is a game based on [Space Station 13](https://spacestation13.com), made in [BYOND](https://www.byond.com). CM-SS13 has wildly adapted the SS13 model into a strategic roleplay-based team deathmatch game.
+## :exclamation: Как скомпилировать билд :exclamation:
 
-# Useful Links
+**2022-04-06** оригинальные ЦМы изменили способ компиляции билда с классического (через byond) на продвинутый.
 
-- ## [Setting up a Development Environment](https://cm-ss13.com/wiki/Guide_to_Git)
-> [!TIP]
-> Want to contribute for the first time but unsure where to start? Take a look at our community maintained [Guide to Contributing](https://cm-ss13.com/wiki/Contributing_to_the_Game)!
+**Быстрый способ**. Найдите файл `bin/server.cmd` и дважды щелкните на нем для автоматической сборки и размещения сервера на порту 1337.
 
-This guide will get you set up with a Visual Studio Code development environment, complete with BYOND debugger, which will allow you to contribute back to this repository.
+**Долгий способ**. Найдите файл `bin/build.cmd` и дважды щелкните на нем, чтобы запустить сборку. Сборка состоит из нескольких этапов и может занять около 1-5 минут. Если программа закрывается, это означает, что она завершила свою работу. После этого можно нормально настроить сервер, открыв `colonialmarines.dmb` в DreamDaemon.
 
-- ## [Contributing Rules](.github/CONTRIBUTING.md)
-This is our canonical, maintainer-maintained contributing guide, which contains information on our maintainer team structure and pull request rules.
+**Компилирование кода в DreamMaker напрямую устарело и может приводить к ошибкам**, такие как `'tgui.bundle.js': cannot find file`.
 
-- ## [Code Standards](github/guides/STANDARDS.md)
-Our standards documents details how to structure your code to comply with CM-SS13 code standards, and provides some information on DreamMaker quirks.
+**[Как компилировать в VSCode и другие варианты сборки](tools/build/README.md).**
 
-- ## [Code Style](github/guides/STYLES.md)
-The styles document tells you how to style your code to match the rest of the code in our codebase.
+## Помощь в разработке
+[Руководство по помощи в разработке](.github/CONTRIBUTING.md)
 
-- ## [tgui README](tgui/README.md)
-All new interfaces in CM must be created using tgui - this document will help get you set up for tgui development.
+[Настройка среды разработки](https://cm-ss13.com/wiki/Guide_to_Git)
 
-# Licenses
+## Лицензия
 
-### <a href="LICENSE-AGPLv3.txt"><img src="https://img.shields.io/badge/licence-AGPL_3-red?style=for-the-badge" alt="AGPLv3 license"></a>
-> The code for CM-SS13 is licensed under the [GNU Affero General Public License v3](http://www.gnu.org/licenses/agpl.html). All code is assumed to be licensed under AGPL v3 unless stated otherwise by file header, or this document.
+Код для CM-SS13 лицензирован под [GNU Affero General Public License v3](http://www.gnu.org/licenses/agpl.html), с которым можно ознакомиться в полном объеме в [/LICENSE-AGPL3](/LICENSE-AGPL3).
 
-### <a href="LICENSE-CC-BY-NC-SA-3.0.txt"><img src="https://img.shields.io/badge/licence-CC_3.0_BY--SA-lightblue?style=for-the-badge" alt="Creative Commons 3.0 BY-SA"></a>
-> Assets including icons and sound are under the [Creative Commons 3.0 BY-SA license](https://creativecommons.org/licenses/by-sa/3.0/) unless otherwise indicated. Authorship for assets including art and sound under the CC BY-SA license is defined as the active development team of CM-SS13 unless stated otherwise (by author of the commit).
+Активы, включая иконки и звук, находятся под лицензией [Creative Commons 3.0 BY-SA license](https://creativecommons.org/licenses/by-sa/3.0/) если не указано иное. Авторство на активы, включая искусство и звук, под лицензией CC BY-SA определяется как активная команда разработчиков CM-SS13, если не указано иное (автор коммита).
 
-### <a href="LICENSE-GPLv3.txt"><img src="https://img.shields.io/badge/licence-GPL_3-orange?style=for-the-badge" alt="GPLv3 license"></a>
-> Commits before [9a001bf520f889b434acd295253a1052420860af on Mon, 14 Sep 2020 09:13:32 +0000](https://github.com/cmss13-devs/cmss13/commit/9a001bf520f889b434acd295253a1052420860af) are assumed to be licensed under [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0.html) and can be used in closed source repositories.
+Предполагается, что код лицензируется по AGPL v3, если в заголовке файла не указано иное. Коммиты до 9a001bf520f889b434acd295253a1052420860af считаются лицензированными по GPLv3 и могут быть использованы в закрытом репозитории.

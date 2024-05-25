@@ -106,7 +106,7 @@
 
 /obj/structure/machinery/recharge_station/get_examine_text(mob/user)
 	. = ..()
-	. += "The charge meter reads: [floor(chargepercentage())]%"
+	. += "The charge meter reads: [round(chargepercentage())]%"
 
 /obj/structure/machinery/recharge_station/proc/chargepercentage()
 	return ((current_internal_charge / max_internal_charge) * 100)
@@ -135,7 +135,7 @@
 	else
 		icon_state = "borgcharger0"
 	overlays.Cut()
-	switch(floor(chargepercentage()))
+	switch(round(chargepercentage()))
 		if(1 to 20)
 			overlays += image('icons/obj/objects.dmi', "statn_c0")
 		if(21 to 40)
@@ -150,6 +150,11 @@
 			overlays += image('icons/obj/objects.dmi', "statn_c100")
 
 /obj/structure/machinery/recharge_station/proc/process_occupant()
+	// FRAY-MARINES start
+	if (hacky_override)
+		process_occupant_localized()
+		return
+	// FRAY-MARINES end
 	if(src.occupant)
 		var/doing_stuff = FALSE
 		if (issynth(occupant))

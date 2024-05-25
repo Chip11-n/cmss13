@@ -1,9 +1,7 @@
-import { useState } from 'react';
-
-import { BooleanLike } from '../../common/react';
-import { useBackend } from '../backend';
+import { useBackend, useLocalState } from '../backend';
 import { Box, Button, Divider, Section, Stack, Tabs } from '../components';
 import { Window } from '../layouts';
+import { BooleanLike } from '../../common/react';
 
 type Emote = {
   id: string;
@@ -18,93 +16,89 @@ type BackendContext = {
   on_cooldown: BooleanLike;
 };
 
-const EmoteTab = (props) => {
+export const JoeEmotes = (props) => {
   const { data, act } = useBackend<BackendContext>();
   const { categories, emotes, on_cooldown } = data;
-  const [categoryIndex, setCategoryIndex] = useState('Farewell');
-  const mapped_emote = emotes.filter(
-    (emote) => emote && emote.category === categoryIndex,
+  const [categoryIndex, setCategoryIndex] = useLocalState(
+    'category_index',
+    'Farewell'
   );
-  return (
-    <Stack fill vertical>
-      <Stack.Item>
-        <span
-          style={{
-            position: 'relative',
-            top: '8px',
-          }}
-        >
-          <Tabs>
-            {categories.map((item, key) => (
-              <Tabs.Tab
-                key={item}
-                selected={item === categoryIndex}
-                onClick={() => {
-                  setCategoryIndex(item);
-                }}
-              >
-                {item}
-              </Tabs.Tab>
-            ))}
-          </Tabs>
-        </span>
-      </Stack.Item>
-      <Stack.Item grow>
-        <Section fill scrollable>
-          <Stack vertical mt={-2}>
-            <Divider />
-            {mapped_emote.map((item) => (
-              <Stack.Item key={item.id}>
-                <Stack>
-                  <span
-                    style={{
-                      verticalAlign: 'middle',
-                    }}
-                  />{' '}
-                  <Stack.Item>
-                    <Box
-                      m={1}
-                      height="20px"
-                      width="32px"
-                      style={{
-                        verticalAlign: 'middle',
-                      }}
-                    />
-                  </Stack.Item>
-                  <Stack.Item mt={-0.5}>
-                    <Button
-                      disabled={on_cooldown}
-                      tooltip={item.id}
-                      onClick={() =>
-                        act('emote', {
-                          emotePath: item.path,
-                        })
-                      }
-                    >
-                      {item.text}
-                    </Button>
-                  </Stack.Item>
-                </Stack>
-                <Divider />
-              </Stack.Item>
-            ))}
-          </Stack>
-        </Section>
-      </Stack.Item>
-    </Stack>
-  );
-};
 
-export const JoeEmotes = (props) => {
+  const mapped_emote = emotes.filter(
+    (emote) => emote && emote.category === categoryIndex
+  );
+
   return (
     <Window
       width={750}
       height={600}
       theme="crtblue"
-      title="Working Joe Voice Synthesizer"
-    >
+      title="Working Joe Voice Synthesizer">
       <Window.Content>
-        <EmoteTab />
+        <Stack fill vertical>
+          <Stack.Item>
+            <span
+              style={{
+                'position': 'relative',
+                'top': '8px',
+              }}>
+              <Tabs>
+                {categories.map((item, index) => (
+                  <Tabs.Tab
+                    key={index}
+                    selected={item === categoryIndex}
+                    onClick={() => {
+                      setCategoryIndex(item);
+                    }}>
+                    {item}
+                  </Tabs.Tab>
+                ))}
+              </Tabs>
+            </span>
+          </Stack.Item>
+          <Stack.Item grow>
+            <Section fill scrollable>
+              <Stack vertical mt={-2}>
+                <Divider />
+                {mapped_emote.map((item, index) => (
+                  <Stack.Item key={index}>
+                    <Stack>
+                      <span
+                        style={{
+                          'verticalAlign': 'middle',
+                        }}
+                      />{' '}
+                      <Stack.Item>
+                        <Box
+                          m={1}
+                          height="20px"
+                          width="32px"
+                          style={{
+                            '-ms-interpolation-mode': 'nearest-neighbor',
+                            'verticalAlign': 'middle',
+                          }}
+                        />
+                      </Stack.Item>
+                      <Stack.Item mt={-0.5}>
+                        <Button
+                          content={item.text}
+                          disabled={on_cooldown}
+                          tooltip={item.id}
+                          onClick={() =>
+                            act('emote', {
+                              emotePath: item.path,
+                            })
+                          }
+                        />
+                      </Stack.Item>
+                    </Stack>
+                    <Divider />
+                  </Stack.Item>
+                ))}
+              </Stack>
+            </Section>
+          </Stack.Item>
+        </Stack>
       </Window.Content>
     </Window>
   );

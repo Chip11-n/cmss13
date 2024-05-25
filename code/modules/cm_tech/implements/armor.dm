@@ -1,7 +1,7 @@
 
 /obj/item/clothing/accessory/health
 	name = "armor plate"
-	desc = "A metal trauma plate, able to absorb some blows."
+	desc = "A metal trauma plate, able to absorb some blows. Breaks into scrap that can be combined to form improvised plates."
 	icon = 'icons/obj/items/items.dmi'
 	icon_state = "regular2_100"
 	var/base_icon_state = "regular2"
@@ -33,7 +33,7 @@
 			return
 
 /obj/item/clothing/accessory/health/proc/get_damage_status()
-	var/percentage = floor(armor_health / armor_maxhealth * 100)
+	var/percentage = round(armor_health / armor_maxhealth * 100)
 	switch(percentage)
 		if(0)
 			. = "It is broken."

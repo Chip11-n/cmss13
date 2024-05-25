@@ -112,7 +112,13 @@
 	return FALSE
 
 /obj/structure/blocker/forcefield/multitile_vehicles
-	types = list(/obj/vehicle/multitile/)
+//	types = list(/obj/vehicle/multitile/) /// затроллено до лучших времён
+
+
+/obj/structure/blocker/forcefield/multitile_vehicles/handle_vehicle_bump(obj/vehicle/multitile/multitile_vehicle)
+	if(multitile_vehicle.vehicle_flags & VEHICLE_BYPASS_BLOCKERS)
+		return TRUE
+	return FALSE
 
 
 /obj/structure/blocker/forcefield/multitile_vehicles/handle_vehicle_bump(obj/vehicle/multitile/multitile_vehicle)
@@ -125,11 +131,3 @@
 	icon_state = "purple_line"
 
 	visible = TRUE
-
-// for fuel pump since it's a large sprite.
-
-/obj/structure/blocker/fuelpump
-	name = "\improper Fuel Pump"
-	desc = "It is a machine that pumps fuel around the ship."
-	invisibility = 101
-	mouse_opacity = MOUSE_OPACITY_TRANSPARENT

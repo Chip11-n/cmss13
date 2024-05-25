@@ -63,7 +63,7 @@
 			S.frequency = GET_RANDOM_FREQ // Same frequency for everybody
 
 	if(!sound_range)
-		sound_range = floor(0.25*vol) //if no specific range, the max range is equal to a quarter of the volume.
+		sound_range = round(0.25*vol) //if no specific range, the max range is equal to a quarter of the volume.
 	S.range = sound_range
 
 	var/turf/turf_source = get_turf(source)
@@ -150,7 +150,7 @@
 	if(!SSticker?.login_music)
 		return FALSE
 	if(prefs && prefs.toggles_sound & SOUND_LOBBY)
-		playsound_client(src, SSticker.login_music, null, 70, 0, VOLUME_LOBBY, SOUND_CHANNEL_LOBBY, SOUND_STREAM)
+		playsound_client(src, SSticker.login_music, vol = 70, vol_cat=VOLUME_LOBBY, channel=SOUND_CHANNEL_LOBBY)
 
 
 /// Play sound for all on-map clients on a given Z-level. Good for ambient sounds.

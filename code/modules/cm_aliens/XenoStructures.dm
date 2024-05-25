@@ -118,7 +118,7 @@
 
 /obj/effect/alien/resin/attackby(obj/item/W, mob/user)
 	if(!(W.flags_item & NOBLUDGEON))
-		var/damage = W.force * W.demolition_mod * RESIN_MELEE_DAMAGE_MULTIPLIER
+		var/damage = W.force * RESIN_MELEE_DAMAGE_MULTIPLIER
 		health -= damage
 		if(istype(src, /obj/effect/alien/resin/sticky))
 			playsound(loc, "alien_resin_move", 25)
@@ -391,7 +391,7 @@
 		return // defer to item afterattack
 	if(!(W.flags_item & NOBLUDGEON) && W.force)
 		user.animation_attack_on(src)
-		health -= W.force * RESIN_MELEE_DAMAGE_MULTIPLIER * W.demolition_mod
+		health -= W.force*RESIN_MELEE_DAMAGE_MULTIPLIER
 		to_chat(user, "You hit the [name] with your [W.name]!")
 		playsound(loc, "alien_resin_move", 25)
 		healthcheck()
@@ -564,8 +564,6 @@
 		return FALSE
 
 	if(current_mob.ally_of_hivenumber(hivenumber))
-		if(!isxeno(current_mob))
-			return FALSE
 		if(!current_mob.on_fire)
 			return FALSE
 		burning_friendly = TRUE
@@ -573,7 +571,7 @@
 	else if(current_mob.body_position == LYING_DOWN || current_mob.is_mob_incapacitated(TRUE))
 		return FALSE
 
-	if(!burning_friendly && current_mob.health < 0)
+	if(!burning_friendly)
 		return FALSE
 	if(current_mob.stat == DEAD)
 		return FALSE

@@ -58,7 +58,11 @@
 	. = ..()
 	if(!.)
 		return
-	for(var/turf/place as anything in block(.[MAP_MINX], .[MAP_MINY], .[MAP_MINZ], .[MAP_MAXX], .[MAP_MAXY], .[MAP_MAXZ]))
+	var/list/turfs = block( locate(.[MAP_MINX], .[MAP_MINY], .[MAP_MINZ]),
+							locate(.[MAP_MAXX], .[MAP_MAXY], .[MAP_MAXZ]))
+	for(var/i in 1 to turfs.len)
+		var/turf/place = turfs[i]
+
 		// ================== CM Change ==================
 		// We perform atom initialization of the docking_ports BEFORE skipping space,
 		// because our lifeboats have their corners as object props and still
@@ -81,7 +85,12 @@
 /datum/map_template/shuttle/post_load(obj/docking_port/mobile/M)
 	if(movement_force)
 		M.movement_force = movement_force.Copy()
-	M.linkup(src)
+	M.linkup(M)
+
+
+/datum/map_template/shuttle/uss_crash
+	shuttle_id = DROPSHIP_CRASH
+	name = "USS Crash"
 
 /datum/map_template/shuttle/vehicle
 	shuttle_id = MOBILE_SHUTTLE_VEHICLE_ELEVATOR

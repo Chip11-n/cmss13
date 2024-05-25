@@ -35,7 +35,7 @@
 
 	if(istype(W, /obj/item/weapon/twohanded/breacher))
 		var/obj/item/weapon/twohanded/breacher/current_hammer = W
-		if(user.action_busy)
+		if(user.action_busy || !(current_hammer.flags_item & WIELDED))
 			return
 		if(!(HAS_TRAIT(user, TRAIT_SUPER_STRONG) || !current_hammer.really_heavy))
 			to_chat(user, SPAN_WARNING("You can't use \the [current_hammer] properly!"))
@@ -127,7 +127,7 @@
 		user.visible_message(SPAN_NOTICE("[user] starts repairing the damage to [src]."),
 		SPAN_NOTICE("You start repairing the damage to [src]."))
 		playsound(src, 'sound/items/Welder.ogg', 25, 1)
-		if(do_after(user, max(5, floor(damage / 5) * user.get_skill_duration_multiplier(SKILL_CONSTRUCTION)), INTERRUPT_ALL, BUSY_ICON_FRIENDLY) && istype(src, /turf/closed/wall/r_wall))
+		if(do_after(user, max(5, round(damage / 5) * user.get_skill_duration_multiplier(SKILL_CONSTRUCTION)), INTERRUPT_ALL, BUSY_ICON_FRIENDLY) && istype(src, /turf/closed/wall/r_wall))
 			user.visible_message(SPAN_NOTICE("[user] finishes repairing the damage to [src]."),
 			SPAN_NOTICE("You finish repairing the damage to [src]."))
 			take_damage(-damage)

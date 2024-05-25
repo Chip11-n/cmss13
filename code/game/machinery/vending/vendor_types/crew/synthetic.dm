@@ -5,7 +5,7 @@
 	desc = "An automated gear rack hooked up to a colossal storage of various medical and engineering supplies. Can be accessed only by synthetic units."
 	icon_state = "gear"
 	req_access = list(ACCESS_MARINE_SYNTH)
-	vendor_role = list(JOB_SYNTH, JOB_SYNTH_SURVIVOR)
+	vendor_role = list(JOB_SYNTH, JOB_SYNTH_SURVIVOR, JOB_CRASH_SYNTH)
 
 	listed_products = list(
 		list("ENGINEER SUPPLIES", 0, null, null, null),
@@ -21,7 +21,6 @@
 		list("Plastic Explosive", 3, /obj/item/explosive/plastic, null, VENDOR_ITEM_REGULAR),
 		list("ES-11 Mobile Fuel Canister", 4, /obj/item/tool/weldpack/minitank, null, VENDOR_ITEM_REGULAR),
 		list("Engineer Kit", 1, /obj/item/storage/toolkit/empty, null, VENDOR_ITEM_REGULAR),
-		list("Tactical Prybar", 5, /obj/item/tool/crowbar/tactical, null, VENDOR_ITEM_REGULAR),
 
 		list("FIRSTAID KITS", 0, null, null, null),
 		list("Advanced Firstaid Kit", 12, /obj/item/storage/firstaid/adv, null, VENDOR_ITEM_REGULAR),
@@ -39,9 +38,6 @@
 		list("Roller Bed", 4, /obj/item/roller, null, VENDOR_ITEM_REGULAR),
 		list("Stasis Bag", 6, /obj/item/bodybag/cryobag, null, VENDOR_ITEM_REGULAR),
 		list("MS-11 Smart Refill Tank", 6, /obj/item/reagent_container/glass/minitank, null, VENDOR_ITEM_REGULAR),
-		list("Blood", 5, /obj/item/reagent_container/blood/OMinus, null, VENDOR_ITEM_REGULAR),
-		list("Surgical Bed", 10, /obj/structure/bed/portable_surgery, null, VENDOR_ITEM_REGULAR),
-		list("Surgical Kit", 30, /obj/item/storage/surgical_tray, null, VENDOR_ITEM_REGULAR),
 
 		list("Pillbottle (Bicaridine)", 5, /obj/item/storage/pill_bottle/bicaridine, null, VENDOR_ITEM_RECOMMENDED),
 		list("Pillbottle (Dexalin)", 5, /obj/item/storage/pill_bottle/dexalin, null, VENDOR_ITEM_REGULAR),
@@ -140,7 +136,6 @@ GLOBAL_LIST_INIT(cm_vending_clothing_synth, list(
 		list("Smartpack, White", 0, /obj/item/storage/backpack/marine/smartpack/white, MARINE_CAN_BUY_BACKPACK, VENDOR_ITEM_REGULAR),
 		list("Smartpack, Black", 0, /obj/item/storage/backpack/marine/smartpack/black, MARINE_CAN_BUY_BACKPACK, VENDOR_ITEM_REGULAR),
 		list("Logistics IMP Backpack", 0, /obj/item/storage/backpack/marine/satchel/big, MARINE_CAN_BUY_BACKPACK, VENDOR_ITEM_REGULAR),
-		list("Expedition Chestrig", 0, /obj/item/storage/backpack/marine/satchel/intel/chestrig, MARINE_CAN_BUY_BACKPACK, VENDOR_ITEM_REGULAR),
 
 		list("BELT (CHOOSE 1)", 0, null, null, null),
 		list("G8-A General Utility Pouch", 0, /obj/item/storage/backpack/general_belt, MARINE_CAN_BUY_BELT, VENDOR_ITEM_REGULAR),
@@ -178,7 +173,7 @@ GLOBAL_LIST_INIT(cm_vending_clothing_synth, list(
 	name = "\improper ColMarTech Synthetic Equipment Rack"
 	desc = "An automated rack hooked up to a colossal storage of various equipment. Can be accessed only by synthetic units."
 	req_access = list(ACCESS_MARINE_SYNTH)
-	vendor_role = list(JOB_SYNTH, JOB_SYNTH_SURVIVOR)
+	vendor_role = list(JOB_SYNTH, JOB_SYNTH_SURVIVOR, JOB_CRASH_SYNTH)
 
 /obj/structure/machinery/cm_vending/clothing/synth/get_listed_products(mob/user)
 	return GLOB.cm_vending_clothing_synth
@@ -192,8 +187,7 @@ GLOBAL_LIST_INIT(cm_vending_clothing_synth_snowflake, list(
 	list("Medical Scrubs, Green", 12, /obj/item/clothing/under/rank/medical/green, null, VENDOR_ITEM_REGULAR),
 	list("Medical Scrubs, Purple", 12, /obj/item/clothing/under/rank/medical/purple, null, VENDOR_ITEM_REGULAR),
 	list("Medical Scrubs, White", 12, /obj/item/clothing/under/rank/medical, null, VENDOR_ITEM_REGULAR),
-	list("USCM Service Uniform, Tan", 12, /obj/item/clothing/under/marine/officer/bridge, null, VENDOR_ITEM_REGULAR),
-	list("USCM Service Uniform, White", 12, /obj/item/clothing/under/marine/dress, null, VENDOR_ITEM_REGULAR),
+	list("USCM Service Uniform", 12, /obj/item/clothing/under/marine/officer/bridge, null, VENDOR_ITEM_REGULAR),
 	list("USCM Flightsuit", 12, /obj/item/clothing/under/rank/synthetic/flight, null, VENDOR_ITEM_REGULAR),
 	list("USCM Engineers Uniform", 12, /obj/item/clothing/under/marine/engineer/standard, null, VENDOR_ITEM_REGULAR),
 	list("USCM Engineers Uniform (Darker)", 12, /obj/item/clothing/under/marine/engineer/darker, null, VENDOR_ITEM_REGULAR),
@@ -212,12 +206,8 @@ GLOBAL_LIST_INIT(cm_vending_clothing_synth_snowflake, list(
 	list("Grey Utilities", 12, /obj/item/clothing/under/rank/synthetic/utility/yellow, null, VENDOR_ITEM_REGULAR),
 	list("Grey Utilities and Blue Jeans", 12, /obj/item/clothing/under/rank/synthetic/utility/red, null, VENDOR_ITEM_REGULAR),
 	list("Blue Utilities and Brown Jeans", 12, /obj/item/clothing/under/rank/synthetic/utility/blue, null, VENDOR_ITEM_REGULAR),
-	list("White Service Uniform", 12, /obj/item/clothing/under/colonist/white_service, null, VENDOR_ITEM_REGULAR),
 	list("Steward Clothes", 12, /obj/item/clothing/under/colonist/wy_joliet_shopsteward, null, VENDOR_ITEM_REGULAR),
 	list("Red Dress Skirt", 12, /obj/item/clothing/under/blackskirt, null, VENDOR_ITEM_REGULAR),
-	list("Blue Suit Pants", 12, /obj/item/clothing/under/liaison_suit/blue, null, VENDOR_ITEM_REGULAR),
-	list("Brown Suit Pants", 12, /obj/item/clothing/under/liaison_suit/brown, null, VENDOR_ITEM_REGULAR),
-	list("White Suit Pants", 12, /obj/item/clothing/under/liaison_suit/corporate_formal, null, VENDOR_ITEM_REGULAR),
 	list("Working Joe Uniform", 36, /obj/item/clothing/under/rank/synthetic/joe, null, VENDOR_ITEM_REGULAR),
 
 	list("GLASSES", 0, null, null, null),
@@ -248,7 +238,6 @@ GLOBAL_LIST_INIT(cm_vending_clothing_synth_snowflake, list(
 	list("Beret, Red", 12, /obj/item/clothing/head/beret/cm/red, null, VENDOR_ITEM_REGULAR),
 	list("Beret, Standard", 12, /obj/item/clothing/head/beret/cm, null, VENDOR_ITEM_REGULAR),
 	list("Beret, Tan", 12, /obj/item/clothing/head/beret/cm/tan, null, VENDOR_ITEM_REGULAR),
-	list("Beret, Green", 12, /obj/item/clothing/head/beret/cm, MARINE_CAN_BUY_HELMET, VENDOR_ITEM_REGULAR),
 	list("Beret, Black", 12, /obj/item/clothing/head/beret/cm/black, null, VENDOR_ITEM_REGULAR),
 	list("Beret, White", 12, /obj/item/clothing/head/beret/cm/white, null, VENDOR_ITEM_REGULAR),
 	list("Surgical Cap, Blue", 12, /obj/item/clothing/head/surgery/blue, null, VENDOR_ITEM_REGULAR),
@@ -261,7 +250,6 @@ GLOBAL_LIST_INIT(cm_vending_clothing_synth_snowflake, list(
 	list("Req Cap", 12, /obj/item/clothing/head/cmcap/req, null, VENDOR_ITEM_REGULAR),
 	list("Officer Cap", 12, /obj/item/clothing/head/cmcap/bridge, null, VENDOR_ITEM_REGULAR),
 	list("Bio Hood", 12, /obj/item/clothing/head/bio_hood/synth, null, VENDOR_ITEM_REGULAR),
-	list("Fedora", 12, /obj/item/clothing/head/fedora, null, VENDOR_ITEM_REGULAR),
 
 	list("HELMET", 0, null, null, null),
 	list("Marine Helmet (Mission-Specific Camo)", 12, /obj/item/clothing/head/helmet/marine, null, VENDOR_ITEM_REGULAR),
@@ -294,12 +282,6 @@ GLOBAL_LIST_INIT(cm_vending_clothing_synth_snowflake, list(
 	list("Labcoat, Researcher", 12, /obj/item/clothing/suit/storage/labcoat/researcher, null, VENDOR_ITEM_REGULAR),
 	list("Quartermaster Jacket", 12, /obj/item/clothing/suit/storage/RO, null, VENDOR_ITEM_REGULAR),
 	list("Bio Suit", 12, /obj/item/clothing/suit/storage/synthbio, null, VENDOR_ITEM_REGULAR),
-	list("Black Suit Jacket", 12, /obj/item/clothing/suit/storage/jacket/marine/corporate/black, null, VENDOR_ITEM_REGULAR),
-	list("Brown Suit Jacket", 12, /obj/item/clothing/suit/storage/jacket/marine/corporate/brown, null, VENDOR_ITEM_REGULAR),
-	list("Blue Suit Jacket", 12, /obj/item/clothing/suit/storage/jacket/marine/corporate/blue, null, VENDOR_ITEM_REGULAR),
-	list("Brown Vest", 12, /obj/item/clothing/suit/storage/jacket/marine/vest, null, VENDOR_ITEM_REGULAR),
-	list("Tan Vest", 12, /obj/item/clothing/suit/storage/jacket/marine/vest/tan, null, VENDOR_ITEM_REGULAR),
-	list("Grey Vest", 12, /obj/item/clothing/suit/storage/jacket/marine/vest/grey, null, VENDOR_ITEM_REGULAR),
 	list("USCM Poncho (Mission-Specific Camo)", 12, /obj/item/clothing/accessory/poncho, null, VENDOR_ITEM_REGULAR),
 	list("USCM Poncho (Green)", 12, /obj/item/clothing/accessory/poncho/green, null, VENDOR_ITEM_REGULAR),
 	list("USCM Poncho (Brown)", 12, /obj/item/clothing/accessory/poncho/brown, null, VENDOR_ITEM_REGULAR),
@@ -322,10 +304,8 @@ GLOBAL_LIST_INIT(cm_vending_clothing_synth_snowflake, list(
 
 	list("OTHER", 0, null, null, null),
 	list("Red Armband", 6, /obj/item/clothing/accessory/armband, null, VENDOR_ITEM_REGULAR),
-	list("Purple Armband", 6, /obj/item/clothing/accessory/armband/science, null, VENDOR_ITEM_REGULAR),
 	list("Yellow Armband", 6, /obj/item/clothing/accessory/armband/engine, null, VENDOR_ITEM_REGULAR),
 	list("Green Armband", 6, /obj/item/clothing/accessory/armband/medgreen, null, VENDOR_ITEM_REGULAR),
-	list("Dress Gloves", 6, /obj/item/clothing/gloves/marine/dress, null, VENDOR_ITEM_REGULAR),
 
 ))
 
@@ -337,7 +317,7 @@ GLOBAL_LIST_INIT(cm_vending_clothing_synth_snowflake, list(
 	use_snowflake_points = TRUE
 	vendor_theme = VENDOR_THEME_COMPANY
 	req_access = list(ACCESS_MARINE_SYNTH)
-	vendor_role = list(JOB_SYNTH, JOB_SYNTH_SURVIVOR, JOB_WORKING_JOE)
+	vendor_role = list(JOB_SYNTH, JOB_SYNTH_SURVIVOR, JOB_WORKING_JOE, JOB_CRASH_SYNTH)
 
 	vend_delay = 1 SECONDS
 
@@ -354,7 +334,7 @@ GLOBAL_LIST_INIT(cm_vending_clothing_synth_snowflake, list(
 	available_points_to_display = 0
 	vendor_theme = VENDOR_THEME_COMPANY
 	req_access = list(ACCESS_MARINE_SYNTH)
-	vendor_role = list(JOB_SYNTH)
+	vendor_role = list(JOB_SYNTH, JOB_CRASH_SYNTH)
 
 /obj/structure/machinery/cm_vending/own_points/experimental_tools/redeem_token(obj/item/coin/marine/token, mob/user)
 	if(token.token_type == VEND_TOKEN_SYNTH)
@@ -387,5 +367,4 @@ GLOBAL_LIST_INIT(cm_vending_synth_tools, list(
 		/obj/item/weapon/gun/smg/nailgun/compact,
 		/obj/item/ammo_magazine/smg/nailgun,
 		/obj/item/ammo_magazine/smg/nailgun,
-		/obj/item/storage/belt/gun/m4a3/nailgun,
 	)

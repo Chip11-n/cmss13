@@ -17,6 +17,7 @@
 
 	if(xeno.crest_defense)
 		to_chat(xeno, SPAN_XENOWARNING("We lower our crest."))
+		xeno.balloon_alert(xeno, "crest lowered")
 
 		xeno.ability_speed_modifier += speed_debuff
 		xeno.armor_deflection_buff += armor_buff
@@ -25,6 +26,7 @@
 		xeno.update_icons()
 	else
 		to_chat(xeno, SPAN_XENOWARNING("We raise our crest."))
+		xeno.balloon_alert(xeno, "crest raised")
 
 		xeno.ability_speed_modifier -= speed_debuff
 		xeno.armor_deflection_buff -= armor_buff

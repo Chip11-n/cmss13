@@ -108,7 +108,7 @@
 	ability_name = "screech"
 	macro_path = /datum/action/xeno_action/verb/verb_screech
 	action_type = XENO_ACTION_CLICK
-	xeno_cooldown = 50 SECONDS
+	xeno_cooldown = 60 SECONDS
 	plasma_cost = 250
 	cooldown_message = "You feel your throat muscles vibrate. You are ready to screech again."
 	no_cooldown_msg = FALSE // Needed for onclick actions
@@ -116,6 +116,12 @@
 
 /datum/action/xeno_action/onclick/screech/use_ability(atom/target)
 	var/mob/living/carbon/xenomorph/queen/xeno = owner
+	var/screech_memes = list('code/modules/carrotman2013/sounds/screeches/eagle-screech.ogg',
+							'code/modules/carrotman2013/sounds/screeches/fnaf.ogg',
+							'code/modules/carrotman2013/sounds/screeches/hee-hee.ogg',
+							'code/modules/carrotman2013/sounds/screeches/pig.ogg',
+							'code/modules/carrotman2013/sounds/screeches/victory-screech.ogg',
+							'code/modules/carrotman2013/sounds/screeches/yaay.ogg')
 
 	if (!istype(xeno))
 		return
@@ -140,9 +146,12 @@
 		if(hugger.stat != DEAD)
 			hugger.die()
 
-	playsound(xeno.loc, pick(xeno.screech_sound_effect_list), 75, 0, status = 0)
+	if(prob(5))
+		playsound(xeno.loc, pick(screech_memes), 75, 0, status = 0)
+	else
+		playsound(xeno.loc, pick(xeno.screech_sound_effect_list), 75, 0, status = 0)
 	xeno.visible_message(SPAN_XENOHIGHDANGER("[xeno] emits an ear-splitting guttural roar!"))
-	xeno.create_shriekwave(14) //Adds the visual effect. Wom wom wom, 14 shriekwaves
+	xeno.create_shriekwave() //Adds the visual effect. Wom wom wom
 
 	for(var/mob/mob in view())
 		if(mob && mob.client)
@@ -206,7 +215,7 @@
 
 	var/whisper = strip_html(input("Message:", "Psychic Whisper") as text|null)
 	if(whisper)
-		log_say("PsychicWhisper: [key_name(xeno_player)]->[target_mob.key] : [whisper] (AREA: [get_area_name(target_mob)])")
+		log_say("PsychicWhisper: [key_name(xeno_player)]->[target_mob.key] : [whisper]")
 		if(!istype(target_mob, /mob/living/carbon/xenomorph))
 			to_chat(target_mob, SPAN_XENOQUEEN("You hear a strange, alien voice in your head. \"[whisper]\""))
 		else
@@ -259,7 +268,7 @@
 		return
 	var/targetstring = english_list(target_list)
 	to_chat(xeno_player, SPAN_XENONOTICE("You said: \"[whisper]\" to [targetstring]"))
-	log_say("PsychicRadiance: [key_name(xeno_player)]->[targetstring] : [whisper] (AREA: [get_area_name(xeno_player)])")
+	log_say("PsychicRadiance: [key_name(xeno_player)]->[targetstring] : [whisper]")
 	for (var/mob/dead/observer/ghost as anything in GLOB.observer_list)
 		if(!ghost.client || isnewplayer(ghost))
 			continue

@@ -67,6 +67,7 @@
 	paygrade = PAY_SHORT_UE2
 
 /datum/equipment_preset/upp/soldier/load_gear(mob/living/carbon/human/new_human)
+	//TODO: add backpacks and satchels
 	//face
 	new_human.equip_to_slot_or_del(new /obj/item/device/radio/headset/distress/UPP, WEAR_L_EAR)
 	//head
@@ -74,8 +75,6 @@
 	//body
 	var/obj/item/clothing/under/marine/veteran/UPP/UPP = new()
 	new_human.equip_to_slot_or_del(UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP, WEAR_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/device/binoculars, WEAR_IN_JACKET)
 	//limbs
@@ -257,8 +256,6 @@
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/head/uppcap, WEAR_HEAD)
 	//body
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/under/marine/veteran/UPP/medic, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/support, WEAR_JACKET) //medic should move fast
 	new_human.equip_to_slot_or_del(new /obj/item/weapon/gun/smg/bizon/upp, WEAR_J_STORE)
 	//waist
@@ -431,8 +428,6 @@
 	var/obj/item/clothing/accessory/storage/tool_webbing/equipped/W = new()
 	UPP.attach_accessory(new_human, W)
 	new_human.equip_to_slot_or_del(UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP, WEAR_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/device/binoculars, WEAR_IN_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/weapon/gun/rifle/type71/sapper, WEAR_J_STORE)
@@ -559,8 +554,6 @@
 	//body
 	var/obj/item/clothing/under/marine/veteran/UPP/UPP = new()
 	new_human.equip_to_slot_or_del(UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/heavy, WEAR_JACKET)
 	//limbs
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/shoes/marine/upp/knife, WEAR_FEET)
@@ -688,8 +681,6 @@
 	//body
 	var/obj/item/clothing/under/marine/veteran/UPP/UPP = new()
 	new_human.equip_to_slot_or_del(UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/heavy, WEAR_JACKET)
 	//limbs
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/shoes/marine/upp/knife, WEAR_FEET)
@@ -822,8 +813,6 @@
 	var/obj/item/clothing/accessory/storage/webbing/W = new()
 	UPP.attach_accessory(new_human, W)
 	new_human.equip_to_slot_or_del(UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71, WEAR_IN_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_ACCESSORY)
@@ -983,8 +972,6 @@
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/head/uppcap/beret, WEAR_HEAD)
 	//uniform
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/under/marine/veteran/UPP/mp, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	//jacket
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/mp, WEAR_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/device/binoculars, WEAR_IN_JACKET)
@@ -1144,8 +1131,6 @@
 	new_human.equip_to_slot_or_del(M, WEAR_BODY)
 	for(var/i in 1 to W.hold.storage_slots)
 		new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 
 	//jacket
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/officer, WEAR_JACKET)
@@ -1251,6 +1236,9 @@
 		list("Health Analyzer", 4, /obj/item/device/healthanalyzer, null, VENDOR_ITEM_REGULAR),
 		list("Medical HUD Glasses", 4, /obj/item/clothing/glasses/hud/health, null, VENDOR_ITEM_MANDATORY),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -1303,8 +1291,6 @@
 	new_human.equip_to_slot_or_del(M, WEAR_BODY)
 	for(var/i in 1 to W.hold.storage_slots)
 		new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 
 	//jacket
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/officer, WEAR_JACKET)
@@ -1410,6 +1396,9 @@
 		list("Health Analyzer", 4, /obj/item/device/healthanalyzer, null, VENDOR_ITEM_REGULAR),
 		list("Medical HUD Glasses", 4, /obj/item/clothing/glasses/hud/health, null, VENDOR_ITEM_MANDATORY),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -1463,8 +1452,6 @@
 	new_human.equip_to_slot_or_del(M, WEAR_BODY)
 	for(var/i in 1 to W.hold.storage_slots)
 		new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 
 	//jacket
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/kapitan, WEAR_JACKET)
@@ -1570,6 +1557,9 @@
 		list("Health Analyzer", 4, /obj/item/device/healthanalyzer, null, VENDOR_ITEM_REGULAR),
 		list("Medical HUD Glasses", 4, /obj/item/clothing/glasses/hud/health, null, VENDOR_ITEM_MANDATORY),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -1623,8 +1613,6 @@
 	new_human.equip_to_slot_or_del(M, WEAR_BODY)
 	for(var/i in 1 to W.hold.storage_slots)
 		new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 
 	//jacket
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/kapitan, WEAR_JACKET)
@@ -1730,6 +1718,9 @@
 		list("Health Analyzer", 4, /obj/item/device/healthanalyzer, null, VENDOR_ITEM_REGULAR),
 		list("Medical HUD Glasses", 4, /obj/item/clothing/glasses/hud/health, null, VENDOR_ITEM_MANDATORY),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -1783,8 +1774,6 @@
 	new_human.equip_to_slot_or_del(M, WEAR_BODY)
 	for(var/i in 1 to W.hold.storage_slots)
 		new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 
 	//jacket
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/kapitan, WEAR_JACKET)
@@ -1890,6 +1879,9 @@
 		list("Health Analyzer", 4, /obj/item/device/healthanalyzer, null, VENDOR_ITEM_REGULAR),
 		list("Medical HUD Glasses", 4, /obj/item/clothing/glasses/hud/health, null, VENDOR_ITEM_MANDATORY),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -1943,8 +1935,6 @@
 	new_human.equip_to_slot_or_del(M, WEAR_BODY)
 	for(var/i in 1 to W.hold.storage_slots)
 		new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 
 	//jacket
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/kapitan, WEAR_JACKET)
@@ -2050,6 +2040,9 @@
 		list("Health Analyzer", 4, /obj/item/device/healthanalyzer, null, VENDOR_ITEM_REGULAR),
 		list("Medical HUD Glasses", 4, /obj/item/clothing/glasses/hud/health, null, VENDOR_ITEM_MANDATORY),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -2103,8 +2096,6 @@
 	new_human.equip_to_slot_or_del(M, WEAR_BODY)
 	for(var/i in 1 to W.hold.storage_slots)
 		new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 
 	//jacket
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/kapitan, WEAR_JACKET)
@@ -2210,6 +2201,9 @@
 		list("Health Analyzer", 4, /obj/item/device/healthanalyzer, null, VENDOR_ITEM_REGULAR),
 		list("Medical HUD Glasses", 4, /obj/item/clothing/glasses/hud/health, null, VENDOR_ITEM_MANDATORY),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -2263,8 +2257,6 @@
 	new_human.equip_to_slot_or_del(M, WEAR_BODY)
 	for(var/i in 1 to W.hold.storage_slots)
 		new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 
 	//jacket
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/kapitan, WEAR_JACKET)
@@ -2370,6 +2362,9 @@
 		list("Health Analyzer", 4, /obj/item/device/healthanalyzer, null, VENDOR_ITEM_REGULAR),
 		list("Medical HUD Glasses", 4, /obj/item/clothing/glasses/hud/health, null, VENDOR_ITEM_MANDATORY),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -2423,8 +2418,6 @@
 	new_human.equip_to_slot_or_del(M, WEAR_BODY)
 	for(var/i in 1 to W.hold.storage_slots)
 		new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 
 	//jacket
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/kapitan, WEAR_JACKET)
@@ -2530,6 +2523,9 @@
 		list("Health Analyzer", 4, /obj/item/device/healthanalyzer, null, VENDOR_ITEM_REGULAR),
 		list("Medical HUD Glasses", 4, /obj/item/clothing/glasses/hud/health, null, VENDOR_ITEM_MANDATORY),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -2600,8 +2596,8 @@
 	languages = ALL_SYNTH_LANGUAGES_UPP
 
 	skills = /datum/skills/synthetic
-	assignment = JOB_UPP_SUPPORT_SYNTH
-	rank = JOB_UPP_SUPPORT_SYNTH
+	assignment = JOB_UPP_COMBAT_SYNTH
+	rank = JOB_UPP_COMBAT_SYNTH
 	paygrade = PAY_SHORT_SYN
 	idtype = /obj/item/card/id/dogtag
 
@@ -2642,21 +2638,19 @@
 	new_human.set_species(SYNTH_GEN_THREE)
 
 /datum/equipment_preset/upp/synth/load_skills(mob/living/carbon/human/new_human)
-	. = ..()
 	new_human.allow_gun_usage = FALSE
 
 /datum/equipment_preset/upp/synth/load_gear(mob/living/carbon/human/new_human)
 	//back
 	new_human.equip_to_slot_or_del(new /obj/item/storage/backpack/lightpack/upp, WEAR_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/device/defibrillator/compact, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/device/defibrillator, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/storage/firstaid/adv, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/blood/OMinus, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/blood/OMinus, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/roller/surgical, WEAR_IN_BACK)
+	new_human.equip_to_slot_or_del(new /obj/item/device/defibrillator/compact, WEAR_IN_BACK) //1
+	new_human.equip_to_slot_or_del(new /obj/item/storage/firstaid/adv, WEAR_IN_BACK) //2
+	new_human.equip_to_slot_or_del(new /obj/item/roller, WEAR_IN_BACK) //2.33
+	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/food/snacks/upp, WEAR_IN_BACK) //2.66
+	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/food/snacks/upp, WEAR_IN_BACK) //3
+	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/food/snacks/upp, WEAR_IN_BACK) //3.33
 	//face
 	new_human.equip_to_slot_or_del(new /obj/item/device/radio/headset/distress/UPP/command, WEAR_L_EAR)
-	new_human.equip_to_slot_or_del(new /obj/item/tool/screwdriver, WEAR_R_EAR)
 	if(new_human.disabilities & NEARSIGHTED)
 		new_human.equip_to_slot_or_del(new /obj/item/clothing/glasses/hud/health/prescription(new_human), WEAR_EYES)
 	else
@@ -2666,29 +2660,23 @@
 	new_human.equip_to_slot_or_del(new hat, WEAR_HEAD)
 	//body
 	var/obj/item/clothing/under/marine/veteran/UPP/medic/UPP = new()
-	var/obj/item/clothing/accessory/storage/surg_vest/drop_green/upp/webbing = new()
+	var/obj/item/clothing/accessory/storage/tool_webbing/equipped/webbing = new()
 	UPP.attach_accessory(new_human, webbing)
 	new_human.equip_to_slot_or_del(UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/support/synth, WEAR_JACKET)
-	new_human.equip_to_slot_or_del(new /obj/item/weapon/telebaton, WEAR_IN_JACKET)
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_JACKET)
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_JACKET)
-	new_human.equip_to_slot_or_del(new /obj/item/device/motiondetector/hacked, WEAR_J_STORE)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
+	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/support, WEAR_JACKET)
+	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/glass/bottle/tricordrazine, WEAR_IN_JACKET)
 	//waist
-	new_human.equip_to_slot_or_del(new /obj/item/storage/belt/medical/lifesaver/upp/synth, WEAR_WAIST)
+	new_human.equip_to_slot_or_del(new /obj/item/storage/belt/medical/lifesaver/upp/full, WEAR_WAIST)
 	//limbs
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/shoes/marine/upp/knife, WEAR_FEET)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/gloves/marine/veteran/upp, WEAR_HANDS)
 	//pockets
-	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/tools/tactical/upp, WEAR_R_STORE)
-
+	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/medical/full/pills, WEAR_R_STORE)
 	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/medical, WEAR_L_STORE)
 	new_human.equip_to_slot_or_del(new /obj/item/tool/surgery/surgical_line, WEAR_IN_L_STORE)
 	new_human.equip_to_slot_or_del(new /obj/item/tool/surgery/synthgraft, WEAR_IN_L_STORE)
-	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/hypospray/epinephrine, WEAR_IN_L_STORE)
-	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/glass/bottle/epinephrine, WEAR_IN_L_STORE)
+	new_human.equip_to_slot_or_del(new /obj/item/device/healthanalyzer, WEAR_IN_L_STORE)
+	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/hypospray/tricordrazine, WEAR_IN_L_STORE)
 
 /datum/equipment_preset/upp/synth/get_antag_clothing_equipment()
 	return list(
@@ -2806,62 +2794,6 @@
 		list("Whistle", 5, /obj/item/device/whistle, null, VENDOR_ITEM_REGULAR),
 	)
 
-
-/datum/equipment_preset/upp/synth/combat
-	name = "UPP Combat Synthetic"
-	flags = EQUIPMENT_PRESET_EXTRA
-
-	assignment = JOB_UPP_COMBAT_SYNTH
-	rank = JOB_UPP_COMBAT_SYNTH
-
-/datum/equipment_preset/upp/synth/combat/load_skills(mob/living/carbon/human/new_human)
-	. = ..()
-	new_human.allow_gun_usage = TRUE
-
-/datum/equipment_preset/upp/synth/combat/load_gear(mob/living/carbon/human/new_human)
-	//back
-	new_human.equip_to_slot_or_del(new /obj/item/storage/backpack/lightpack/upp, WEAR_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/tool/surgery/surgical_line, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/tool/surgery/synthgraft, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/device/defibrillator/compact, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/hypospray/epinephrine, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/glass/bottle/epinephrine, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/blood/OMinus, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/roller/surgical, WEAR_IN_BACK)
-	//face
-	new_human.equip_to_slot_or_del(new /obj/item/device/radio/headset/distress/UPP/command, WEAR_L_EAR)
-	new_human.equip_to_slot_or_del(new /obj/item/tool/screwdriver, WEAR_R_EAR)
-	if(new_human.disabilities & NEARSIGHTED)
-		new_human.equip_to_slot_or_del(new /obj/item/clothing/glasses/hud/health/prescription(new_human), WEAR_EYES)
-	else
-		new_human.equip_to_slot_or_del(new /obj/item/clothing/glasses/hud/health(new_human), WEAR_EYES)
-	//head
-	var/hat = pick(/obj/item/clothing/head/uppcap, /obj/item/clothing/head/uppcap/beret, /obj/item/clothing/head/uppcap/ushanka)
-	new_human.equip_to_slot_or_del(new hat, WEAR_HEAD)
-	//body
-	var/obj/item/clothing/under/marine/veteran/UPP/UPP = new()
-	var/obj/item/clothing/accessory/storage/surg_vest/drop_green/upp/webbing = new()
-	UPP.attach_accessory(new_human, webbing)
-	new_human.equip_to_slot_or_del(UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/support, WEAR_JACKET)
-	new_human.equip_to_slot_or_del(new /obj/item/weapon/telebaton, WEAR_IN_JACKET)
-	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/smg/bizon, WEAR_IN_JACKET)
-	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/smg/bizon, WEAR_IN_JACKET)
-	new_human.equip_to_slot_or_del(new /obj/item/weapon/gun/smg/bizon/upp, WEAR_J_STORE)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
-	//waist
-	new_human.equip_to_slot_or_del(new /obj/item/storage/belt/medical/lifesaver/upp/synth, WEAR_WAIST)
-	//limbs
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/shoes/marine/upp/knife, WEAR_FEET)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/gloves/marine/veteran/upp, WEAR_HANDS)
-	//pockets
-	var/obj/item/storage/pouch/magazine/large/ppouch = new()
-	new_human.equip_to_slot_or_del(ppouch, WEAR_L_STORE)
-	for(var/i = 1 to ppouch.storage_slots)
-		new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/smg/bizon, WEAR_IN_L_STORE)
-	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/tools/tactical/upp, WEAR_R_STORE)
-
 //*****************************************************************************************************/
 
 /datum/equipment_preset/upp/conscript
@@ -2876,6 +2808,7 @@
 	paygrade = PAY_SHORT_UE1
 
 /datum/equipment_preset/upp/conscript/load_gear(mob/living/carbon/human/new_human)
+	//TODO: add backpacks and satchels
 	//back
 	var/maybebackpack = prob(20) ? pick(/obj/item/storage/backpack/lightpack/upp, /obj/item/storage/backpack/lightpack) : null
 	if(maybebackpack)
@@ -2891,8 +2824,6 @@
 	//body
 	var/obj/item/clothing/under/marine/veteran/UPP/UPP = new()
 	new_human.equip_to_slot_or_del(UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 
 	var/maybejacket = prob(50) ? pick(/obj/item/clothing/suit/storage/marine/faction/UPP/jacket, /obj/item/clothing/suit/storage/snow_suit/soviet) : null
 	if(maybejacket)
@@ -2991,10 +2922,9 @@
 	access = get_access(ACCESS_LIST_GLOBAL)
 
 /datum/equipment_preset/upp/commando/load_gear(mob/living/carbon/human/new_human)
+	//TODO: add backpacks and satchels
 	new_human.equip_to_slot_or_del(new /obj/item/device/radio/headset/distress/UPP/kdo, WEAR_L_EAR)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/under/marine/veteran/UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/commando, WEAR_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
@@ -3014,8 +2944,8 @@
 	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/magazine/large, WEAR_R_STORE)
 	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/firstaid/full, WEAR_L_STORE)
 
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_BACK)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_BACK)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_BACK)
 
 	spawn_weapon(/obj/item/weapon/gun/rifle/type71/carbine/commando, /obj/item/ammo_magazine/rifle/type71, new_human, 0, 8)
 
@@ -3074,6 +3004,9 @@
 		list("Entrenching Tool", 2, /obj/item/tool/shovel/etool, null, VENDOR_ITEM_RECOMMENDED),
 		list("Sandbags x25", 5, /obj/item/stack/sandbags_empty/half, null, VENDOR_ITEM_RECOMMENDED),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -3112,10 +3045,9 @@
 	paygrade = PAY_SHORT_UC2
 
 /datum/equipment_preset/upp/commando/medic/load_gear(mob/living/carbon/human/new_human)
+	//TODO: add backpacks and satchels
 	new_human.equip_to_slot_or_del(new /obj/item/device/radio/headset/distress/UPP/kdo/medic, WEAR_L_EAR)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/under/marine/veteran/UPP/medic, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/commando, WEAR_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
@@ -3143,8 +3075,8 @@
 	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/food/snacks/upp, WEAR_IN_BACK)
 	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/explosive/C4, WEAR_L_STORE)
 
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_JACKET)
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_JACKET)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_JACKET)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_JACKET)
 
 	spawn_weapon(/obj/item/weapon/gun/rifle/type71/carbine/commando, /obj/item/ammo_magazine/rifle/type71, new_human, 0, 5)
 
@@ -3242,6 +3174,9 @@
 		list("Roller Bed", 4, /obj/item/roller, null, VENDOR_ITEM_REGULAR),
 		list("Stasis Bag", 6, /obj/item/bodybag/cryobag, null, VENDOR_ITEM_REGULAR),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -3280,10 +3215,9 @@
 	idtype = /obj/item/card/id/silver
 
 /datum/equipment_preset/upp/commando/leader/load_gear(mob/living/carbon/human/new_human)
+	//TODO: add backpacks and satchels
 	new_human.equip_to_slot_or_del(new /obj/item/device/radio/headset/distress/UPP/kdo/command, WEAR_L_EAR)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/under/marine/veteran/UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/commando, WEAR_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
@@ -3304,8 +3238,8 @@
 	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/magazine/large, WEAR_R_STORE)
 	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/explosive/C4, WEAR_L_STORE)
 
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_BACK)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_BACK)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_BACK)
 	new_human.equip_to_slot_or_del(new /obj/item/storage/box/handcuffs, WEAR_IN_BACK)
 
 	spawn_weapon(/obj/item/weapon/gun/rifle/type71/carbine/commando, /obj/item/ammo_magazine/rifle/type71, new_human, 0, 7)
@@ -3393,6 +3327,9 @@
 		list("Health Analyzer", 4, /obj/item/device/healthanalyzer, null, VENDOR_ITEM_REGULAR),
 		list("Medical HUD Glasses", 4, /obj/item/clothing/glasses/hud/health, null, VENDOR_ITEM_MANDATORY),
 
+		list("SPECIAL AMMUNITION", 0, null, null, null),
+		list("Type 71 HEAP Magazine (5.45x39mm)", 10, /obj/item/ammo_magazine/rifle/type71/heap , null, VENDOR_ITEM_REGULAR),
+
 		list("ATTACHMENTS", 0, null, null, null),
 		list("Angled Grip", 10, /obj/item/attachable/angledgrip, null, VENDOR_ITEM_REGULAR),
 		list("Extended Barrel", 10, /obj/item/attachable/extended_barrel, null, VENDOR_ITEM_REGULAR),
@@ -3424,8 +3361,6 @@
 /datum/equipment_preset/upp/commando/low_threat/load_gear(mob/living/carbon/human/new_human)
 	new_human.equip_to_slot_or_del(new /obj/item/device/radio/headset/distress/UPP/kdo, WEAR_L_EAR)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/under/marine/veteran/UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/commando, WEAR_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
@@ -3445,8 +3380,8 @@
 	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/magazine/large, WEAR_R_STORE)
 	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/firstaid/full, WEAR_L_STORE)
 
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_BACK)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_BACK)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_BACK)
 
 	spawn_weapon(/obj/item/weapon/gun/rifle/type71/carbine/commando, /obj/item/ammo_magazine/rifle/type71, new_human, 0, 8)
 
@@ -3454,10 +3389,9 @@
 	name = "UPP Commando Medic"
 
 /datum/equipment_preset/upp/commando/medic/load_gear(mob/living/carbon/human/new_human)
+	//TODO: add backpacks and satchels
 	new_human.equip_to_slot_or_del(new /obj/item/device/radio/headset/distress/UPP/kdo/medic, WEAR_L_EAR)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/under/marine/veteran/UPP/medic, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/commando, WEAR_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
@@ -3485,8 +3419,8 @@
 	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/food/snacks/upp, WEAR_IN_BACK)
 	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/explosive/C4, WEAR_L_STORE)
 
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_JACKET)
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_JACKET)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_JACKET)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_JACKET)
 
 	spawn_weapon(/obj/item/weapon/gun/rifle/type71/carbine/commando, /obj/item/ammo_magazine/rifle/type71, new_human, 0, 5)
 
@@ -3494,10 +3428,9 @@
 	name = "UPP Commando Leader"
 
 /datum/equipment_preset/upp/commando/leader/load_gear(mob/living/carbon/human/new_human)
+	//TODO: add backpacks and satchels
 	new_human.equip_to_slot_or_del(new /obj/item/device/radio/headset/distress/UPP/kdo/command, WEAR_L_EAR)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/under/marine/veteran/UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/suit/storage/marine/faction/UPP/commando, WEAR_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
 	new_human.equip_to_slot_or_del(new /obj/item/ammo_magazine/rifle/type71/ap, WEAR_IN_JACKET)
@@ -3518,8 +3451,8 @@
 	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/magazine/large, WEAR_R_STORE)
 	new_human.equip_to_slot_or_del(new /obj/item/storage/pouch/explosive/C4, WEAR_L_STORE)
 
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_BACK)
-	new_human.equip_to_slot_or_del(new /obj/item/restraint/handcuffs, WEAR_IN_BACK)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_BACK)
+	new_human.equip_to_slot_or_del(new /obj/item/handcuffs, WEAR_IN_BACK)
 	new_human.equip_to_slot_or_del(new /obj/item/storage/box/handcuffs, WEAR_IN_BACK)
 
 //*****************************************************************************************************/
@@ -3537,8 +3470,6 @@
 
 /datum/equipment_preset/upp/tank/load_gear(mob/living/carbon/human/new_human)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/under/marine/veteran/UPP(new_human), WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/shoes/marine/upp/knife(new_human), WEAR_FEET)
 	new_human.equip_to_slot_or_del(new /obj/item/device/radio/headset/distress/UPP/cct(new_human), WEAR_L_EAR)
 	new_human.equip_to_slot_or_del(new /obj/item/clothing/glasses/welding(new_human), WEAR_EYES)
@@ -3674,8 +3605,6 @@
 	var/obj/item/clothing/accessory/storage/surg_vest/equipped/W = new()
 	UPP.attach_accessory(new_human, W)
 	new_human.equip_to_slot_or_del(UPP, WEAR_BODY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp, WEAR_ACCESSORY)
-	new_human.equip_to_slot_or_del(new /obj/item/clothing/accessory/patch/upp/naval, WEAR_ACCESSORY)
 	//waist
 	new_human.equip_to_slot_or_del(new /obj/item/storage/belt/medical/lifesaver/upp/full, WEAR_WAIST)
 	new_human.equip_to_slot_or_del(new /obj/item/reagent_container/hypospray/autoinjector/oxycodone, WEAR_IN_BELT)

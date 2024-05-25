@@ -26,7 +26,7 @@
 
 	var/atom/movable/vehicle_light_holder/lighting_holder
 
-	var/vehicle_light_range = 5
+	var/vehicle_light_range = 7
 	var/vehicle_light_power = 2
 
 	//Yay! Working cameras in the vehicles at last!!
@@ -34,6 +34,8 @@
 	var/obj/structure/machinery/camera/vehicle/camera_int = null
 
 	var/nickname //used for single-use verb to name the vehicle. Put anything here to prevent naming
+
+	var/next_shout = 0 //to prevent spamming
 
 	var/honk_sound = 'sound/vehicles/honk_4_light.ogg'
 	var/next_honk = 0 //to prevent spamming
@@ -175,17 +177,6 @@
 	rotate_entrances(angle_to_turn)
 	rotate_bounds(angle_to_turn)
 
-	if(bound_width > world.icon_size || bound_height > world.icon_size)
-		lighting_holder = new(src)
-		lighting_holder.set_light_range(vehicle_light_range)
-		lighting_holder.set_light_power(vehicle_light_power)
-		lighting_holder.set_light_on(vehicle_light_range || vehicle_light_power)
-	else if(light_range)
-		set_light_on(TRUE)
-
-	light_pixel_x = -bound_x
-	light_pixel_y = -bound_y
-
 	healthcheck()
 	update_icon()
 
@@ -200,6 +191,20 @@
 		interior = new(src)
 		INVOKE_ASYNC(src, PROC_REF(do_create_interior))
 
+/obj/vehicle/multitile/New()
+	. = ..()
+	if(bound_width > world.icon_size || bound_height > world.icon_size)
+		lighting_holder = new(src)
+		lighting_holder.set_light_flags(LIGHT_ATTACHED)
+		lighting_holder.set_light_range(vehicle_light_range)
+		lighting_holder.set_light_power(vehicle_light_power)
+		lighting_holder.set_light_on(vehicle_light_range || vehicle_light_power)
+	else if(light_range)
+		set_light_on(TRUE)
+
+	light_pixel_x = -bound_x
+	light_pixel_y = -bound_y
+
 /obj/vehicle/multitile/proc/do_create_interior()
 	interior.create_interior(interior_map)
 
@@ -213,6 +218,8 @@
 		QDEL_NULL(interior)
 
 	QDEL_NULL_LIST(hardpoints)
+
+	QDEL_NULL(lighting_holder)
 
 	GLOB.all_multi_vehicles -= src
 
@@ -293,14 +300,14 @@
 		// Health check is done before the hardpoint takes damage
 		// This way, the frame won't take damage at the same time hardpoints break
 		if(H.can_take_damage())
-			H.take_damage(floor(damage * get_dmg_multi(type)))
+			H.take_damage(round(damage * get_dmg_multi(type)))
 			all_broken = FALSE
 
 	// If all hardpoints are broken, the vehicle frame begins taking full damage
 	if(all_broken)
 		health = max(0, health - damage * get_dmg_multi(type))
 	else //otherwise, 1/10th of damage lands on the hull
-		health = max(0, health - floor(damage * get_dmg_multi(type) / 10))
+		health = max(0, health - round(damage * get_dmg_multi(type) / 10))
 
 	if(ismob(attacker))
 		var/mob/M = attacker
@@ -334,12 +341,15 @@
 
 	// Checked here because we want to be able to null the mob in a seat
 	if(!istype(M))
-		return FALSE
+		return
 
 	M.set_interaction(src)
 	M.reset_view(src)
 	give_action(M, /datum/action/human_action/vehicle_unbuckle)
-	return TRUE
+
+//It's breaking it, so we don't throwing it anyways
+/obj/vehicle/multitile/throw_atom(atom/target, range, speed = 0, atom/thrower, spin, launch_type = NORMAL_LAUNCH, pass_flags = NO_FLAGS, list/end_throw_callbacks, list/collision_callbacks)
+	return FALSE
 
 /// Get crewmember of seat.
 /obj/vehicle/multitile/proc/get_seat_mob(seat)
@@ -381,9 +391,10 @@
 		toggle_cameras_status()
 		handle_all_modules_broken()
 
-	//vehicle is dead, no more lights
-	if(health <= 0 && lighting_holder.light_range)
-		lighting_holder.set_light_on(FALSE)
+	if(lighting_holder)
+		//vehicle is dead, no more lights
+		if (health <= 0) lighting_holder.set_light_on(FALSE)
+		else lighting_holder.set_light_on(TRUE)
 	update_icon()
 
 /*

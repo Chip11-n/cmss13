@@ -84,8 +84,8 @@
 			recharge_duration = recharge_duration * SHUTTLE_COOLING_FACTOR_RECHARGE
 
 
-	dropship.callTime = floor(flight_duration)
-	dropship.rechargeTime = floor(recharge_duration)
+	dropship.callTime = round(flight_duration)
+	dropship.rechargeTime = round(recharge_duration)
 
 /obj/structure/machinery/computer/shuttle/dropship/flight/tgui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
@@ -101,7 +101,7 @@
 	if(disabled)
 		return UI_UPDATE
 	if(!skip_time_lock && world.time < SSticker.mode.round_time_lobby + SHUTTLE_TIME_LOCK)
-		to_chat(user, SPAN_WARNING("The shuttle is still undergoing pre-flight fueling and cannot depart yet. Please wait another [floor((SSticker.mode.round_time_lobby + SHUTTLE_TIME_LOCK-world.time)/600)] minutes before trying again."))
+		to_chat(user, SPAN_WARNING("The shuttle is still undergoing pre-flight fueling and cannot depart yet. Please wait another [round((SSticker.mode.round_time_lobby + SHUTTLE_TIME_LOCK-world.time)/600)] minutes before trying again."))
 		return UI_CLOSE
 	if(dropship_control_lost)
 		var/remaining_time = timeleft(door_control_cooldown) / 10
@@ -141,13 +141,10 @@
 	// if the dropship has crashed don't allow more interactions
 	var/obj/docking_port/mobile/marine_dropship/shuttle = SSshuttle.getShuttle(shuttleId)
 	if(shuttle.mode == SHUTTLE_CRASHED)
-		to_chat(user, SPAN_NOTICE("[src] is unresponsive."))
+		to_chat(user, SPAN_NOTICE("\The [src] is not responsive"))
 		return
 
 	if(dropship_control_lost)
-		if(shuttle.is_hijacked)
-			to_chat(user, SPAN_WARNING("The shuttle is not responding due to an unauthorized access attempt."))
-			return
 		var/remaining_time = timeleft(door_control_cooldown) / 10
 		to_chat(user, SPAN_WARNING("The shuttle is not responding due to an unauthorized access attempt. In large text it says the lockout will be automatically removed in [remaining_time] seconds."))
 		if(!skillcheck(user, SKILL_PILOT, SKILL_PILOT_EXPERT))
@@ -177,7 +174,7 @@
 	if(!shuttle.is_hijacked)
 		tgui_interact(user)
 
-/obj/structure/machinery/computer/shuttle/dropship/flight/proc/groundside_alien_action(mob/living/carbon/xenomorph/xeno)
+/obj/structure/machinery/computer/shuttle/dropship/flight/proc/groundside_alien_action(mob/living/carbon/xenomorph/xeno, datum/dropship_hijack/hijack)
 	if(SSticker.mode.active_lz != src)
 		to_chat(xeno, SPAN_NOTICE("This terminal is inactive."))
 		return
@@ -300,7 +297,7 @@
 	hijack.fire()
 	GLOB.alt_ctrl_disabled = TRUE
 
-	marine_announcement("Unscheduled dropship departure detected from operational area. Hijack likely. Shutting down autopilot.", "Dropship Alert", 'sound/AI/hijack.ogg', logging = ARES_LOG_SECURITY)
+	marine_announcement("Незапланированное отправление десантного судна зафиксировано в зоне операции. Высокая вероятность угона. Отключение автопилота.", "Уведомление Десантного Корабля", 'sound/AI/hijack.ogg', logging = ARES_LOG_SECURITY)
 	log_ares_flight("Unknown", "Unscheduled dropship departure detected from operational area. Hijack likely. Shutting down autopilot.")
 
 	var/mob/living/carbon/xenomorph/xeno = user
@@ -327,14 +324,14 @@
 		colonial_marines.add_current_round_status_to_end_results("Hijack")
 
 /obj/structure/machinery/computer/shuttle/dropship/flight/proc/remove_door_lock()
-	if(door_control_cooldown)
-		deltimer(door_control_cooldown)
-		door_control_cooldown = null
 	var/obj/docking_port/mobile/marine_dropship/shuttle = SSshuttle.getShuttle(shuttleId)
 	if(shuttle.is_hijacked)
 		return
 	playsound(loc, 'sound/machines/terminal_success.ogg', KEYBOARD_SOUND_VOLUME, 1)
 	dropship_control_lost = FALSE
+	if(door_control_cooldown)
+		deltimer(door_control_cooldown)
+		door_control_cooldown = null
 
 /obj/structure/machinery/computer/shuttle/dropship/flight/ui_data(mob/user)
 	var/obj/docking_port/mobile/marine_dropship/shuttle = SSshuttle.getShuttle(shuttleId)
@@ -495,7 +492,7 @@
 				if(!dropship.automated_launch) //If we're toggling it on...
 					var/auto_delay
 					auto_delay = tgui_input_number(usr, "Set the delay for automated departure after recharging (seconds)", "Automated Departure Settings", DROPSHIP_MIN_AUTO_DELAY/10, DROPSHIP_MAX_AUTO_DELAY/10, DROPSHIP_MIN_AUTO_DELAY/10)
-					dropship.automated_launch_delay = Clamp(auto_delay SECONDS, DROPSHIP_MIN_AUTO_DELAY, DROPSHIP_MAX_AUTO_DELAY)
+					dropship.automated_launch_delay = сlamp(auto_delay SECONDS, DROPSHIP_MIN_AUTO_DELAY, DROPSHIP_MAX_AUTO_DELAY)
 					dropship.set_automated_launch(!dropship.automated_launch)
 			*/
 		if("disable-automate")

@@ -367,7 +367,7 @@
 	var/no_perma_damage = owner.status_flags & NO_PERMANENT_DAMAGE
 	var/no_bone_break = owner.chem_effect_flags & CHEM_EFFECT_RESIST_FRACTURE
 	if(previous_brute > 0 && !is_ff && body_part != BODY_FLAG_CHEST && body_part != BODY_FLAG_GROIN && !no_limb_loss && !no_perma_damage && !no_bone_break)
-		if(CONFIG_GET(flag/limbs_can_break) && brute_dam >= max_damage * CONFIG_GET(number/organ_health_multiplier) && (status & LIMB_BROKEN))
+		if(CONFIG_GET(flag/limbs_can_break) && brute_dam >= max_damage * CONFIG_GET(number/organ_health_multiplier))
 			var/cut_prob = brute/max_damage * 5
 			if(prob(cut_prob))
 				limb_delimb(damage_source)
@@ -498,6 +498,7 @@ This function completely restores a damaged organ to perfect condition.
 					owner.visible_message(SPAN_WARNING("The wound on [owner.name]'s [display_name] widens with a nasty ripping noise."),
 					SPAN_WARNING("The wound on your [display_name] widens with a nasty ripping noise."),
 					SPAN_WARNING("You hear a nasty ripping noise, as if flesh is being torn apart."))
+					owner.heartpounce()
 				return
 
 	//Creating wound
@@ -603,6 +604,7 @@ This function completely restores a damaged organ to perfect condition.
 	if(knitting_time > 0)
 		if(world.time > knitting_time)
 			to_chat(owner, SPAN_WARNING("The bones in your [display_name] feel fully knitted."))
+			owner.heartpounce()
 			owner.pain.apply_pain(-PAIN_BONE_BREAK)
 			status &= ~LIMB_BROKEN //Let it be known that this code never unbroke the limb.
 			knitting_time = -1
@@ -1513,7 +1515,7 @@ treat_grafted var tells it to apply to grafted but unsalved wounds, for burn kit
 /obj/limb/head/limb_delimb(damage_source)
 	var/obj/item/clothing/head/helmet/owner_helmet = owner.head
 
-	if(!istype(owner_helmet) || (issynth(owner) && !owner.allow_gun_usage))
+	if(!istype(owner_helmet) || !owner.allow_gun_usage)
 		droplimb(0, 0, damage_source)
 		return
 

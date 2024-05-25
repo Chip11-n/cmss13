@@ -3,6 +3,7 @@
 #define EQUIPMENT_PRESET_EXTRA (1<<1)
 #define EQUIPMENT_PRESET_START_OF_ROUND_WO (1<<2)
 #define EQUIPMENT_PRESET_MARINE (1<<3)
+#define EQUIPMENT_PRESET_START_OF_ROUND_CRASH (1<<4)
 
 /datum/equipment_preset
 	var/name = "Preset"
@@ -201,7 +202,7 @@
 				qdel(R)
 
 	if(flags & EQUIPMENT_PRESET_MARINE)
-		var/playtime = get_job_playtime(new_human.client, rank)
+		var/playtime = get_job_playtime(new_human.client, assignment)
 		var/medal_type
 
 		switch(playtime)
@@ -220,7 +221,7 @@
 		if(medal_type)
 			var/obj/item/clothing/accessory/medal/medal = new medal_type()
 			medal.recipient_name = new_human.real_name
-			medal.recipient_rank = assignment
+			medal.recipient_rank = current_rank
 
 			if(new_human.wear_suit && new_human.wear_suit.can_attach_accessory(medal))
 				new_human.wear_suit.attach_accessory(new_human, medal, TRUE)

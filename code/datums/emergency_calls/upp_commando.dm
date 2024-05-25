@@ -3,9 +3,9 @@
 /datum/emergency_call/upp_commando
 	name = "UPP Commandos (!DEATHSQUAD!)"
 	mob_max = 6
-	probability = 0
+	probability = 5
 	objectives = "Stealthily assault the ship. Use your silenced weapons, tranquilizers, and night vision to get the advantage on the enemy. Take out the power systems, comms and engine. Stick together and keep a low profile."
-	shuttle_id = MOBILE_SHUTTLE_ID_ERT3
+	shuttle_id = "Distress_UPP"
 	name_of_spawn = /obj/effect/landmark/ert_spawns/distress_upp
 	item_spawn = /obj/effect/landmark/ert_spawns/distress_upp/item
 	hostility = TRUE

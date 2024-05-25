@@ -10,6 +10,8 @@
 	health = 400
 	firing_arc = 90
 
+	origins = list(0, -3)
+
 	ammo = new /obj/item/ammo_magazine/hardpoint/primary_flamer
 	max_clips = 1
 
@@ -31,8 +33,9 @@
 		BULLET_TRAIT_ENTRY(/datum/element/bullet_trait_iff)
 	))
 
-/obj/item/hardpoint/primary/flamer/try_fire(atom/target, mob/living/user, params)
-	if(get_turf(target) in owner.locs)
+/obj/item/hardpoint/primary/flamer/try_fire(target, user, params)
+	var/turf/origin_turf = get_origin_turf()
+	if(origin_turf == get_turf(target))
 		to_chat(user, SPAN_WARNING("The target is too close."))
 		return NONE
 

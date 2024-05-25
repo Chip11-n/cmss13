@@ -50,15 +50,19 @@ SUBSYSTEM_DEF(ticker)
 
 	var/totalPlayers = 0 //used for pregame stats on statpanel
 	var/totalPlayersReady = 0 //used for pregame stats on statpanel
-	var/tutorial_disabled = FALSE
+	var/tutorial_disabled = FALSE //zonenote
 
 /datum/controller/subsystem/ticker/Initialize(timeofday)
+	if(!SSmapping.configs)
+		SSmapping.HACK_LoadMapConfig()
+
 	load_mode()
 
 	var/all_music = CONFIG_GET(keyed_list/lobby_music)
 	var/key = SAFEPICK(all_music)
 	if(key)
 		login_music = file(all_music[key])
+
 	return SS_INIT_SUCCESS
 
 /datum/controller/subsystem/ticker/fire(resumed = FALSE)
@@ -69,7 +73,7 @@ SUBSYSTEM_DEF(ticker)
 			if(isnull(start_at))
 				start_at = time_left || world.time + (CONFIG_GET(number/lobby_countdown) * 10)
 			to_chat_spaced(world, type = MESSAGE_TYPE_SYSTEM, margin_top = 2, margin_bottom = 0, html = SPAN_ROUNDHEADER("Welcome to the pre-game lobby of [CONFIG_GET(string/servername)]!"))
-			to_chat_spaced(world, type = MESSAGE_TYPE_SYSTEM, margin_top = 0, html = SPAN_ROUNDBODY("Please, setup your character and select ready. Game will start in [floor(time_left / 10) || CONFIG_GET(number/lobby_countdown)] seconds."))
+			to_chat_spaced(world, type = MESSAGE_TYPE_SYSTEM, margin_top = 0, html = SPAN_ROUNDBODY("Please, setup your character and select ready. Game will start in [round(time_left / 10) || CONFIG_GET(number/lobby_countdown)] seconds."))
 			SEND_GLOBAL_SIGNAL(COMSIG_GLOB_MODE_PREGAME_LOBBY)
 			current_state = GAME_STATE_PREGAME
 			fire()
@@ -175,8 +179,6 @@ SUBSYSTEM_DEF(ticker)
 /datum/controller/subsystem/ticker/proc/setup()
 	to_chat(world, SPAN_BOLDNOTICE("Enjoy the game!"))
 	var/init_start = world.timeofday
-	//Create and announce mode
-	mode = config.pick_mode(GLOB.master_mode)
 
 	CHECK_TICK
 	if(!mode.can_start(bypass_checks))
@@ -201,13 +203,12 @@ SUBSYSTEM_DEF(ticker)
 				handle_map_reboot()
 		else
 			to_chat(world, "Attempting again...")
-		QDEL_NULL(mode)
+
 		GLOB.RoleAuthority.reset_roles()
 		return FALSE
 
 	CHECK_TICK
 	if(!mode.pre_setup() && !bypass_checks)
-		QDEL_NULL(mode)
 		to_chat(world, "<b>Error in pre-setup for [GLOB.master_mode].</b> Reverting to pre-game lobby.")
 		GLOB.RoleAuthority.reset_roles()
 		return FALSE
@@ -233,9 +234,6 @@ SUBSYSTEM_DEF(ticker)
 		cb.InvokeAsync()
 	LAZYCLEARLIST(round_start_events)
 	CHECK_TICK
-
-	// We need stats to track roundstart role distribution.
-	mode.setup_round_stats()
 
 	//Configure mode and assign player to special mode stuff
 	if (!(mode.flags_round_type & MODE_NO_SPAWN))
@@ -281,7 +279,7 @@ SUBSYSTEM_DEF(ticker)
 	save_mode(CONFIG_GET(string/gamemode_default))
 
 	if(GLOB.round_statistics)
-		to_chat_spaced(world, html = FONT_SIZE_BIG(SPAN_ROLE_BODY("<B>Welcome to [GLOB.round_statistics.round_name]</B>")))
+		to_chat_spaced(world, html = FONT_SIZE_BIG(SPAN_ROLE_BODY("<B>Добро пожаловать на [GLOB.round_statistics.round_name]</B>")))
 
 	GLOB.supply_controller.start_processing()
 
@@ -346,8 +344,8 @@ SUBSYSTEM_DEF(ticker)
 
 /datum/controller/subsystem/ticker/proc/GetTimeLeft()
 	if(isnull(SSticker.time_left))
-		return floor(max(0, start_at - world.time) / 10)
-	return floor(time_left / 10)
+		return round(max(0, start_at - world.time) / 10)
+	return round(time_left / 10)
 
 
 /datum/controller/subsystem/ticker/proc/SetTimeLeft(newtime)
@@ -358,11 +356,17 @@ SUBSYSTEM_DEF(ticker)
 
 
 /datum/controller/subsystem/ticker/proc/load_mode()
-	var/mode = trim(file2text("data/mode.txt"))
-	if(mode)
-		GLOB.master_mode = SSmapping.configs[GROUND_MAP].force_mode ? SSmapping.configs[GROUND_MAP].force_mode : mode
+	var/cfg_mode = trim(file2text("data/mode.txt"))
+	if(SSmapping?.configs?[GROUND_MAP].force_mode)
+		GLOB.master_mode = SSmapping.configs[GROUND_MAP].force_mode
+	else if(cfg_mode)
+		GLOB.master_mode = cfg_mode
 	else
 		GLOB.master_mode = "Extended"
+
+	mode = config.pick_mode(GLOB.master_mode)
+	mode.setup_round_stats()
+
 	log_game("Saved mode is '[GLOB.master_mode]'")
 
 
@@ -387,10 +391,10 @@ SUBSYSTEM_DEF(ticker)
 
 	var/skip_delay = check_rights()
 	if(delay_end && !skip_delay)
-		to_chat(world, SPAN_BOLDNOTICE("An admin has delayed the round end."))
+		to_chat(world, SPAN_BOLDNOTICE("Администратор отложил конец раунда."))
 		return
 
-	to_chat(world, SPAN_BOLDNOTICE("Rebooting World in [DisplayTimeText(delay)]. [reason]"))
+	to_chat(world, SPAN_BOLDNOTICE("Перезагрузка мира через [DisplayTimeText(delay)]. [reason]"))
 
 	var/start_wait = world.time
 	sleep(delay - (world.time - start_wait))
@@ -399,9 +403,20 @@ SUBSYSTEM_DEF(ticker)
 		to_chat(world, SPAN_BOLDNOTICE("Reboot was cancelled by an admin."))
 		return
 
-	log_game("Rebooting World. [reason]")
+	log_game("АГАСЬ. [reason]")
 	to_chat_forced(world, "<h3>[SPAN_BOLDNOTICE("Rebooting...")]</h3>")
-
+	var/end_sound = pick("sound/misc/Game_Over_Man.ogg",
+						"sound/misc/gone_to_plaid.ogg",
+						"sound/misc/Rerun.ogg",
+						"sound/misc/facehugged_male.ogg",
+						"sound/misc/asses_kicked.ogg",
+						"sound/misc/hardon.ogg",
+						"sound/misc/outstanding_marines.ogg",
+						"sound/misc/sadtrombone.ogg",
+						"sound/misc/distressbeacon_Sunshine.ogg",
+						"sound/misc/surrounded_by_assholes.ogg",
+						"sound/misc/good_is_dumb.ogg")
+	world << sound(end_sound)
 	world.Reboot(TRUE)
 
 /datum/controller/subsystem/ticker/proc/create_characters()

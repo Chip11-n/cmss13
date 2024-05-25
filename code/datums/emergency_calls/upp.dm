@@ -5,8 +5,7 @@
 	name = "UPP Naval Infantry (Squad)"
 	mob_max = 9
 	probability = 20
-	shuttle_id = MOBILE_SHUTTLE_ID_ERT3
-	home_base = /datum/lazy_template/ert/upp_station
+	shuttle_id = "Distress_UPP"
 	name_of_spawn = /obj/effect/landmark/ert_spawns/distress_upp
 	item_spawn = /obj/effect/landmark/ert_spawns/distress_upp/item
 	//1 leader, 1 engineer, 2 medics, 1 specialist, 5 soldiers
@@ -21,7 +20,7 @@
 /datum/emergency_call/upp/New()
 	. = ..()
 	hostility = pick(50;FALSE,50;TRUE)
-	arrival_message = "[MAIN_SHIP_NAME] t*is i* UP* d^sp^*ch`. STr*&e teaM, #*u are cLe*% for a*pr*%^h. Pr*mE a*l wE*p^ns and pR*epr# t% r@nd$r a(tD."
+	arrival_message = "Э*т* УП* в^sа^*ка`. КоМ*&а зачистки, #*u вы г*%вы к п*ос*%^е. По*тE в*е оР*ж^е )0r и|*$e @а*й*с$ c0н&*о."
 	if(hostility)
 		objectives = "Eliminate the UA Forces to ensure the UPP prescence in this sector is continued. Listen to your superior officers and take over the [MAIN_SHIP_NAME] at all costs."
 	else

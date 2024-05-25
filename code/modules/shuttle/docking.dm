@@ -41,7 +41,7 @@
 		rotation = dir2angle(new_dock.dir)-dir2angle(dir)
 		if ((rotation % 90) != 0)
 			rotation += (rotation % 90) //diagonal rotations not allowed, round up
-		rotation %%= 360
+		rotation = SIMPLIFY_DEGREES(rotation)
 
 	if(!movement_direction)
 		movement_direction = turn(preferred_direction, 180)
@@ -52,7 +52,7 @@
 	if(!istype(new_dock, /obj/docking_port/stationary/transit) && crashing)
 		new_dock.on_crash()
 		on_crash()
-		crashing = FALSE
+		addtimer(VARSET_CALLBACK(src, crashing, FALSE), 10 SECONDS)
 
 	. = preflight_check(old_turfs, new_turfs, areas_to_move, rotation)
 	if(.)

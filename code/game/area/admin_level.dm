@@ -113,10 +113,6 @@
 	name = "UPP Station"
 	icon_state = "green"
 
-/area/adminlevel/ert_station/pizza_station
-	name = "Pizza Galaxy"
-	icon_state = "red"
-
 /area/adminlevel/ert_station/clf_station
 	name = "CLF Station"
 	icon_state = "white"
@@ -144,9 +140,6 @@
 	icon_state = "green"
 	requires_power = 0
 	flags_area = AREA_NOTUNNEL
-
-/area/misc
-	weather_enabled = FALSE
 
 /area/misc/testroom
 	requires_power = FALSE

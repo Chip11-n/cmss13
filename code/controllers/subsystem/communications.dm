@@ -66,8 +66,6 @@ Frequency range: 1200 to 1600
 Radiochat range: 1441 to 1489 (most devices refuse to be tune to other frequency, even during mapmaking)
 */
 
-#define UNIVERSAL_FREQ 1
-
 #define MIN_FREE_FREQ 1201 // -------------------------------------------------
 
 //Misc channels
@@ -329,11 +327,11 @@ SUBSYSTEM_DEF(radio)
 	if(length(extra_zs))
 		target_zs += extra_zs
 	for(var/obj/structure/machinery/telecomms/T as anything in tcomm_machines_ground)
-		if((UNIVERSAL_FREQ in T.freq_listening) || (frequency in T.freq_listening))
+		if(!length(T.freq_listening) || (frequency in T.freq_listening))
 			target_zs += SSmapping.levels_by_trait(ZTRAIT_GROUND)
 			break
 	for(var/obj/structure/machinery/telecomms/T as anything in tcomm_machines_almayer)
-		if((UNIVERSAL_FREQ in T.freq_listening) || (frequency in T.freq_listening))
+		if(!length(T.freq_listening) || (frequency in T.freq_listening))
 			target_zs += SSmapping.levels_by_trait(ZTRAIT_MARINE_MAIN_SHIP)
 			target_zs += SSmapping.levels_by_trait(ZTRAIT_RESERVED)
 			break

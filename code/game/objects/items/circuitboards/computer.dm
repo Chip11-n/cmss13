@@ -26,12 +26,6 @@
 	if (..(C))
 		network = C.network
 
-/obj/item/circuitboard/computer/cameras/tv
-	name = "Circuit board (Television Set)"
-	build_path = /obj/structure/machinery/computer/cameras/wooden_tv/broadcast
-	network = list(CAMERA_NET_CORRESPONDENT)
-	req_access = list()
-
 /obj/item/circuitboard/computer/cameras/engineering
 	name = "Circuit board (Engineering Camera Monitor)"
 	build_path = /obj/structure/machinery/computer/cameras/engineering
@@ -225,17 +219,14 @@
 	name = "Circuit board (vehicle ASRS console)"
 	build_path = /obj/structure/machinery/computer/supplycomp/vehicle
 	var/spent = FALSE //so that they can't just reconstruct the console to get another APC
-	var/tank_unlocked = FALSE
 
 /obj/item/circuitboard/computer/supplycomp/vehicle/construct(obj/structure/machinery/computer/supplycomp/vehicle/SCV)
 	if (..(SCV))
 		SCV.spent = spent
-		SCV.tank_unlocked = tank_unlocked
 
 /obj/item/circuitboard/computer/supplycomp/vehicle/disassemble(obj/structure/machinery/computer/supplycomp/vehicle/SCV)
 	if (..(SCV))
 		spent = SCV.spent
-		tank_unlocked = SCV.tank_unlocked
 
 /obj/item/circuitboard/computer/operating
 	name = "Circuit board (Operating Computer)"

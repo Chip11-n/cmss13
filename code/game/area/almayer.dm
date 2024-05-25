@@ -276,7 +276,6 @@
 
 /area/almayer/shipboard/brig/dress
 	name = "\improper CIC Dress Uniform Room"
-
 /area/almayer/shipboard/brig/processing
 	name = "\improper Brig Processing and Holding"
 
@@ -366,12 +365,8 @@
 	name = "\improper Upper Deck Aft Hallway"
 	icon_state = "aft"
 
-/area/almayer/hallways/upper/fore_hallway
-	name = "\improper Upper Deck Fore Hallway"
-	icon_state = "stern"
-
-/area/almayer/hallways/upper/midship_hallway
-	name = "\improper Upper Deck Midship Hallway"
+/area/almayer/hallways/upper/stern_hallway
+	name = "\improper Upper Deck Stern Hallway"
 	icon_state = "stern"
 
 /area/almayer/hallways/upper/port
@@ -428,18 +423,6 @@
 
 /area/almayer/maint/upper/u_m_s
 	name = "\improper Upper Deck Starboard-Midship Maintenance"
-
-/area/almayer/maint/upper/u_f_p
-	name = "\improper Upper Deck Port-Fore Maintenance"
-
-/area/almayer/maint/upper/u_f_s
-	name = "\improper Upper Deck Starboard-Fore Maintenance"
-
-/area/almayer/maint/upper/u_a_p
-	name = "\improper Upper Deck Port-Aft Maintenance"
-
-/area/almayer/maint/upper/u_a_s
-	name = "\improper Upper Deck Starboard-Aft Maintenance"
 
 // hull areas
 /area/almayer/maint/hull
@@ -774,6 +757,16 @@
 /area/almayer/squads/charlie_delta_shared
 	name = "\improper Charlie Delta Equipment Preparation"
 	icon_state = "cd_shared"
+	fake_zlevel = 2 // lowerdeck
+
+/area/almayer/squads/alpha_delta_shared
+	name = "\improper Alpha Delta Equipment Preparation"
+	icon_state = "ad_shared"
+	fake_zlevel = 2 // lowerdeck
+
+/area/almayer/squads/bravo_charlie_shared
+	name = "\improper Bravo Charlie Equipment Preparation"
+	icon_state = "bc_shared"
 	fake_zlevel = 2 // lowerdeck
 
 /area/almayer/squads/req

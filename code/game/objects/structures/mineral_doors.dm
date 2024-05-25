@@ -102,7 +102,7 @@
 			Dismantle()
 	else if(!(W.flags_item & NOBLUDGEON) && W.force)
 		user.animation_attack_on(src)
-		hardness -= W.force/100 * W.demolition_mod
+		hardness -= W.force/100
 		to_chat(user, "You hit the [name] with your [W.name]!")
 		CheckHardness()
 	else

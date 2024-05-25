@@ -190,7 +190,7 @@
 		if(X1<X2)
 			b+=m
 		while(X1!=X2 || Y1!=Y2)
-			if(floor(m*X1+b-Y1))
+			if(round(m*X1+b-Y1))
 				Y1+=signY //Line exits tile vertically
 			else
 				X1+=signX //Line exits tile horizontally
@@ -255,7 +255,7 @@
 
 		// copied from join as xeno
 		var/deathtime = world.time - cur_obs.timeofdeath
-		if(deathtime < XENO_JOIN_DEAD_TIME && ( !cur_obs.client.admin_holder || !(cur_obs.client.admin_holder.rights & R_ADMIN)) && !cur_obs.bypass_time_of_death_checks)
+		if(deathtime < GLOB.xeno_join_dead_time && ( !cur_obs.client.admin_holder || !(cur_obs.client.admin_holder.rights & R_ADMIN)) && !cur_obs.bypass_time_of_death_checks)
 			continue
 
 		// AFK players cannot be drafted
@@ -263,7 +263,7 @@
 			continue
 
 		// Mods with larva protection cannot be drafted
-		if(check_client_rights(cur_obs.client, R_MOD, FALSE) && cur_obs.admin_larva_protection)
+		if((cur_obs.client.admin_holder && (cur_obs.client.admin_holder.rights & R_MOD)) && !cur_obs.adminlarva)
 			continue
 
 		if(hive)

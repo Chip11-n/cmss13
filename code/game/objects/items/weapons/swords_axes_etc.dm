@@ -23,7 +23,7 @@
 	icon_state = "baton"
 	item_state = "classic_baton"
 	flags_equip_slot = SLOT_WAIST
-	force = MELEE_FORCE_NORMAL
+	force = MELEE_FORCE_WEAK
 
 /obj/item/weapon/classic_baton/attack(mob/M as mob, mob/living/user as mob)
 	if(!..())
@@ -94,7 +94,7 @@
 	return
 
 /obj/item/weapon/telebaton/proc/stun(mob/living/carbon/human/target, mob/living/user)
-	if(target.check_shields(src, 0, "[user]'s [name]"))
+	if(target.check_shields(src, 0, "[user]'s [name]", get_dir(user,target)))
 		return FALSE
 	// Visuals and sound
 	playsound(target, 'sound/weapons/baton.ogg', 50, TRUE, 7)

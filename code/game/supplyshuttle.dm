@@ -289,8 +289,8 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 
 /obj/structure/machinery/computer/supply_drop_console/proc/handle_supplydrop()
 	SHOULD_NOT_SLEEP(TRUE)
-	var/obj/structure/closet/crate/crate = check_pad()
-	if(!crate)
+	var/obj/structure/closet/crate/C = check_pad()
+	if(!C)
 		to_chat(usr, "[icon2html(src, usr)] [SPAN_WARNING("No crate was detected on the drop pad. Get Requisitions on the line!")]")
 		return
 
@@ -316,25 +316,19 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 		to_chat(usr, "[icon2html(src, usr)] [SPAN_WARNING("The landing zone appears to be obstructed or out of bounds. Package would be lost on drop.")]")
 		return
 
-	if(crate.opened)
-		to_chat(usr, "[icon2html(src, usr)] [SPAN_WARNING("The crate is not secure on the drop pad. Please close it!")]")
-		return
-
-	crate.visible_message(SPAN_WARNING("\The [crate] loads into a launch tube. Stand clear!"))
-	current_squad.send_message("'[crate.name]' supply drop incoming. Heads up!")
-	current_squad.send_maptext(crate.name, "Incoming Supply Drop:")
+	C.visible_message(SPAN_WARNING("\The [C] loads into a launch tube. Stand clear!"))
+	current_squad.send_message("'[C.name]' supply drop incoming. Heads up!")
+	current_squad.send_maptext(C.name, "Incoming Supply Drop:")
 	COOLDOWN_START(src, next_fire, drop_cooldown)
 	if(ismob(usr))
 		var/mob/M = usr
 		M.count_niche_stat(STATISTICS_NICHE_CRATES)
 
-	playsound(crate.loc,'sound/effects/bamf.ogg', 50, 1)  //Ehh
-	var/obj/structure/droppod/supply/pod = new(null, crate)
-	crate.forceMove(pod)
+	playsound(C.loc,'sound/effects/bamf.ogg', 50, 1)  //Ehh
+	var/obj/structure/droppod/supply/pod = new(null, C)
+	C.forceMove(pod)
 	pod.launch(T)
-	log_ares_requisition("Supply Drop", "Launch [crate.name] to X[x_supply], Y[y_supply].", usr.real_name)
-	log_game("[key_name(usr)] launched supply drop '[crate.name]' to X[x_coord], Y[y_coord].")
-	visible_message("[icon2html(src, viewers(src))] [SPAN_BOLDNOTICE("'[crate.name]' supply drop launched! Another launch will be available in five minutes.")]")
+	visible_message("[icon2html(src, viewers(src))] [SPAN_BOLDNOTICE("'[C.name]' supply drop launched! Another launch will be available in five minutes.")]")
 
 //A limited version of the above console
 //Can't pick squads, drops less often
@@ -416,7 +410,6 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 		"Operations",
 		"Weapons",
 		"Vehicle Ammo",
-		"Vehicle Equipment",
 		"Attachments",
 		"Ammo",
 		"Weapons Specialist Ammo",
@@ -444,6 +437,7 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 	//dropship part fabricator's points, so we can reference them globally (mostly for DEFCON)
 	var/dropship_points = 10000 //gains roughly 18 points per minute | Original points of 5k doubled due to removal of prespawned ammo.
 	var/tank_points = 0
+	var/mech_points = 5
 
 /datum/controller/supply/New()
 	. = ..()
@@ -493,13 +487,13 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 	if(crate_iteration <= 5 && crate_amount < 4)
 		crate_amount = 4
 
-	var/unit_crate_amount = floor(crate_amount)
+	var/unit_crate_amount = round(crate_amount)
 	var/carry = crate_amount - unit_crate_amount
 	random_crates_carry[pool] += carry
 	var/total_carry = random_crates_carry[pool]
 
 	if(total_carry >= 1)
-		var/additional_crates = floor(total_carry)
+		var/additional_crates = round(total_carry)
 		random_crates_carry[pool] -= additional_crates
 		unit_crate_amount += additional_crates
 
@@ -515,7 +509,7 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 	if(!GLOB.supply_packs_datums[supply_info.reference_package])
 		return
 
-	supply_info.cost = floor(supply_info.cost * ASRS_COST_MULTIPLIER) //We still do this to raise the weight
+	supply_info.cost = round(supply_info.cost * ASRS_COST_MULTIPLIER) //We still do this to raise the weight
 	//We have to create a supply order to make the system spawn it. Here we transform a crate into an order.
 	var/datum/supply_order/supply_order = new /datum/supply_order()
 	supply_order.ordernum = ordernum++
@@ -529,13 +523,13 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 /datum/controller/supply/proc/pick_weighted_crate(list/datum/supply_packs_asrs/cratelist)
 	var/list/datum/supply_packs_asrs/weighted_crate_list = list()
 	for(var/datum/supply_packs_asrs/crate in cratelist)
-		var/weight = (floor(10000/crate.cost))
+		var/weight = (round(10000/crate.cost))
 		weighted_crate_list[crate] = weight
 	return pickweight(weighted_crate_list)
 
 //To stop things being sent to centcomm which should not be sent to centcomm. Recursively checks for these types.
 /datum/controller/supply/proc/forbidden_atoms_check(atom/A)
-	if(istype(A,/mob/living) && !black_market_enabled)
+	if(istype(A,/mob/living/carbon/human) && !black_market_enabled)
 		return TRUE
 
 	for(var/i=1, i<=A.contents.len, i++)
@@ -553,6 +547,64 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 	for(var/obj/structure/closet/crate/C in area_shuttle)
 		points += points_per_crate
 		qdel(C)
+
+	//Зачем им трупы
+	var/points_per_xeno_t1 = 20
+	var/points_per_xeno_t2 = 40
+	var/points_per_xeno_t3 = 70
+	var/points_per_xeno_q = 150
+	for(var/mob/living/carbon/xenomorph/larva in area_shuttle)
+		points += 6
+		qdel(larva)
+	for(var/mob/living/carbon/xenomorph/carrier in area_shuttle)
+		points += points_per_xeno_t2
+		qdel(carrier)
+	for(var/mob/living/carbon/xenomorph/ravager in area_shuttle)
+		points += points_per_xeno_t3
+		qdel(ravager)
+	for(var/mob/living/carbon/xenomorph/praetorian in area_shuttle)
+		points += points_per_xeno_t3
+		qdel(praetorian)
+	for(var/mob/living/carbon/xenomorph/hivelord in area_shuttle)
+		points += points_per_xeno_t2
+		qdel(hivelord)
+	for(var/mob/living/carbon/xenomorph/defender in area_shuttle)
+		points += points_per_xeno_t1
+		qdel(defender)
+	for(var/mob/living/carbon/xenomorph/warrior in area_shuttle)
+		points += points_per_xeno_t2
+		qdel(warrior)
+	for(var/mob/living/carbon/xenomorph/facehugger in area_shuttle)
+		points += 5
+		qdel(facehugger)
+	for(var/mob/living/carbon/xenomorph/runner in area_shuttle)
+		points += points_per_xeno_t1
+		qdel(runner)
+	for(var/mob/living/carbon/xenomorph/boiler in area_shuttle)
+		points += points_per_xeno_t3
+		qdel(boiler)
+	for(var/mob/living/carbon/xenomorph/crusher in area_shuttle)
+		points += points_per_xeno_t3
+		qdel(crusher)
+	for(var/mob/living/carbon/xenomorph/burrower in area_shuttle)
+		points += points_per_xeno_t2
+		qdel(burrower)
+	for(var/mob/living/carbon/xenomorph/drone in area_shuttle)
+		points += points_per_xeno_t1
+		qdel(drone)
+	for(var/mob/living/carbon/xenomorph/spitter in area_shuttle)
+		points += points_per_xeno_t2
+		qdel(spitter)
+	for(var/mob/living/carbon/xenomorph/sentinel in area_shuttle)
+		points += points_per_xeno_t1
+		qdel(sentinel)
+	for(var/mob/living/carbon/xenomorph/lurker in area_shuttle)
+		points += points_per_xeno_t2
+		qdel(lurker)
+	for(var/mob/living/carbon/xenomorph/queen in area_shuttle)
+		points += points_per_xeno_q
+		qdel(queen) //Квина иди нахуй
+
 
 	// Sell manifests.
 	var/screams = FALSE
@@ -781,7 +833,7 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 				var/datum/supply_packs/supply_pack = GLOB.supply_packs_datums[supply_type]
 				if(supply_pack.contraband || supply_pack.group != last_viewed_group || !supply_pack.buyable)
 					continue //Have to send the type instead of a reference to
-				temp += "<A href='?src=\ref[src];doorder=[supply_pack.name]'>[supply_pack.name]</A> Cost: $[floor(supply_pack.cost) * SUPPLY_TO_MONEY_MUPLTIPLIER]<BR>" //the obj because it would get caught by the garbage
+				temp += "<A href='?src=\ref[src];doorder=[supply_pack.name]'>[supply_pack.name]</A> Cost: $[round(supply_pack.cost) * SUPPLY_TO_MONEY_MUPLTIPLIER]<BR>" //the obj because it would get caught by the garbage
 
 	else if (href_list["doorder"])
 		if(world.time < reqtime)
@@ -980,7 +1032,7 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 					var/datum/supply_packs/supply_pack = GLOB.supply_packs_datums[supply_type]
 					if(!is_buyable(supply_pack))
 						continue
-					temp += "<A href='?src=\ref[src];doorder=[supply_pack.name]'>[supply_pack.name]</A> Cost: $[floor(supply_pack.cost) * SUPPLY_TO_MONEY_MUPLTIPLIER]<BR>"		//the obj because it would get caught by the garbage
+					temp += "<A href='?src=\ref[src];doorder=[supply_pack.name]'>[supply_pack.name]</A> Cost: $[round(supply_pack.cost) * SUPPLY_TO_MONEY_MUPLTIPLIER]<BR>"		//the obj because it would get caught by the garbage
 
 	else if (href_list["doorder"])
 		if(world.time < reqtime)
@@ -1058,10 +1110,10 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 			if(SO.ordernum == ordernum)
 				supply_order = SO
 				supply_pack = supply_order.object
-				if(GLOB.supply_controller.points >= floor(supply_pack.cost) && GLOB.supply_controller.black_market_points >= supply_pack.dollar_cost)
+				if(GLOB.supply_controller.points >= round(supply_pack.cost) && GLOB.supply_controller.black_market_points >= supply_pack.dollar_cost)
 					GLOB.supply_controller.requestlist.Cut(i,i+1)
-					GLOB.supply_controller.points -= floor(supply_pack.cost)
-					GLOB.supply_controller.black_market_points -= floor(supply_pack.dollar_cost)
+					GLOB.supply_controller.points -= round(supply_pack.cost)
+					GLOB.supply_controller.black_market_points -= round(supply_pack.dollar_cost)
 					if(GLOB.supply_controller.black_market_heat != -1) //-1 Heat means heat is disabled
 						GLOB.supply_controller.black_market_heat = clamp(GLOB.supply_controller.black_market_heat + supply_pack.crate_heat + (supply_pack.crate_heat * rand(rand(-0.25,0),0.25)), 0, 100) // black market heat added is crate heat +- up to 25% of crate heat
 					GLOB.supply_controller.shoppinglist += supply_order
@@ -1160,7 +1212,7 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 		var/datum/supply_packs/supply_pack = GLOB.supply_packs_datums[supply_type]
 		if(!is_buyable(supply_pack))
 			continue
-		temp += "<A href='?src=\ref[src];doorder=[supply_pack.name]'>[supply_pack.name]</A> Cost: $[floor(supply_pack.dollar_cost)]<BR>"
+		temp += "<A href='?src=\ref[src];doorder=[supply_pack.name]'>[supply_pack.name]</A> Cost: $[round(supply_pack.dollar_cost)]<BR>"
 
 /obj/structure/machinery/computer/supplycomp/proc/handle_mendoza_dialogue()
 
@@ -1322,8 +1374,7 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 	req_access = list(ACCESS_MARINE_CREWMAN)
 	circuit = /obj/item/circuitboard/computer/supplycomp/vehicle
 	// Can only retrieve one vehicle per round
-	var/spent = TRUE
-	var/tank_unlocked = FALSE
+	var/spent = FALSE
 	var/list/allowed_roles = list(JOB_CREWMAN)
 
 	var/list/vehicles
@@ -1332,7 +1383,6 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 	var/name = "vehicle order"
 
 	var/obj/vehicle/ordered_vehicle
-	var/unlocked = TRUE
 	var/failure_message = "<font color=\"red\"><b>Not enough resources were allocated to repair this vehicle during this operation.</b></font><br>"
 
 /datum/vehicle_order/proc/has_vehicle_lock()
@@ -1345,48 +1395,20 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 	name = "M34A2 Longstreet Light Tank"
 	ordered_vehicle = /obj/effect/vehicle_spawner/tank/decrepit
 
-/datum/vehicle_order/tank/has_vehicle_lock()
-	return
-
-/datum/vehicle_order/tank/broken
-	name = "Smashed M34A2 Longstreet Light Tank"
-	ordered_vehicle = /obj/effect/vehicle_spawner/tank/hull/broken
-
-/datum/vehicle_order/tank/plain
-	name = "M34A2 Longstreet Light Tank"
-	ordered_vehicle = /obj/effect/vehicle_spawner/tank
-
 /datum/vehicle_order/apc
 	name = "M577 Armored Personnel Carrier"
 	ordered_vehicle = /obj/effect/vehicle_spawner/apc/decrepit
-
-/datum/vehicle_order/apc/med
-	name = "M577-MED Armored Personnel Carrier"
-	ordered_vehicle = /obj/effect/vehicle_spawner/apc_med/decrepit
-
-/datum/vehicle_order/apc/cmd
-	name = "M577-CMD Armored Personnel Carrier"
-	ordered_vehicle = /obj/effect/vehicle_spawner/apc_cmd/decrepit
-
-/datum/vehicle_order/apc/empty
-	name = "Barebones M577 Armored Personal Carrier"
-	ordered_vehicle = /obj/effect/vehicle_spawner/apc/unarmed/broken
-
-/datum/vehicle_order/arc
-	name = "M540-B Armored Recon Carrier"
-	ordered_vehicle = /obj/effect/vehicle_spawner/arc
-
-/datum/vehicle_order/arc/has_vehicle_lock()
-	return
 
 /obj/structure/machinery/computer/supplycomp/vehicle/Initialize()
 	. = ..()
 
 	vehicles = list(
-		new /datum/vehicle_order/apc(),
-		new /datum/vehicle_order/apc/med(),
-		new /datum/vehicle_order/apc/cmd(),
+		/datum/vehicle_order/apc,
+		/datum/vehicle_order/tank,
 	)
+
+	for(var/order as anything in vehicles)
+		vehicles[order] = new order
 
 	if(!GLOB.VehicleElevatorConsole)
 		GLOB.VehicleElevatorConsole = src
@@ -1416,13 +1438,11 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 		return
 
 	dat += "Platform position: "
-	if (SSshuttle.vehicle_elevator.mode != SHUTTLE_IDLE)
+	if (SSshuttle.vehicle_elevator.timeLeft())
 		dat += "Moving"
 	else
 		if(is_mainship_level(SSshuttle.vehicle_elevator.z))
 			dat += "Raised"
-			if(!spent)
-				dat += "<br>\[<a href='?src=\ref[src];lower_elevator=1'>Lower</a>\]"
 		else
 			dat += "Lowered"
 	dat += "<br><hr>"
@@ -1433,12 +1453,12 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 		dat += "Available vehicles:<br>"
 
 		for(var/d in vehicles)
-			var/datum/vehicle_order/VO = d
+			var/datum/vehicle_order/VO = vehicles[d]
 
 			if(VO.has_vehicle_lock())
 				dat += VO.failure_message
 			else
-				dat += "<a href='?src=\ref[src];get_vehicle=\ref[VO]'>[VO.name]</a><br>"
+				dat += "<a href='?src=\ref[src];get_vehicle=[d]'>[VO.name]</a><br>"
 
 	show_browser(H, dat, "Automated Storage and Retrieval System", "computer", "size=575x450")
 
@@ -1458,24 +1478,25 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 		world.log << "## ERROR: Eek. The supply/elevator datum is missing somehow."
 		return
 
+	if(!should_block_game_interaction(SSshuttle.vehicle_elevator))
+		to_chat(usr, SPAN_WARNING("The elevator needs to be in the cargo bay dock to call a vehicle up. Ask someone to send it away."))
+		return
+
 	if(isturf(loc) && ( in_range(src, usr) || isSilicon(usr) ) )
 		usr.set_interaction(src)
 
 	if(href_list["get_vehicle"])
-		if(is_mainship_level(SSshuttle.vehicle_elevator.z) || SSshuttle.vehicle_elevator.mode != SHUTTLE_IDLE)
-			to_chat(usr, SPAN_WARNING("The elevator needs to be in the cargo bay dock to call a vehicle up!"))
+		if(is_mainship_level(SSshuttle.vehicle_elevator.z))
 			return
 		// dunno why the +1 is needed but the vehicles spawn off-center
 		var/turf/middle_turf = get_turf(SSshuttle.vehicle_elevator)
 
 		var/obj/vehicle/multitile/ordered_vehicle
 
-		var/datum/vehicle_order/VO = locate(href_list["get_vehicle"])
-		if(!(VO in vehicles))
-			return
+		var/datum/vehicle_order/VO = vehicles[text2path(href_list["get_vehicle"])]
 
-		if(VO?.has_vehicle_lock())
-			return
+		if(!VO) return
+		if(VO.has_vehicle_lock()) return
 
 		spent = TRUE
 		ordered_vehicle = new VO.ordered_vehicle(middle_turf)
@@ -1483,13 +1504,7 @@ GLOBAL_DATUM_INIT(supply_controller, /datum/controller/supply, new())
 
 		VO.on_created(ordered_vehicle)
 
-		SEND_GLOBAL_SIGNAL(COMSIG_GLOB_VEHICLE_ORDERED, ordered_vehicle)
-
-	else if(href_list["lower_elevator"])
-		if(!is_mainship_level(SSshuttle.vehicle_elevator.z))
-			return
-
-		SSshuttle.vehicle_elevator.request(SSshuttle.getDock("adminlevel vehicle"))
+		SEND_GLOBAL_SIGNAL(COMSIG_GLOB_VEHICLE_ORDERED, VO)
 
 	add_fingerprint(usr)
 	updateUsrDialog()

@@ -9,6 +9,8 @@
 	health = 500
 	firing_arc = 60
 
+	origins = list(0, -2)
+
 	ammo = new /obj/item/ammo_magazine/hardpoint/towlauncher
 	max_clips = 1
 

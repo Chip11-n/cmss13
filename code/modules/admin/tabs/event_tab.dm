@@ -282,7 +282,7 @@
 
 	message_admins("[key_name_admin(usr)] granted requisitions [points_to_add] points.")
 	if(points_to_add >= 0)
-		shipwide_ai_announcement("Additional Supply Budget has been authorised for this operation.")
+		shipwide_ai_announcement("Дополнительный Бюджет Снабжения был выделен для этой операции.")
 
 /datum/admins/proc/check_req_heat()
 	set name = "Check Requisitions Heat"
@@ -474,7 +474,7 @@
 	new_order.approvedby = MAIN_AI_SYSTEM
 	GLOB.supply_controller.shoppinglist += new_order
 
-	marine_announcement("A nuclear device has been supplied and will be delivered to requisitions via ASRS.", "NUCLEAR ARSENAL ACQUIRED", 'sound/misc/notice2.ogg')
+	marine_announcement("Ядерный заряд был загружен и будет доставлен в карго через ASRS.", "ПОЛУЧЕНО ЯДЕРНОЕ ВООРУЖЕНИЕ", 'sound/misc/notice2.ogg')
 	message_admins("[key_name_admin(usr)] admin-spawned \a [encrypt] nuke.")
 	log_game("[key_name_admin(usr)] admin-spawned \a [encrypt] nuke.")
 
@@ -773,7 +773,6 @@
 		<A href='?src=\ref[src];[HrefToken()];events=nuke'>Spawn a nuke</A><BR>
 		<A href='?src=\ref[src];[HrefToken()];events=pmcguns'>Toggle PMC gun restrictions</A><BR>
 		<A href='?src=\ref[src];[HrefToken()];events=monkify'>Turn everyone into monkies</A><BR>
-		<A href='?src=\ref[src];[HrefToken()];events=xenothumbs'>Give or take opposable thumbs and gun permits from xenos</A><BR>
 		<BR>
 		"}
 

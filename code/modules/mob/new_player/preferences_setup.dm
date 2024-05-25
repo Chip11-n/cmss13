@@ -257,10 +257,8 @@
 			return /datum/equipment_preset/uscm_ship/auxiliary_officer
 		if(JOB_INTEL)
 			return /datum/equipment_preset/uscm/intel/full
-		if(JOB_CAS_PILOT)
-			return /datum/equipment_preset/uscm_ship/gp/full
-		if(JOB_DROPSHIP_PILOT)
-			return /datum/equipment_preset/uscm_ship/dp/full
+		if(JOB_PILOT)
+			return /datum/equipment_preset/uscm_ship/po/full
 		if(JOB_DROPSHIP_CREW_CHIEF)
 			return /datum/equipment_preset/uscm_ship/dcc/full
 		if(JOB_CORPORATE_LIAISON)
@@ -278,6 +276,8 @@
 			return /datum/equipment_preset/uscm_ship/uscm_police/cmp
 		if(JOB_WARDEN)
 			return /datum/equipment_preset/uscm_ship/uscm_police/warden
+		if(JOB_CREWMAN)
+			return /datum/equipment_preset/uscm/tank/full
 		if(JOB_SEA)
 			return /datum/equipment_preset/uscm_ship/sea
 		if(JOB_CHIEF_ENGINEER)

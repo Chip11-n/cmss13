@@ -10,6 +10,8 @@
 	health = 500
 	firing_arc = 60
 
+	origins = list(0, -3)
+
 	ammo = new /obj/item/ammo_magazine/hardpoint/ltb_cannon
 	max_clips = 3
 

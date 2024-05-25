@@ -4,7 +4,6 @@
 	var/maximum_volume = 100
 	var/atom/my_atom = null
 	var/trigger_volatiles = FALSE
-	var/allow_star_shape = TRUE
 	var/exploded = FALSE
 	var/datum/weakref/source_mob
 
@@ -166,13 +165,9 @@
 		if(specific_reagent)
 			if(istype(R, specific_reagent))
 				R.last_source_mob = WEAKREF(new_source_mob)
-				if(R.data_properties)
-					R.data_properties["last_source_mob"] = R.last_source_mob
 				return
 			continue
 		R.last_source_mob = WEAKREF(new_source_mob)
-		if(R.data_properties)
-			R.data_properties["last_source_mob"] = R.last_source_mob
 
 /datum/reagents/proc/copy_to(obj/target, amount=1, multiplier=1, preserve_data=1, safety = 0)
 	if(!target)
@@ -266,7 +261,7 @@
 					if(!has_reagent(B, C.required_reagents[B]))
 						break
 					total_matching_reagents++
-					multipliers += floor(get_reagent_amount(B) / C.required_reagents[B])
+					multipliers += round(get_reagent_amount(B) / C.required_reagents[B])
 				for(var/B in C.required_catalysts)
 					if(B == "silver" && istype(my_atom, /obj/item/reagent_container/glass/beaker/silver))
 						total_matching_catalysts++
@@ -360,12 +355,12 @@
 		del_reagent(R.id)
 	return FALSE
 
-/datum/reagents/proc/reaction(atom/A, method=TOUCH, volume_modifier=0, permeable_in_mobs=TRUE)
+/datum/reagents/proc/reaction(atom/A, method=TOUCH, volume_modifier=0)
 	if(method != TOUCH && method != INGEST)
 		return
 	for(var/datum/reagent/R in reagent_list)
 		if(ismob(A))
-			R.reaction_mob(A, method, R.volume + volume_modifier, permeable_in_mobs)
+			R.reaction_mob(A, method, R.volume + volume_modifier)
 		else if(isturf(A))
 			R.reaction_turf(A, R.volume + volume_modifier)
 		else if(isobj(A))
@@ -594,9 +589,9 @@
 				dir = E.dir
 
 	//only integers please
-	radius = floor(radius)
-	intensity = floor(intensity)
-	duration = floor(duration)
+	radius = round(radius)
+	intensity = round(intensity)
+	duration = round(duration)
 	if(ex_power > 0)
 		explode(sourceturf, ex_power, ex_falloff, ex_falloff_shape, dir, angle)
 	if(intensity > 0)
@@ -630,7 +625,7 @@
 	if(my_atom) //It exists outside of null space.
 		for(var/datum/reagent/R in reagent_list) // if you want to do extra stuff when other chems are present, do it here
 			if(R.id == "iron")
-				shards += floor(R.volume)
+				shards += round(R.volume)
 			else if(R.id == "phoron" && R.volume >= EXPLOSION_PHORON_THRESHOLD)
 				shard_type = /datum/ammo/bullet/shrapnel/incendiary
 
@@ -679,7 +674,7 @@
 		duration = max_fire_dur
 
 	// shape
-	if(supplemented > 0 && intensity > CHEM_FIRE_STAR_THRESHOLD && allow_star_shape)
+	if(supplemented > 0 && intensity > CHEM_FIRE_STAR_THRESHOLD)
 		flameshape = FLAMESHAPE_STAR
 
 	if(supplemented < 0 && intensity < CHEM_FIRE_IRREGULAR_THRESHOLD)

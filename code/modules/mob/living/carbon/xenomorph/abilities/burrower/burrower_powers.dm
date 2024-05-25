@@ -126,7 +126,7 @@
 		return
 
 	var/area/A = get_area(T)
-	if(A.flags_area & AREA_NOTUNNEL || get_dist(src, T) > 15)
+	if(A.flags_area & AREA_NOTUNNEL)
 		to_chat(src, SPAN_XENOWARNING("There's no way to tunnel over there."))
 		return
 

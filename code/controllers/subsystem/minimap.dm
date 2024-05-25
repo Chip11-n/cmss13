@@ -88,8 +88,8 @@ SUBSYSTEM_DEF(minimaps)
 				else if(yval < smallest_y)
 					smallest_y = yval
 
-		minimaps_by_z["[level]"].x_offset = floor((SCREEN_PIXEL_SIZE-largest_x-smallest_x) / MINIMAP_SCALE)
-		minimaps_by_z["[level]"].y_offset = floor((SCREEN_PIXEL_SIZE-largest_y-smallest_y) / MINIMAP_SCALE)
+		minimaps_by_z["[level]"].x_offset = Floor((SCREEN_PIXEL_SIZE-largest_x-smallest_x) / MINIMAP_SCALE)
+		minimaps_by_z["[level]"].y_offset = Floor((SCREEN_PIXEL_SIZE-largest_y-smallest_y) / MINIMAP_SCALE)
 
 		icon_gen.Shift(EAST, minimaps_by_z["[level]"].x_offset)
 		icon_gen.Shift(NORTH, minimaps_by_z["[level]"].y_offset)
@@ -758,6 +758,76 @@ SUBSYSTEM_DEF(minimaps)
 
 	return data
 
+/datum/tacmap/drawing/tgui_interact(mob/user, datum/tgui/ui)
+	var/mob/living/carbon/xenomorph/xeno = user
+	var/is_xeno = istype(xeno)
+	var/faction = is_xeno ? xeno.hivenumber : user.faction
+	if(faction == FACTION_NEUTRAL && isobserver(user))
+		faction = allowed_flags == MINIMAP_FLAG_XENO ? XENO_HIVE_NORMAL : FACTION_MARINE
+
+	if(is_xeno && xeno.hive.see_humans_on_tacmap && targeted_ztrait != ZTRAIT_MARINE_MAIN_SHIP)
+		allowed_flags |= MINIMAP_FLAG_USCM|MINIMAP_FLAG_PMC|MINIMAP_FLAG_UPP|MINIMAP_FLAG_CLF
+		targeted_ztrait = ZTRAIT_MARINE_MAIN_SHIP
+		map_holder = null
+
+	new_current_map = get_unannounced_tacmap_data_png(faction)
+	old_map = get_tacmap_data_png(faction)
+	current_svg = get_tacmap_data_svg(faction)
+
+	var/use_live_map = faction == FACTION_MARINE && skillcheck(user, SKILL_LEADERSHIP, SKILL_LEAD_EXPERT) || is_xeno
+
+	if(use_live_map && !map_holder)
+		var/level = SSmapping.levels_by_trait(targeted_ztrait)
+		if(!level[1])
+			return
+		map_holder = SSminimaps.fetch_tacmap_datum(level[1], allowed_flags)
+
+	ui = SStgui.try_update_ui(user, src, ui)
+	if(!ui)
+		if(!wiki_map_fallback)
+			var/wiki_url = CONFIG_GET(string/wikiurl)
+			var/obj/item/map/current_map/new_map = new
+			if(wiki_url && new_map.html_link)
+				wiki_map_fallback ="[wiki_url]/[new_map.html_link]"
+			else
+				debug_log("Failed to determine fallback wiki map! Attempted '[wiki_url]/[new_map.html_link]'")
+			qdel(new_map)
+
+		// Ensure we actually have the map image sent
+		resend_current_map_png(user)
+
+		if(use_live_map)
+			tacmap_ready_time = SSminimaps.next_fire + 2 SECONDS
+			addtimer(CALLBACK(src, PROC_REF(on_tacmap_fire), faction), SSminimaps.next_fire - world.time + 1 SECONDS)
+			user.client.register_map_obj(map_holder.map)
+
+		ui = new(user, src, "TacticalMap")
+		ui.open()
+
+/datum/tacmap/drawing/ui_data(mob/user)
+	var/list/data = list()
+
+	data["newCanvasFlatImage"] = new_current_map?.flat_tacmap
+	data["oldCanvasFlatImage"] = old_map?.flat_tacmap
+	data["svgData"] = current_svg?.svg_data
+
+	data["actionQueueChange"] = action_queue_change
+
+	data["toolbarColorSelection"] = toolbar_color_selection
+	data["toolbarUpdatedSelection"] = toolbar_updated_selection
+
+	if(isxeno(user))
+		data["canvasCooldown"] = max(GLOB.xeno_canvas_cooldown - world.time, 0)
+	else
+		data["canvasCooldown"] = max(GLOB.uscm_canvas_cooldown - world.time, 0)
+
+	data["updatedCanvas"] = updated_canvas
+
+	data["lastUpdateTime"] = last_update_time
+	data["tacmapReady"] = world.time > tacmap_ready_time
+
+	return data
+
 /datum/tacmap/ui_static_data(mob/user)
 	var/list/data = list()
 
@@ -765,7 +835,7 @@ SUBSYSTEM_DEF(minimaps)
 	data["canDraw"] = FALSE
 	data["canViewTacmap"] = TRUE
 	data["canViewCanvas"] = FALSE
-	data["isxeno"] = FALSE
+	data["isXeno"] = FALSE
 
 	return data
 
@@ -781,7 +851,7 @@ SUBSYSTEM_DEF(minimaps)
 	var/is_xeno = istype(xeno)
 	var/faction = is_xeno ? xeno.hivenumber : user.faction
 
-	data["isxeno"] = is_xeno
+	data["isXeno"] = is_xeno
 	data["canViewTacmap"] = is_xeno
 	data["canViewCanvas"] = faction == FACTION_MARINE || faction == XENO_HIVE_NORMAL
 
@@ -799,7 +869,7 @@ SUBSYSTEM_DEF(minimaps)
 	data["canDraw"] = FALSE
 	data["canViewTacmap"] = FALSE
 	data["canViewCanvas"] = TRUE
-	data["isxeno"] = FALSE
+	data["isXeno"] = FALSE
 
 	return data
 
@@ -811,7 +881,7 @@ SUBSYSTEM_DEF(minimaps)
 	data["canDraw"] = FALSE
 	data["canViewTacmap"] = FALSE
 	data["canViewCanvas"] = TRUE
-	data["isxeno"] = TRUE
+	data["isXeno"] = TRUE
 
 	return data
 

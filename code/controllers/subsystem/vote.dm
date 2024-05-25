@@ -36,7 +36,7 @@ SUBSYSTEM_DEF(vote)
 
 /datum/controller/subsystem/vote/fire()
 	if(mode)
-		time_remaining = floor((started_time + CONFIG_GET(number/vote_period) - world.time)/10)
+		time_remaining = round((started_time + CONFIG_GET(number/vote_period) - world.time)/10)
 
 		if(time_remaining < 0)
 			result()
@@ -100,10 +100,9 @@ SUBSYSTEM_DEF(vote)
 				if(choices["Continue Playing"] >= greatest_votes)
 					greatest_votes = choices["Continue Playing"]
 	. = list()
-	if(greatest_votes)
-		for(var/option in choices_adjusted)
-			if(choices_adjusted[option] == greatest_votes)
-				. += option
+	for(var/option in choices_adjusted)
+		if(choices_adjusted[option] == greatest_votes)
+			. += option
 	return .
 
 
@@ -273,14 +272,12 @@ SUBSYSTEM_DEF(vote)
 				question = "Gamemode vote"
 				randomize_entries = TRUE
 				for(var/mode_type in config.gamemode_cache)
-					var/datum/game_mode/cur_mode = mode_type
-					if(initial(cur_mode.config_tag))
-						cur_mode = new mode_type
-						var/vote_cycle_met = !initial(cur_mode.vote_cycle) || (text2num(SSperf_logging?.round?.id) % initial(cur_mode.vote_cycle) == 0)
-						var/min_players_met = length(GLOB.clients) >= cur_mode.required_players
-						if(initial(cur_mode.votable) && vote_cycle_met && min_players_met)
-							choices += initial(cur_mode.config_tag)
-						qdel(cur_mode)
+					var/datum/game_mode/M = mode_type
+					if(initial(M.config_tag))
+						var/vote_cycle_met = !initial(M.vote_cycle) || (text2num(SSperf_logging?.round?.id) % initial(M.vote_cycle) == 0)
+						var/population_met = (!initial(M.population_min) || initial(M.population_min) < length(GLOB.clients)) && (!initial(M.population_max) || initial(M.population_max) > length(GLOB.clients))
+						if(initial(M.votable) && vote_cycle_met && population_met)
+							choices += initial(M.config_tag)
 			if("groundmap")
 				question = "Ground map vote"
 				vote_sound = 'sound/voice/start_your_voting.ogg'
@@ -363,7 +360,7 @@ SUBSYSTEM_DEF(vote)
 		var/vp = CONFIG_GET(number/vote_period)
 		SEND_SOUND(world, sound(vote_sound, channel = SOUND_CHANNEL_VOX, volume = vote_sound_vol))
 		to_chat(world, SPAN_CENTERBOLD("<br><br><font color='purple'><b>[text]</b><br>Type <b>vote</b> or click <a href='?src=[REF(src)]'>here</a> to place your votes.<br>You have [DisplayTimeText(vp)] to vote.</font><br><br>"))
-		time_remaining = floor(vp/10)
+		time_remaining = round(vp/10)
 		for(var/c in GLOB.clients)
 			var/client/C = c
 			var/datum/action/innate/vote/V = give_action(C.mob, /datum/action/innate/vote)
@@ -380,7 +377,7 @@ SUBSYSTEM_DEF(vote)
 
 /datum/controller/subsystem/vote/proc/map_vote_adjustment(current_votes, carry_over, total_votes)
 	// Get 10% of the total map votes and remove them from the pool
-	var/total_vote_adjustment = floor(total_votes * CONFIG_GET(number/vote_adjustment_callback))
+	var/total_vote_adjustment = round(total_votes * CONFIG_GET(number/vote_adjustment_callback))
 
 	// Do not remove more votes than were made for the map
 	return -(min(current_votes, total_vote_adjustment))

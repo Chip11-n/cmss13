@@ -69,26 +69,6 @@
 	// spotter
 	new /obj/item/storage/box/kit/spotter(src)
 
-/obj/item/storage/box/spec/sniper/anti_materiel/fill_preset_inventory()
-	name = "\improper AMR equipment case"
-	desc = "A large case containing an experimental XM43E1, a set of M45 ghillie armor and helmet, a M42 scout sight, ammunition, spotter equipment, and additional pieces of equipment.\nDrag this sprite onto yourself to open it up! NOTE: You cannot put items back inside this case."
-	new /obj/item/clothing/suit/storage/marine/ghillie(src)
-	new /obj/item/clothing/head/helmet/marine/ghillie(src)
-	new /obj/item/clothing/glasses/night/m42_night_goggles(src)
-	new /obj/item/weapon/gun/rifle/sniper/XM43E1(src)
-	new /obj/item/ammo_magazine/sniper/anti_materiel(src)
-	new /obj/item/ammo_magazine/sniper/anti_materiel(src)
-	new /obj/item/ammo_magazine/sniper/anti_materiel(src)
-	new /obj/item/ammo_magazine/sniper/anti_materiel(src)
-	new /obj/item/ammo_magazine/sniper/anti_materiel(src)
-	new /obj/item/storage/backpack/marine/smock(src)
-	new /obj/item/weapon/gun/pistol/vp78(src)
-	new /obj/item/ammo_magazine/pistol/vp78(src)
-	new /obj/item/ammo_magazine/pistol/vp78(src)
-	new /obj/item/facepaint/sniper(src)
-	// spotter
-	new /obj/item/storage/box/kit/spotter(src)
-
 /obj/item/storage/box/spec/scout
 	name = "\improper Scout equipment case"
 	desc = "A large case containing an M4RA battle rifle, M3-S light armor and helmet, M4RA battle sight, M68 thermal cloak, V3 reactive thermal tarp, improved scout laser designator, ammunition and additional pieces of equipment.\nDrag this sprite onto yourself to open it up! NOTE: You cannot put items back inside this case."
@@ -140,6 +120,22 @@
 	new /obj/item/ammo_magazine/pistol/vp78(src)
 	new /obj/item/device/binoculars(src)
 
+/obj/item/storage/box/spec/st
+	name = "\improper Stormtrooper equipment case"
+	desc = "M40 helmet, M40 armor, Montage, 88 mod vp78 and ammo.\nDrag this sprite onto yourself to open it up! NOTE: You cannot put items back inside this case."
+	kit_overlay = "st"
+
+/obj/item/storage/box/spec/st/fill_preset_inventory()
+	new /obj/item/clothing/suit/storage/marine/M40(src)
+	new /obj/item/clothing/head/helmet/marine/M40(src)
+	new /obj/item/weapon/gun/shotgun/combat(src)
+	new /obj/item/attachable/stock/tactical(src)
+	new /obj/item/clothing/accessory/storage/holster(src)
+	new /obj/item/weapon/gun/pistol/vp78(src)
+	new /obj/item/ammo_magazine/pistol/vp78(src)
+	new /obj/item/ammo_magazine/pistol/vp78(src)
+	new /obj/item/weapon/twohanded/st_hammer(src)
+	new /obj/item/weapon/shield/montage(src)
 
 /obj/item/storage/box/spec/heavy_grenadier
 	name = "\improper Heavy Grenadier equipment case"
@@ -277,10 +273,6 @@
 			spec_box = new /obj/item/storage/box/spec/sniper(T)
 			specialist_assignment = "Sniper"
 			user.skills.set_skill(SKILL_SPEC_WEAPONS, SKILL_SPEC_SNIPER)
-		if("Anti-materiel Sniper")
-			spec_box = new /obj/item/storage/box/spec/sniper/anti_materiel(T)
-			specialist_assignment = "Heavy Sniper"
-			user.skills.set_skill(SKILL_SPEC_WEAPONS, SKILL_SPEC_SNIPER)
 		if("Scout")
 			spec_box = new /obj/item/storage/box/spec/scout(T)
 			specialist_assignment = "Scout"
@@ -295,6 +287,10 @@
 			//this is to be able to use C4s that are coming with the kit
 			if(!skillcheck(user, SKILL_ENGINEER, SKILL_ENGINEER_TRAINED))
 				user.skills.set_skill(SKILL_ENGINEER, SKILL_ENGINEER_TRAINED)
+		if("ST")
+			spec_box = new /obj/item/storage/box/spec/st(T)
+			specialist_assignment = "ST"
+			user.skills.set_skill(SKILL_SPEC_WEAPONS, SKILL_SPEC_ST)
 	if(specialist_assignment)
 		user.put_in_hands(spec_box)
 		ID.set_assignment((user.assigned_squad && squad_assignment_update ? (user.assigned_squad.name + " ") : "") + ID.assignment + " ([specialist_assignment])")
@@ -522,7 +518,7 @@
 	name = "\improper Cryo Self Defense Kit"
 	desc = "A basic self-defense kit reserved for emergencies. As you might expect, not much care was put into keeping the stock fresh, who would be insane enough to attack a USCM ship directly?"
 	icon_state = "cryo_defense_kit"
-	storage_slots = 4
+	storage_slots = 3
 
 /obj/item/storage/box/kit/cryo_self_defense/update_icon()
 	if(LAZYLEN(contents))
@@ -533,7 +529,6 @@
 /obj/item/storage/box/kit/cryo_self_defense/fill_preset_inventory()
 	new /obj/item/weapon/gun/pistol/mod88/flashlight(src)
 	new /obj/item/attachable/bayonet(src)
-	new /obj/item/tool/crowbar/red(src)
 	new /obj/item/reagent_container/food/snacks/packaged_meal(src, pick("boneless pork ribs", "grilled chicken", "pizza square", "spaghetti chunks", "chicken tender"))
 
 /obj/item/storage/box/kit/exp_trooper

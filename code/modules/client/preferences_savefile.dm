@@ -1,5 +1,5 @@
 #define SAVEFILE_VERSION_MIN 8
-#define SAVEFILE_VERSION_MAX 22
+#define SAVEFILE_VERSION_MAX 21
 
 //handles converting savefiles to new formats
 //MAKE SURE YOU KEEP THIS UP TO DATE!
@@ -89,12 +89,6 @@
 			dual_wield_pref = DUAL_WIELD_FIRE
 		S["dual_wield_pref"] << dual_wield_pref
 
-	if(savefile_version < 22)
-		var/sound_toggles
-		S["toggles_sound"] >> sound_toggles
-		sound_toggles |= SOUND_OBSERVER_ANNOUNCEMENTS
-		S["toggles_sound"] << sound_toggles
-
 	savefile_version = SAVEFILE_VERSION_MAX
 	return 1
 
@@ -150,8 +144,6 @@
 	S["UI_style_alpha"] >> UI_style_alpha
 	S["item_animation_pref_level"] >> item_animation_pref_level
 	S["pain_overlay_pref_level"] >> pain_overlay_pref_level
-	S["flash_overlay_pref"] >> flash_overlay_pref
-	S["crit_overlay_pref"] >> crit_overlay_pref
 	S["stylesheet"] >> stylesheet
 	S["window_skin"] >> window_skin
 	S["fps"] >> fps
@@ -173,6 +165,7 @@
 
 	S["synth_name"] >> synthetic_name
 	S["synth_type"] >> synthetic_type
+	S["synth_manufacturer"] >> synth_manufacturer
 	S["pred_name"] >> predator_name
 	S["pred_gender"] >> predator_gender
 	S["pred_age"] >> predator_age
@@ -235,8 +228,6 @@
 	UI_style_alpha = sanitize_integer(UI_style_alpha, 0, 255, initial(UI_style_alpha))
 	item_animation_pref_level = sanitize_integer(item_animation_pref_level, SHOW_ITEM_ANIMATIONS_NONE, SHOW_ITEM_ANIMATIONS_ALL, SHOW_ITEM_ANIMATIONS_ALL)
 	pain_overlay_pref_level = sanitize_integer(pain_overlay_pref_level, PAIN_OVERLAY_BLURRY, PAIN_OVERLAY_LEGACY, PAIN_OVERLAY_BLURRY)
-	flash_overlay_pref = sanitize_integer(flash_overlay_pref, FLASH_OVERLAY_WHITE, FLASH_OVERLAY_DARK)
-	crit_overlay_pref = sanitize_integer(crit_overlay_pref, CRIT_OVERLAY_WHITE, CRIT_OVERLAY_DARK)
 	window_skin = sanitize_integer(window_skin, 0, SHORT_REAL_LIMIT, initial(window_skin))
 	ghost_vision_pref = sanitize_inlist(ghost_vision_pref, list(GHOST_VISION_LEVEL_NO_NVG, GHOST_VISION_LEVEL_MID_NVG, GHOST_VISION_LEVEL_FULL_NVG), GHOST_VISION_LEVEL_MID_NVG)
 	ghost_orbit = sanitize_inlist(ghost_orbit, GLOB.ghost_orbits, initial(ghost_orbit))
@@ -251,6 +242,7 @@
 	adaptive_zoom = sanitize_integer(adaptive_zoom, 0, 2, 0)
 	tooltips = sanitize_integer(tooltips, FALSE, TRUE, TRUE)
 
+	if(isnull(synth_manufacturer)) synth_manufacturer = initial(synth_manufacturer)
 	synthetic_name = synthetic_name ? sanitize_text(synthetic_name, initial(synthetic_name)) : initial(synthetic_name)
 	synthetic_type = sanitize_inlist(synthetic_type, PLAYER_SYNTHS, initial(synthetic_type))
 	predator_name = predator_name ? sanitize_text(predator_name, initial(predator_name)) : initial(predator_name)
@@ -331,8 +323,6 @@
 	S["tgui_say"] << tgui_say
 	S["item_animation_pref_level"] << item_animation_pref_level
 	S["pain_overlay_pref_level"] << pain_overlay_pref_level
-	S["flash_overlay_pref"] << flash_overlay_pref
-	S["crit_overlay_pref"] << crit_overlay_pref
 	S["stylesheet"] << stylesheet
 	S["be_special"] << be_special
 	S["default_slot"] << default_slot
@@ -367,6 +357,7 @@
 
 	S["synth_name"] << synthetic_name
 	S["synth_type"] << synthetic_type
+	S["synth_manufacturer"] << synth_manufacturer
 	S["pred_name"] << predator_name
 	S["pred_gender"] << predator_gender
 	S["pred_age"] << predator_age

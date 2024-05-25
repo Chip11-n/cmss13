@@ -2,7 +2,7 @@
 //access you must add them individually to access.dm with the other squads. Just look for "access_alpha" and add the new one
 
 //Note: some important procs are held by the job controller, in job_controller.dm.
-//In particular, get_lowest_squad() and randomize_squad()
+//In particular, randomize_squad()
 /datum/squad_type //Majority of this is for a follow-on PR to fully flesh the system out and add more bits for other factions.
 	var/name = "Squad Type"
 	var/lead_name
@@ -44,9 +44,9 @@
 	/// Can use any squad vendor regardless of squad connection
 	var/omni_squad_vendor = FALSE
 	/// maximum # of engineers allowed in the squad
-	var/max_engineers = 3
+	var/max_engineers = 6
 	/// maximum # of squad medics allowed in the squad
-	var/max_medics = 4
+	var/max_medics = 8
 	/// maximum # of specs allowed in the squad
 	var/max_specialists = 1
 	/// maximum # of fireteam leaders allowed in the suqad
@@ -113,6 +113,8 @@
 	///Should we add the name of our squad in front of their name? Ex: Alpha Hospital Corpsman
 	var/prepend_squad_name_to_assignment = TRUE
 
+	//При скольки игроках запускать сквад?
+	var/active_at = null
 
 /datum/squad/marine
 	name = "Root"
@@ -136,6 +138,7 @@
 	access = list(ACCESS_MARINE_BRAVO)
 	radio_freq = BRAVO_FREQ
 	minimap_color = MINIMAP_SQUAD_BRAVO
+	active_at = 40
 
 /datum/squad/marine/charlie
 	name = SQUAD_MARINE_3
@@ -144,6 +147,7 @@
 	access = list(ACCESS_MARINE_CHARLIE)
 	radio_freq = CHARLIE_FREQ
 	minimap_color = MINIMAP_SQUAD_CHARLIE
+	active_at = 60
 
 /datum/squad/marine/delta
 	name = SQUAD_MARINE_4
@@ -152,6 +156,8 @@
 	access = list(ACCESS_MARINE_DELTA)
 	radio_freq = DELTA_FREQ
 	minimap_color = MINIMAP_SQUAD_DELTA
+	active_at = 20
+
 
 /datum/squad/marine/echo
 	name = SQUAD_MARINE_5
@@ -439,23 +445,22 @@
 //Straight-up insert a marine into a squad.
 //This sets their ID, increments the total count, and so on. Everything else is done in job_controller.dm.
 //So it does not check if the squad is too full already, or randomize it, etc.
-/datum/squad/proc/put_marine_in_squad(mob/living/carbon/human/M, obj/item/card/id/ID)
-
+/datum/squad/proc/put_marine_in_squad(mob/living/carbon/human/M, obj/item/card/id/id_card)
 	if(!istype(M))
 		return FALSE //Logic
-	if(!src.usable)
+	if(!usable)
 		return FALSE
 	if(!M.job)
 		return FALSE //Not yet
 	if(M.assigned_squad)
 		return FALSE //already in a squad
 
-	var/obj/item/card/id/C = ID
-	if(!C)
-		C = M.wear_id
-	if(!C)
-		C = M.get_active_hand()
-	if(!istype(C))
+	if(!id_card)
+		id_card = M.wear_id
+		if(!id_card)
+			id_card = M.get_active_hand()
+
+	if(!istype(id_card))
 		return FALSE //No ID found
 
 	var/assignment = M.job
@@ -463,25 +468,20 @@
 
 	var/list/extra_access = list()
 
+	var/affected_slot
 	switch(GET_DEFAULT_ROLE(M.job))
 		if(JOB_SQUAD_ENGI)
-			assignment = JOB_SQUAD_ENGI
-			num_engineers++
-			C.claimedgear = FALSE
+			affected_slot = "engineers"
+			id_card.claimedgear = FALSE
 		if(JOB_SQUAD_MEDIC)
-			assignment = JOB_SQUAD_MEDIC
-			num_medics++
-			C.claimedgear = FALSE
-		if(JOB_SQUAD_SPECIALIST)
-			assignment = JOB_SQUAD_SPECIALIST
-			num_specialists++
+			affected_slot = "medics"
+			id_card.claimedgear = FALSE
 		if(JOB_SQUAD_TEAM_LEADER)
-			assignment = JOB_SQUAD_TEAM_LEADER
-			num_tl++
-			M.important_radio_channels += radio_freq
+			affected_slot = "tl"
 		if(JOB_SQUAD_SMARTGUN)
-			assignment = JOB_SQUAD_SMARTGUN
-			num_smartgun++
+			affected_slot = "smartgun"
+		if(JOB_SQUAD_SPECIALIST)
+			affected_slot = "specialists"
 		if(JOB_SQUAD_LEADER)
 			if(squad_leader && GET_DEFAULT_ROLE(squad_leader.job) != JOB_SQUAD_LEADER) //field promoted SL
 				var/old_lead = squad_leader
@@ -493,8 +493,7 @@
 			SStracking.start_tracking("marine_sl", M)
 
 			if(GET_DEFAULT_ROLE(M.job) == JOB_SQUAD_LEADER) //field promoted SL don't count as real ones
-				num_leaders++
-
+				affected_slot = "leaders"
 		if(JOB_MARINE_RAIDER)
 			assignment = JOB_MARINE_RAIDER
 			if(name == JOB_MARINE_RAIDER)
@@ -511,11 +510,14 @@
 				SStracking.set_leader(tracking_id, M)
 				SStracking.start_tracking("marine_sl", M)
 				if(GET_DEFAULT_ROLE(M.job) == JOB_MARINE_RAIDER_SL) //field promoted SL don't count as real ones
-					num_leaders++
+					affected_slot = "leaders"
 		if(JOB_MARINE_RAIDER_CMD)
 			assignment = JOB_MARINE_RAIDER_CMD
 			if(name == JOB_MARINE_RAIDER)
 				assignment = "Officer"
+
+	if(affected_slot)
+		vars["num_[affected_slot]"]++
 
 	RegisterSignal(M, COMSIG_PARENT_QDELETING, PROC_REF(personnel_deleted), override = TRUE)
 	if(assignment != JOB_SQUAD_LEADER)
@@ -528,17 +530,17 @@
 
 	marines_list += M
 	M.assigned_squad = src //Add them to the squad
-	C.access += (src.access + extra_access) //Add their squad access to their ID
+	id_card.access += (src.access + extra_access) //Add their squad access to their ID
 	if(prepend_squad_name_to_assignment)
-		C.assignment = "[name] [assignment]"
+		id_card.assignment = "[name] [assignment]"
 	else
-		C.assignment = assignment
+		id_card.assignment = assignment
 
 	SEND_SIGNAL(M, COMSIG_SET_SQUAD)
 
 	if(paygrade)
-		C.paygrade = paygrade
-	C.name = "[C.registered_name]'s ID Card ([C.assignment])"
+		id_card.paygrade = paygrade
+	id_card.name = "[id_card.registered_name]'s ID Card ([id_card.assignment])"
 
 	var/obj/item/device/radio/headset/almayer/marine/headset = locate() in list(M.wear_l_ear, M.wear_r_ear)
 	if(headset && radio_freq)
@@ -549,18 +551,17 @@
 	return TRUE
 
 //proc used by the overwatch console to transfer marine to another squad
-/datum/squad/proc/remove_marine_from_squad(mob/living/carbon/human/M, obj/item/card/id/ID)
+/datum/squad/proc/remove_marine_from_squad(mob/living/carbon/human/M, obj/item/card/id/id_card)
 	if(M.assigned_squad != src)
 		return //not assigned to the correct squad
-	var/obj/item/card/id/C = ID
-	if(!istype(C))
-		C = M.wear_id
-	if(!istype(C))
+	if(!istype(id_card))
+		id_card = M.wear_id
+	if(!istype(id_card))
 		return FALSE //Abort, no ID found
 
-	C.access -= src.access
-	C.assignment = M.job
-	C.name = "[C.registered_name]'s ID Card ([C.assignment])"
+	id_card.access -= src.access
+	id_card.assignment = M.job
+	id_card.name = "[id_card.registered_name]'s ID Card ([id_card.assignment])"
 
 	forget_marine_in_squad(M)
 

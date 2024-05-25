@@ -820,6 +820,7 @@
 		/datum/action/xeno_action/onclick/choose_resin/queen_macro, //fourth macro
 		/datum/action/xeno_action/onclick/manage_hive,
 		/datum/action/xeno_action/activable/info_marker/queen,
+		/datum/action/xeno_action/onclick/give_evo_points,
 		// Screech is typically new for this list, but its possible they never ovi and it then is forced here:
 		/datum/action/xeno_action/onclick/screech, //custom macro, Screech
 		// These are new and their arrangement matters:
@@ -943,11 +944,3 @@
 /mob/living/carbon/xenomorph/queen/alter_ghost(mob/dead/observer/ghost)
 	ghost.icon = queen_standing_icon
 	return ..()
-
-/mob/living/carbon/xenomorph/queen/point_to_atom(atom/target_atom, turf/target_turf)
-	recently_pointed_to = world.time + 1 SECONDS
-
-	var/obj/effect/overlay/temp/point/big/greyscale/point = new(target_turf, src, target_atom)
-	point.color = "#a800a8"
-
-	visible_message("<b>[src]</b> points to [target_atom]", null, null, 5)

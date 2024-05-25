@@ -65,8 +65,6 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 	var/chat_display_preferences = CHAT_TYPE_ALL
 	var/item_animation_pref_level = SHOW_ITEM_ANIMATIONS_ALL
 	var/pain_overlay_pref_level = PAIN_OVERLAY_BLURRY
-	var/flash_overlay_pref = FLASH_OVERLAY_WHITE
-	var/crit_overlay_pref = CRIT_OVERLAY_WHITE
 	var/UI_style_color = "#ffffff"
 	var/UI_style_alpha = 255
 	var/View_MC = FALSE
@@ -84,6 +82,8 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 	//Synthetic specific preferences
 	var/synthetic_name = "Undefined"
 	var/synthetic_type = SYNTH_GEN_THREE
+	var/synth_manufacturer = "Weyland-Yutani"
+	var/new_manufacturer = "Weyland-Yutani"
 	//Predator specific preferences.
 	var/predator_name = "Undefined"
 	var/predator_gender = MALE
@@ -502,6 +502,7 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 				dat += "<b>Synthetic Name:</b> <a href='?_src_=prefs;preference=synth_name;task=input'><b>[synthetic_name]</b></a><br>"
 				dat += "<b>Synthetic Type:</b> <a href='?_src_=prefs;preference=synth_type;task=input'><b>[synthetic_type]</b></a><br>"
 				dat += "<b>Synthetic Whitelist Status:</b> <a href='?_src_=prefs;preference=synth_status;task=input'><b>[synth_status]</b></a><br>"
+				dat += "<b>Manufacturer:</b> <a href ='?_src_=prefs;preference=synth_manufacturer;task=input'><b>[new_manufacturer]</b></a><br>"
 				dat += "</div>"
 			else
 				dat += "<b>You do not have the whitelist for this role.</b>"
@@ -592,11 +593,8 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 			dat += "<b>tgui Window Mode:</b> <a href='?_src_=prefs;preference=tgui_fancy'><b>[(tgui_fancy) ? "Fancy (default)" : "Compatible (slower)"]</b></a><br>"
 			dat += "<b>tgui Window Placement:</b> <a href='?_src_=prefs;preference=tgui_lock'><b>[(tgui_lock) ? "Primary monitor" : "Free (default)"]</b></a><br>"
 			dat += "<b>Play Admin Sounds:</b> <a href='?_src_=prefs;preference=hear_admin_sounds'><b>[(toggles_sound & SOUND_MIDI) ? "Yes" : "No"]</b></a><br>"
-			dat += "<b>Play Announcement Sounds As Ghost:</b> <a href='?_src_=prefs;preference=hear_observer_announcements'><b>[(toggles_sound & SOUND_OBSERVER_ANNOUNCEMENTS) ? "Yes" : "No"]</b></a><br>"
 			dat += "<b>Toggle Meme or Atmospheric Sounds:</b> <a href='?src=\ref[src];action=proccall;procpath=/client/proc/toggle_admin_sound_types'>Toggle</a><br>"
 			dat += "<b>Set Eye Blur Type:</b> <a href='?src=\ref[src];action=proccall;procpath=/client/proc/set_eye_blur_type'>Set</a><br>"
-			dat += "<b>Set Flash Type:</b> <a href='?src=\ref[src];action=proccall;procpath=/client/proc/set_flash_type'>Set</a><br>"
-			dat += "<b>Set Crit Type:</b> <a href='?src=\ref[src];action=proccall;procpath=/client/proc/set_crit_type'>Set</a><br>"
 			dat += "<b>Play Lobby Music:</b> <a href='?_src_=prefs;preference=lobby_music'><b>[(toggles_sound & SOUND_LOBBY) ? "Yes" : "No"]</b></a><br>"
 			dat += "<b>Play VOX Announcements:</b> <a href='?_src_=prefs;preference=sound_vox'><b>[(hear_vox) ? "Yes" : "No"]</b></a><br>"
 			dat += "<b>Default Ghost Night Vision Level:</b> <a href='?_src_=prefs;preference=ghost_vision_pref;task=input'><b>[ghost_vision_pref]</b></a><br>"
@@ -631,8 +629,6 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 					</b> <a href='?_src_=prefs;preference=toggle_prefs;flag=[TOGGLE_MIDDLE_MOUSE_SWAP_HANDS]'><b>[toggle_prefs & TOGGLE_MIDDLE_MOUSE_SWAP_HANDS ? "On" : "Off"]</b></a><br>"
 			dat += "<b>Toggle Vendors Vending to Hands: \
 					</b> <a href='?_src_=prefs;preference=toggle_prefs;flag=[TOGGLE_VEND_ITEM_TO_HAND]'><b>[toggle_prefs & TOGGLE_VEND_ITEM_TO_HAND ? "On" : "Off"]</b></a><br>"
-			dat += "<b>Toggle Semi-Auto Ammo Display Limiter: \
-					</b> <a href='?_src_=prefs;preference=toggle_prefs;flag=[TOGGLE_AMMO_DISPLAY_TYPE]'><b>[toggle_prefs & TOGGLE_AMMO_DISPLAY_TYPE ? "On" : "Off"]</b></a><br>"
 			dat += "<a href='?src=\ref[src];action=proccall;procpath=/client/proc/switch_item_animations'>Toggle Item Animations Detail Level</a><br>"
 			dat += "<a href='?src=\ref[src];action=proccall;procpath=/client/proc/toggle_dualwield'>Toggle Dual Wield Functionality</a><br>"
 		if(MENU_SPECIAL) //wart
@@ -651,19 +647,14 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 	dat += "</div></body>"
 
 	winshow(user, "preferencewindow", TRUE)
-	show_browser(user, dat, "Preferences", "preferencewindow")
+	show_browser(user, dat, "Preferences", "preferencebrowser")
 	onclose(user, "preferencewindow", src)
 
-/**
- * Job Preferences: Preferences for role at round start.
- *
- * Arguments:
- * * limit - The amount of jobs allowed per column.
- * * splitJobs - Allows you split the table by job. You can make different tables for each department by including their heads.
- * * width - Screen' width.
- * * height - Screen's height.
- */
-/datum/preferences/proc/SetChoices(mob/user, limit = 20, list/splitJobs = list(JOB_CHIEF_REQUISITION, JOB_WO_CMO), width = 950, height = 750)
+//limit - The amount of jobs allowed per column. Defaults to 13 to make it look nice.
+//splitJobs - Allows you split the table by job. You can make different tables for each department by including their heads. Defaults to CE to make it look nice.
+//width - Screen' width. Defaults to 550 to make it look nice.
+//height - Screen's height. Defaults to 500 to make it look nice.
+/datum/preferences/proc/SetChoices(mob/user, limit = 19, list/splitJobs = list(JOB_CHIEF_REQUISITION), width = 950, height = 700)
 	if(!GLOB.RoleAuthority)
 		return
 
@@ -772,16 +763,11 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 	onclose(user, "mob_occupation", user.client, list("_src_" = "prefs", "preference" = "job", "task" = "close"))
 	return
 
-/**
- * Job Assignments window: Assign unique characters to a particular job.
- *
- * Arguments:
- * * limit - The amount of jobs allowed per column.
- * * splitJobs - Allows you split the table by job. You can make different tables for each department by including their heads.
- * * width - Screen' width.
- * * height - Screen's height.
- */
-/datum/preferences/proc/set_job_slots(mob/user, limit = 20, list/splitJobs = list(JOB_CHIEF_REQUISITION, JOB_WO_CMO), width = 950, height = 750)
+//limit - The amount of jobs allowed per column. Defaults to 13 to make it look nice.
+//splitJobs - Allows you split the table by job. You can make different tables for each department by including their heads. Defaults to CE to make it look nice.
+//width - Screen' width. Defaults to 550 to make it look nice.
+//height - Screen's height. Defaults to 500 to make it look nice.
+/datum/preferences/proc/set_job_slots(mob/user, limit = 19, list/splitJobs = list(JOB_CHIEF_REQUISITION), width = 950, height = 700)
 	if(!GLOB.RoleAuthority)
 		return
 
@@ -979,7 +965,6 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 		pref_job_slots[J.title] = JOB_SLOT_CURRENT_SLOT
 
 /datum/preferences/proc/process_link(mob/user, list/href_list)
-
 
 	switch(href_list["preference"])
 		if("job")
@@ -1264,7 +1249,7 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 				if("pred_age")
 					var/new_predator_age = tgui_input_number(user, "Choose your Predator's age(175 to 3000):", "Character Preference", 1234, 3000, 175)
 					if(new_predator_age)
-						predator_age = max(min( floor(text2num(new_predator_age)), 3000),175)
+						predator_age = max(min( round(text2num(new_predator_age)), 3000),175)
 				if("pred_use_legacy")
 					var/legacy_choice = tgui_input_list(user, "What legacy set do you wish to use?", "Legacy Set", PRED_LEGACIES)
 					if(!legacy_choice)
@@ -1277,13 +1262,13 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 					predator_translator_type = new_translator_type
 				if("pred_mask_type")
 					var/new_predator_mask_type = tgui_input_number(user, "Choose your mask type:\n(1-12)", "Mask Selection", 1, 12, 1)
-					if(new_predator_mask_type) predator_mask_type = floor(text2num(new_predator_mask_type))
+					if(new_predator_mask_type) predator_mask_type = round(text2num(new_predator_mask_type))
 				if("pred_armor_type")
 					var/new_predator_armor_type = tgui_input_number(user, "Choose your armor type:\n(1-7)", "Armor Selection", 1, 7, 1)
-					if(new_predator_armor_type) predator_armor_type = floor(text2num(new_predator_armor_type))
+					if(new_predator_armor_type) predator_armor_type = round(text2num(new_predator_armor_type))
 				if("pred_boot_type")
 					var/new_predator_boot_type = tgui_input_number(user, "Choose your greaves type:\n(1-4)", "Greave Selection", 1, 4, 1)
-					if(new_predator_boot_type) predator_boot_type = floor(text2num(new_predator_boot_type))
+					if(new_predator_boot_type) predator_boot_type = round(text2num(new_predator_boot_type))
 				if("pred_mask_mat")
 					var/new_pred_mask_mat = tgui_input_list(user, "Choose your mask material:", "Mask Material", PRED_MATERIALS)
 					if(!new_pred_mask_mat)
@@ -1498,7 +1483,7 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 				if("age")
 					var/new_age = tgui_input_number(user, "Choose your character's age:\n([AGE_MIN]-[AGE_MAX])", "Character Preference", 19, AGE_MAX, AGE_MIN)
 					if(new_age)
-						age = max(min( floor(text2num(new_age)), AGE_MAX),AGE_MIN)
+						age = max(min( round(text2num(new_age)), AGE_MAX),AGE_MIN)
 
 				if("metadata")
 					var/new_metadata = input(user, "Enter any information you'd like others to see, such as Roleplay-preferences:", "Game Preference" , metadata)  as message|null
@@ -1633,6 +1618,11 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 					var/new_relation = input(user, "Choose your relation to the Weyland-Yutani company. Note that this represents what others can find out about your character by researching your background, not what your character actually thinks.", "Character Preference")  as null|anything in list("Loyal", "Supportive", "Neutral", "Skeptical", "Opposed")
 					if(new_relation)
 						nanotrasen_relation = new_relation
+
+				if("synth_manufacturer")
+					var/synth_builder = input(user, "Choose your manufacturer.")  as null|anything in list("Weyland-Yutani", "Borgia Industries", "Hyperdyne Systems", "Lasalle Bionational", "Seegson", "MedTech", "Grant Corporation", "AlphaTech Hardware", "Independent Manufacturer")
+					if(synth_builder)
+						new_manufacturer = synth_builder
 
 				if("prefsquad")
 					var/new_pref_squad = input(user, "Choose your preferred squad.", "Character Preference")  as null|anything in list("Alpha", "Bravo", "Charlie", "Delta", "None")
@@ -1836,9 +1826,6 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 					if(!(toggles_sound & SOUND_MIDI))
 						user?.client?.tgui_panel?.stop_music()
 
-				if("hear_observer_announcements")
-					toggles_sound ^= SOUND_OBSERVER_ANNOUNCEMENTS
-
 				if("lobby_music")
 					toggles_sound ^= SOUND_LOBBY
 					if(toggles_sound & SOUND_LOBBY)
@@ -1954,7 +1941,7 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 
 				if("save")
 					if(save_cooldown > world.time)
-						to_chat(user, SPAN_WARNING("You need to wait [floor((save_cooldown-world.time)/10)] seconds before you can do that again."))
+						to_chat(user, SPAN_WARNING("You need to wait [round((save_cooldown-world.time)/10)] seconds before you can do that again."))
 						return
 					var/datum/origin/character_origin = GLOB.origins[origin]
 					var/name_error = character_origin.validate_name(real_name)
@@ -1970,7 +1957,7 @@ GLOBAL_LIST_INIT(bgstate_options, list(
 
 				if("reload")
 					if(reload_cooldown > world.time)
-						to_chat(user, SPAN_WARNING("You need to wait [floor((reload_cooldown-world.time)/10)] seconds before you can do that again."))
+						to_chat(user, SPAN_WARNING("You need to wait [round((reload_cooldown-world.time)/10)] seconds before you can do that again."))
 						return
 					load_preferences()
 					load_character()

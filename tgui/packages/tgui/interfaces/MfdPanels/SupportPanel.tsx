@@ -1,14 +1,13 @@
 import { useBackend } from '../../backend';
-import { Box, Stack } from '../../components';
-import { FultonMfdPanel } from './FultonPanel';
-import { MedevacMfdPanel } from './MedevacPanel';
-import { MgMfdPanel } from './MGPanel';
 import { MfdPanel, MfdProps } from './MultifunctionDisplay';
-import { ParadropMfdPanel } from './ParadropPanel';
+import { MedevacMfdPanel } from './MedevacPanel';
+import { FultonMfdPanel } from './FultonPanel';
+import { Box, Stack } from '../../components';
 import { SentryMfdPanel } from './SentryPanel';
+import { MgMfdPanel } from './MGPanel';
 import { SpotlightMfdPanel } from './SpotlightPanel';
-import { mfdState, useEquipmentState } from './stateManagers';
 import { EquipmentContext } from './types';
+import { mfdState, useEquipmentState } from './stateManagers';
 
 export const SupportMfdPanel = (props: MfdProps) => {
   const { equipmentState } = useEquipmentState(props.panelStateId);
@@ -17,7 +16,7 @@ export const SupportMfdPanel = (props: MfdProps) => {
 
   const { data } = useBackend<EquipmentContext>();
   const result = data.equipment_data.find(
-    (x) => x.mount_point === equipmentState,
+    (x) => x.mount_point === equipmentState
   );
   if (result?.shorthand === 'Medevac') {
     return <MedevacMfdPanel panelStateId={props.panelStateId} />;
@@ -27,9 +26,6 @@ export const SupportMfdPanel = (props: MfdProps) => {
   }
   if (result?.shorthand === 'Sentry') {
     return <SentryMfdPanel panelStateId={props.panelStateId} />;
-  }
-  if (result?.shorthand === 'PDS') {
-    return <ParadropMfdPanel panelStateId={props.panelStateId} />;
   }
   if (result?.shorthand === 'MG') {
     return <MgMfdPanel panelStateId={props.panelStateId} />;
@@ -48,8 +44,7 @@ export const SupportMfdPanel = (props: MfdProps) => {
           children: 'EXIT',
           onClick: () => setPanelState(''),
         },
-      ]}
-    >
+      ]}>
       <Box className="NavigationMenu">
         <Stack align="center" vertical>
           <Stack.Item>

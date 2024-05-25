@@ -180,7 +180,6 @@
 	headshot_state = HEADSHOT_OVERLAY_MEDIUM
 	debilitate = list(0,0,0,0,0,0,0,2)
 
-	effective_range_max = 3
 	accuracy = HIT_ACCURACY_TIER_4
 	damage = 45
 	penetration= ARMOR_PENETRATION_TIER_6

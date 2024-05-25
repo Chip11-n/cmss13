@@ -190,9 +190,8 @@ GLOBAL_LIST_INIT(apc_wire_descriptions, list(
 			ui.open()
 
 /obj/structure/machinery/power/apc/ui_status(mob/user)
-	. = ..()
-	if(opened || !can_use(user, TRUE))
-		return UI_DISABLED
+	if(!opened && can_use(user, 1))
+		. = UI_INTERACTIVE
 
 /obj/structure/machinery/power/apc/ui_state(mob/user)
 	return GLOB.not_incapacitated_and_adjacent_state
@@ -211,7 +210,6 @@ GLOBAL_LIST_INIT(apc_wire_descriptions, list(
 		"chargingStatus" = charging,
 		"totalLoad" = display_power(lastused_total),
 		"coverLocked" = coverlocked,
-		"siliconUser" = FALSE,
 
 		"powerChannels" = list(
 			list(
@@ -1373,7 +1371,3 @@ GLOBAL_LIST_INIT(apc_wire_descriptions, list(
 	crash_break_probability = 0
 
 #undef APC_UPDATE_ICON_COOLDOWN
-
-// apc that start at zero charge.
-/obj/structure/machinery/power/apc/nocharge
-	start_charge = 0

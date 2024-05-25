@@ -33,11 +33,8 @@
 	layer = ABOVE_FLY_LAYER
 	stat = DEAD
 	mob_flags = KNOWS_TECHNOLOGY
-
-	/// If the observer is an admin, are they excluded from the xeno queue?
-	var/admin_larva_protection = TRUE // Enabled by default
+	var/adminlarva = FALSE
 	var/ghostvision = TRUE
-	var/self_visibility = TRUE
 	var/can_reenter_corpse
 	var/started_as_observer //This variable is set to 1 when you enter the game as an observer.
 							//If you died in the game and are a ghost - this will remain as null.
@@ -72,10 +69,10 @@
 	set desc = "Toggles your ability to see things only ghosts can see, like other ghosts"
 	set category = "Ghost.Settings"
 	ghostvision = !ghostvision
-	if(ghostvision)
-		see_invisible = INVISIBILITY_OBSERVER
-	else
-		see_invisible = HIDE_INVISIBLE_OBSERVER
+	if(hud_used)
+		var/atom/movable/screen/plane_master/lighting/lighting = hud_used.plane_masters["[GHOST_PLANE]"]
+		if (lighting)
+			lighting.alpha = ghostvision? 255 : 0
 	to_chat(usr, SPAN_NOTICE("You [(ghostvision?"now":"no longer")] have ghost vision."))
 
 /mob/dead/observer/Initialize(mapload, mob/body)
@@ -532,6 +529,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 		if(location) //to avoid runtime when a mob ends up in nullspace
 			msg_admin_niche("[key_name_admin(client)] has ghosted. [ADMIN_JMP(location)]")
 		log_game("[key_name_admin(client)] has ghosted.")
+		src << sound(null, channel = SOUND_CHANNEL_HEART)
 		var/mob/dead/observer/ghost = ghostize((is_nested && nest && !QDELETED(nest))) //FALSE parameter is so we can never re-enter our body, "Charlie, you can never come baaaack~" :3
 		SEND_SIGNAL(src, COMSIG_LIVING_GHOSTED, ghost)
 		if(ghost && !should_block_game_interaction(src))
@@ -655,7 +653,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	usr.forceMove(pick(L))
 	following = null
 
-/mob/dead/observer/proc/scan_health(mob/living/target in view(src.client))
+/mob/dead/observer/proc/scan_health(mob/living/target in oview())
 	set name = "Scan Health"
 
 	if(!istype(target))
@@ -812,13 +810,10 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	set category = "Ghost.Settings"
 
 	if(client)
-		// Check the current zoom level and toggle to the next level cyclically
-		if (client.view == GLOB.world_view_size)
-			client.change_view(14)
-		else if (client.view == 14)
-			client.change_view(28)
-		else
+		if(client.view != GLOB.world_view_size)
 			client.change_view(GLOB.world_view_size)
+		else
+			client.change_view(14)
 
 
 /mob/dead/observer/verb/toggle_darkness()
@@ -846,12 +841,11 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 /mob/dead/observer/verb/toggle_self_visibility()
 	set name = "Toggle Self Visibility"
 	set category = "Ghost.Settings"
-	self_visibility = !self_visibility
-	if (self_visibility)
-		alpha = initial(alpha)
-	else
+
+	if (alpha)
 		alpha = 0
-	to_chat(usr, SPAN_NOTICE("You are now [(self_visibility?"visible":"invisible")]."))
+	else
+		alpha = initial(alpha)
 
 /mob/dead/observer/verb/view_manifest()
 	set name = "View Crew Manifest"
@@ -1191,7 +1185,7 @@ This is the proc mobs get to turn into a ghost. Forked from ghostize due to comp
 	if(!SSticker.HasRoundStarted())
 		var/time_remaining = SSticker.GetTimeLeft()
 		if(time_remaining > 0)
-			. += "Time To Start: [floor(time_remaining)]s[SSticker.delay_start ? " (DELAYED)" : ""]"
+			. += "Time To Start: [round(time_remaining)]s"
 		else if(time_remaining == -10)
 			. += "Time To Start: DELAYED"
 		else

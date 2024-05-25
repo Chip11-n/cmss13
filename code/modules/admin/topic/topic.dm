@@ -554,14 +554,25 @@
 
 		//Banning comes first
 		if(notbannedlist.len)
-			if(!check_rights(R_BAN))  return
-			var/reason = input(usr,"Reason?","Please State Reason","") as text|null
-			if(reason)
-				var/datum/entity/player/P = get_player_from_key(M.ckey)
-				P.add_job_ban(reason, notbannedlist)
 
-				href_list["jobban2"] = 1 // lets it fall through and refresh
-				return 1
+			//RU-CM EDIT START
+			if(!check_rights(R_BAN))
+				return
+
+			var/reason = tgui_input_text(usr, "Reason?", "Please State Reason")
+			if(!reason)
+				reason = "No reason specified."
+
+			var/minutes = tgui_input_number(usr, "Duration in minutes. (0 if permaban)", "Please State Duration", 1440, 262800, 0, 0, TRUE)
+			if(minutes == 0)
+				minutes = null
+
+			var/datum/entity/player/P = get_player_from_key(M.ckey)
+			P.add_job_ban(reason, notbannedlist, minutes)
+			href_list["jobban2"] = 1 // lets it fall through and refresh
+
+			return 1
+			//RU-CM EDIT END
 
 		//Unbanning joblist
 		//all jobs in joblist are banned already OR we didn't give a reason (implying they shouldn't be banned)
@@ -764,7 +775,7 @@
 
 		GLOB.master_mode = href_list["c_mode2"]
 		message_admins("[key_name_admin(usr)] set the mode as [GLOB.master_mode].")
-		to_world(SPAN_NOTICE("<b><i>The mode is now: [GLOB.master_mode]!</i></b>"))
+		to_world(SPAN_NOTICE("<b><i>The mode for the next round: [GLOB.master_mode]!</i></b>"))
 		Game() // updates the main game menu
 		SSticker.save_mode(GLOB.master_mode)
 
@@ -2133,7 +2144,7 @@
 
 	if(href_list["ccdeny"]) // CentComm-deny. The distress call is denied, without any further conditions
 		var/mob/ref_person = locate(href_list["ccdeny"])
-		marine_announcement("The distress signal has not received a response, the launch tubes are now recalibrating.", "Distress Beacon", logging = ARES_LOG_SECURITY)
+		marine_announcement("Сигнал бедствия не получил ответа, перекалибровка пусковых труб.", "Сигнал Бедствия", logging = ARES_LOG_SECURITY)
 		log_game("[key_name_admin(usr)] has denied a distress beacon, requested by [key_name_admin(ref_person)]")
 		message_admins("[key_name_admin(usr)] has denied a distress beacon, requested by [key_name_admin(ref_person)]", 1)
 
@@ -2202,7 +2213,7 @@
 		//Can no longer request a nuke
 		GLOB.ares_datacore.nuke_available = FALSE
 
-		marine_announcement("A nuclear device has been authorized by High Command and will be delivered to requisitions via ASRS.", "NUCLEAR ORDNANCE AUTHORIZED", 'sound/misc/notice2.ogg', logging = ARES_LOG_MAIN)
+		marine_announcement("Использование Ядерного Вооружения было одобрено Старшим Коммандованием. Заряд будет доставлен в карго через ASRS.", "РАЗРЕШЕНО ПРИМЕНЕНИЕ ЯДЕРНОГО ВООРУЖЕНИЯ", 'sound/misc/notice2.ogg', logging = ARES_LOG_MAIN)
 		log_game("[key_name_admin(usr)] has authorized \a [nuketype], requested by [key_name_admin(ref_person)]")
 		message_admins("[key_name_admin(usr)] has authorized \a [nuketype], requested by [key_name_admin(ref_person)]")
 
@@ -2210,13 +2221,13 @@
 		var/mob/ref_person = locate(href_list["nukedeny"])
 		if(!istype(ref_person))
 			return FALSE
-		marine_announcement("Your request for nuclear ordnance deployment has been reviewed and denied by USCM High Command for operational security and colonial preservation reasons. Have a good day.", "NUCLEAR ORDNANCE DENIED", 'sound/misc/notice2.ogg', logging = ARES_LOG_MAIN)
+		marine_announcement("Ваш запрос на предоставление Ядерного Вооружения был рассмотрен и отклонен Старшим Командованием USCM ради обеспечения безопасности операции и колонии. Хорошего дня.", "ОТКЛОНЕНО", 'sound/misc/notice2.ogg', logging = ARES_LOG_MAIN)
 		log_game("[key_name_admin(usr)] has denied nuclear ordnance, requested by [key_name_admin(ref_person)]")
 		message_admins("[key_name_admin(usr)] has dnied nuclear ordnance, requested by [key_name_admin(ref_person)]")
 
 	if(href_list["sddeny"]) // CentComm-deny. The self-destruct is denied, without any further conditions
 		var/mob/ref_person = locate(href_list["sddeny"])
-		marine_announcement("The self-destruct request has not received a response, ARES is now recalculating statistics.", "Self-Destruct System", logging = ARES_LOG_SECURITY)
+		marine_announcement("Запрос на использование системы самоуничтожения не получил ответа, ARES выполняет перерасчет статистики.", "Система Самоуничтожения", logging = ARES_LOG_SECURITY)
 		log_game("[key_name_admin(usr)] has denied self-destruct, requested by [key_name_admin(ref_person)]")
 		message_admins("[key_name_admin(usr)] has denied self-destruct, requested by [key_name_admin(ref_person)]", 1)
 

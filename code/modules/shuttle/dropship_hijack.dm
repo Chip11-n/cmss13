@@ -116,14 +116,14 @@
 		if(!offset_target)
 			offset_target = target // Welp the offsetting failed so...
 		crash_site.forceMove(offset_target)
-		marine_announcement("A hostile aircraft on course for the [target_ship_section] has been successfully deterred.", "IX-50 MGAD System", logging = ARES_LOG_SECURITY)
+		marine_announcement("Вражеское судно направляющееся к [target_ship_section] было успешно ликвидировано.", "Система IX-50 MGAD", 'sound/effects/gau.ogg', logging = ARES_LOG_SECURITY)
 		target_ship_section = new_target_ship_section
 		// TODO mobs not alerted
 		for(var/area/internal_area in shuttle.shuttle_areas)
 			for(var/turf/internal_turf in internal_area)
 				for(var/mob/M in internal_turf)
 					to_chat(M, SPAN_DANGER("The ship jostles violently as explosions rock the ship!"))
-					to_chat(M, SPAN_DANGER("You feel the ship turning sharply as it adjusts its course!"))
+					to_chat(M, SPAN_DANGER("Вы чувствуете как корабль резко поворачивается и меняет направление!"))
 					shake_camera(M, 60, 2)
 			playsound_area(internal_area, 'sound/effects/antiair_explosions.ogg')
 
@@ -140,11 +140,9 @@
 	if(final_announcement)
 		return
 
-	shuttle.crashing = TRUE
+	marine_announcement("ДЕСАНТНЫЙ КОРАБЛЬ ПРЯМО ПО КУРСУ. АВАРИЯ НЕИЗБЕЖНА." , "ТРЕВОГА", 'sound/AI/dropship_emergency.ogg', logging = ARES_LOG_SECURITY)
 
-	marine_announcement("DROPSHIP ON COLLISION COURSE. CRASH IMMINENT." , "EMERGENCY", 'sound/AI/dropship_emergency.ogg', logging = ARES_LOG_SECURITY)
-
-	notify_ghosts(header = "Dropship Collision", message = "The dropship is about to impact [get_area_name(crash_site)]!", source = crash_site, extra_large = TRUE)
+	notify_ghosts(header = "Столкновение с десантным кораблем", message = "Десантный корабль вот-вот упадет на [get_area_name(crash_site)]!", source = crash_site, extra_large = TRUE)
 	final_announcement = TRUE
 
 	playsound_area(get_area(crash_site), 'sound/effects/engine_landing.ogg', 100)
@@ -153,6 +151,7 @@
 	addtimer(CALLBACK(src, PROC_REF(do_dropship_incoming_sound)), 13 SECONDS)
 
 	addtimer(CALLBACK(src, PROC_REF(disable_latejoin)), 3 MINUTES) // latejoin cryorines have 3 minutes to get the hell out
+
 
 /datum/dropship_hijack/almayer/proc/do_dropship_incoming_sound()
 	for(var/area/internal_area in shuttle.shuttle_areas)

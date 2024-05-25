@@ -262,7 +262,3 @@
 /area/shiva/interior/lz2_habs
 	name = "Shiva's Snowball - Argentinian Research Headquarters"
 	icon_state = "bar1"
-
-/area/shiva/interior/aux_power
-	name = "Shiva's Snowball - Auxiliary Generator Station"
-	icon_state = "hangars0"

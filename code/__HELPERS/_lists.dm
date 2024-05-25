@@ -176,4 +176,3 @@
 
 	for(var/i in 1 to inserted_list.len - 1)
 		inserted_list.Swap(i, rand(i, inserted_list.len))
-

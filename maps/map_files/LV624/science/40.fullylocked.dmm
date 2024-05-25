@@ -310,6 +310,12 @@
 	},
 /area/lv624/lazarus/research)
 "aS" = (
+/obj/structure/machinery/power/apc{
+	dir = 1;
+	name = "Research APC";
+	pixel_y = 30;
+	start_charge = 0
+	},
 /obj/structure/machinery/light/small{
 	dir = 1
 	},
@@ -444,15 +450,6 @@
 "DC" = (
 /obj/structure/machinery/light,
 /obj/effect/decal/cleanable/blood/splatter,
-/turf/open/floor{
-	dir = 5;
-	icon_state = "whitepurple"
-	},
-/area/lv624/lazarus/research)
-"Fm" = (
-/obj/structure/machinery/power/apc/nocharge{
-	dir = 1
-	},
 /turf/open/floor{
 	dir = 5;
 	icon_state = "whitepurple"
@@ -666,7 +663,7 @@ Mu
 ay
 aJ
 ab
-Fm
+ay
 ak
 ay
 ab

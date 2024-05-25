@@ -24,8 +24,6 @@
 
 	if(isSenator(src))
 		add_verb(src, /client/proc/whitelist_panel)
-	if(isCouncil(src))
-		add_verb(src, /client/proc/other_records)
 
 /client
 	var/datum/whitelist_panel/wl_panel
@@ -146,10 +144,8 @@ GLOBAL_LIST_INIT(misc_flags, list(
 /datum/whitelist_panel/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
 	. = ..()
 	if(.)
-		return FALSE
+		return
 	var/mob/user = ui.user
-	if(!isSenator(user.client) && !CLIENT_HAS_RIGHTS(user.client, R_PERMISSIONS))
-		return FALSE
 	switch(action)
 		if("go_back")
 			go_back()
@@ -169,7 +165,6 @@ GLOBAL_LIST_INIT(misc_flags, list(
 				return
 			var/datum/entity/player/player = get_player_from_key(player_key)
 			player.set_whitelist_status(new_rights)
-			player.add_note("Whitelists updated by [user.key]. Reason: '[reason]'.", FALSE, NOTE_WHITELIST)
 			to_chat(user, SPAN_HELPFUL("Whitelists for [player_key] updated."))
 			message_admins("Whitelists for [player_key] updated by [key_name(user)]. Reason: '[reason]'.")
 			log_admin("WHITELISTS: Flags for [player_key] changed from [target_rights] to [new_rights]. Reason: '[reason]'.")

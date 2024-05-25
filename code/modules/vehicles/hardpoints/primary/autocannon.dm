@@ -10,6 +10,8 @@
 	health = 500
 	firing_arc = 60
 
+	origins = list(0, -3)
+
 	ammo = new /obj/item/ammo_magazine/hardpoint/ace_autocannon
 	max_clips = 2
 

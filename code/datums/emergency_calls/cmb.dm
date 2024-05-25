@@ -3,7 +3,6 @@
 	name = "CMB - Colonial Marshals Patrol Team (Friendly)"
 	mob_max = 5
 	probability = 10
-	home_base = /datum/lazy_template/ert/weyland_station
 
 	var/max_synths = 1
 	var/synths = 0
@@ -17,7 +16,7 @@
 
 /datum/emergency_call/cmb/New()
 	..()
-	arrival_message = "Incoming Transmission: [MAIN_SHIP_NAME], this is Anchorpoint Station with the Colonial Marshal Bureau. We are receiving your distress signal and are dispatching a nearby team to board with you now. Standby."
+	arrival_message = "Входящая передача: [MAIN_SHIP_NAME], это станция Anchorpoint с Бюро Колониальных Маршалов. Мы принимаем ваш сигнал бедствия и отправляем ближайшую команду к вам. Ожидайте."
 	objectives = "Investigate the distress signal aboard the [MAIN_SHIP_NAME], and assist the crew with rescue if possible. If necessary, a contingent of our Colonial Marines may be ready to act as a QRF to reinforce you."
 
 	will_spawn_icc_liaison = prob(50)
@@ -54,7 +53,7 @@
 
 	print_backstory(mob)
 
-	addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(to_chat), mob, SPAN_BOLD("Objectives:</b> [objectives]")), 1 SECONDS)
+	addtimer(CALLBACK(GLOBAL_PROC, PROC_REF(to_chat), mob, SPAN_BOLD("Objectives:</b> [objectives]")), 1 SECONDS)
 
 
 /datum/emergency_call/cmb/print_backstory(mob/living/carbon/human/M)
@@ -160,7 +159,7 @@
 
 	print_backstory(mob)
 
-	addtimer(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(to_chat), mob, SPAN_BOLD("Objectives:</b> [objectives]")), 1 SECONDS)
+	addtimer(CALLBACK(GLOBAL_PROC, PROC_REF(to_chat), mob, SPAN_BOLD("Objectives:</b> [objectives]")), 1 SECONDS)
 
 
 /datum/emergency_call/cmb/anchorpoint/print_backstory(mob/living/carbon/human/M)

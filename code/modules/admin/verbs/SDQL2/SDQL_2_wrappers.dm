@@ -175,9 +175,6 @@
 /proc/_sin(X)
 	return sin(X)
 
-/proc/_sleep(Delay)
-	sleep(Delay)
-
 /proc/_list_add(list/L, ...)
 	if (args.len < 2)
 		return

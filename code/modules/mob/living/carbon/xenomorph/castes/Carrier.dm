@@ -108,7 +108,7 @@
 		hugger_image_index.Cut()
 		return
 
-	update_clinger_maths(floor(( huggers_cur / huggers_max ) * 3.999) + 1)
+	update_clinger_maths(round(( huggers_cur / huggers_max ) * 3.999) + 1)
 
 	for(var/i in hugger_image_index)
 		if(stat == DEAD)
@@ -347,6 +347,19 @@
 				for(E in egg_turf)
 					if(eggs_cur < eggs_max)
 						store_egg(E)
+			return
+
+	//target an egg morpher to fill em
+	if(istype(T, /obj/effect/alien/resin/special/eggmorph))
+		var/obj/effect/alien/resin/special/eggmorph/morpher = T
+		if(Adjacent(morpher))
+			if(morpher.linked_hive && (morpher.linked_hive.hivenumber != hivenumber))
+				to_chat(src, SPAN_WARNING("That egg morpher is tainted!"))
+				return
+			if(on_fire)
+				to_chat(src, SPAN_WARNING("Touching \the [morpher] while you're on fire would burn the facehuggers in it!"))
+				return
+			store_huggers_from_egg_morpher(morpher)
 			return
 
 	var/obj/item/xeno_egg/E = get_active_hand()

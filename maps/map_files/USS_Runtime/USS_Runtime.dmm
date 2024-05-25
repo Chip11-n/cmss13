@@ -92,7 +92,7 @@
 	},
 /area/event)
 "z" = (
-/obj/effect/landmark/start/pilot/dropship_pilot,
+/obj/effect/landmark/start/pilot,
 /turf/open/floor/almayer{
 	icon_state = "plating"
 	},
@@ -141,12 +141,6 @@
 /area/event)
 "L" = (
 /obj/effect/landmark/start/researcher,
-/turf/open/floor/almayer{
-	icon_state = "plating"
-	},
-/area/event)
-"M" = (
-/obj/effect/landmark/start/pilot/cas_pilot,
 /turf/open/floor/almayer{
 	icon_state = "plating"
 	},
@@ -295,7 +289,7 @@ a
 A
 l
 L
-M
+b
 b
 b
 b

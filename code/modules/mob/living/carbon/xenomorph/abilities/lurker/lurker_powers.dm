@@ -1,9 +1,7 @@
-/datum/action/xeno_action/activable/pounce/lurker/additional_effects(mob/living/living_mob)
+/datum/action/xeno_action/activable/pounce/lurker/additional_effects_always()
 	var/mob/living/carbon/xenomorph/xeno = owner
 	if(!istype(xeno))
 		return
-
-	RegisterSignal(xeno, COMSIG_XENO_SLASH_ADDITIONAL_EFFECTS_SELF, PROC_REF(remove_freeze), TRUE) // Suppresses runtime ever we pounce again before slashing
 
 	var/found = FALSE
 	for(var/mob/living/carbon/human/human in get_turf(xeno))
@@ -15,7 +13,14 @@
 	if(found)
 		var/datum/action/xeno_action/onclick/lurker_invisibility/lurker_invis = get_xeno_action_by_type(xeno, /datum/action/xeno_action/onclick/lurker_invisibility)
 		if(lurker_invis)
-			lurker_invis.invisibility_off() // Full cooldown
+			lurker_invis.invisibility_off()
+
+/datum/action/xeno_action/activable/pounce/lurker/additional_effects(mob/living/living_mob)
+	var/mob/living/carbon/xenomorph/xeno = owner
+	if(!istype(xeno))
+		return
+
+	RegisterSignal(xeno, COMSIG_XENO_SLASH_ADDITIONAL_EFFECTS_SELF, PROC_REF(remove_freeze), TRUE) // Suppresses runtime ever we pounce again before slashing
 
 /datum/action/xeno_action/activable/pounce/lurker/proc/remove_freeze(mob/living/carbon/xenomorph/xeno)
 	SIGNAL_HANDLER
@@ -25,32 +30,20 @@
 		UnregisterSignal(xeno, COMSIG_XENO_SLASH_ADDITIONAL_EFFECTS_SELF)
 		end_pounce_freeze()
 
-/datum/action/xeno_action/onclick/lurker_invisibility/can_use_action()
-	if(!..())
-		return FALSE
-	var/mob/living/carbon/xenomorph/xeno = owner
-	return xeno.deselect_timer < world.time // We clicked the same ability in a very short time
-
 /datum/action/xeno_action/onclick/lurker_invisibility/use_ability(atom/targeted_atom)
 	var/mob/living/carbon/xenomorph/xeno = owner
 
-	if(!istype(xeno))
-		return
-	if(!action_cooldown_check())
-		return
-	if(!check_and_use_plasma_owner())
+	if (!istype(xeno))
 		return
 
-	xeno.deselect_timer = world.time + 5 // Half a second to prevent double clicks
+	if (!action_cooldown_check())
+		return
 
-	if(xeno.stealth)
-		invisibility_off(0.9) // Near full refund of remaining time
-		return ..()
-
-	button.icon_state = "template_active"
-	xeno.update_icons() // callback to make the icon_state indicate invisibility is in lurker/update_icon
+	if (!check_and_use_plasma_owner())
+		return
 
 	animate(xeno, alpha = alpha_amount, time = 0.1 SECONDS, easing = QUAD_EASING)
+	xeno.update_icons() // callback to make the icon_state indicate invisibility is in lurker/update_icon
 
 	xeno.speed_modifier -= speed_buff
 	xeno.recalculate_speed()
@@ -61,44 +54,31 @@
 	// if we go off early, this also works fine.
 	invis_timer_id = addtimer(CALLBACK(src, PROC_REF(invisibility_off)), duration, TIMER_STOPPABLE)
 
+	// Only resets when invisibility ends
+	apply_cooldown_override(1000000000)
 	return ..()
 
-/// Implementation for disabling invisibility.
-/// (refund_multiplier) indicates how much cooldown to refund based on time remaining
-/// 0 indicates full cooldown; 0.5 indicates 50% of remaining time is refunded
-/datum/action/xeno_action/onclick/lurker_invisibility/proc/invisibility_off(refund_multiplier = 0.0)
-	var/mob/living/carbon/xenomorph/xeno = owner
-
-	if(!istype(xeno))
-		return
-	if(owner.alpha == initial(owner.alpha) && !xeno.stealth)
+/datum/action/xeno_action/onclick/lurker_invisibility/proc/invisibility_off()
+	if(!owner || owner.alpha == initial(owner.alpha))
 		return
 
-	if(invis_timer_id != TIMER_ID_NULL)
+	if (invis_timer_id != TIMER_ID_NULL)
 		deltimer(invis_timer_id)
 		invis_timer_id = TIMER_ID_NULL
 
-	animate(xeno, alpha = initial(xeno.alpha), time = 0.1 SECONDS, easing = QUAD_EASING)
-	to_chat(xeno, SPAN_XENOHIGHDANGER("We feel our invisibility end!"))
+	var/mob/living/carbon/xenomorph/xeno = owner
+	if (istype(xeno))
+		animate(xeno, alpha = initial(xeno.alpha), time = 0.1 SECONDS, easing = QUAD_EASING)
+		to_chat(xeno, SPAN_XENOHIGHDANGER("We feel our invisibility end!"))
 
-	button.icon_state = "template"
-	xeno.update_icons()
+		xeno.update_icons()
 
-	xeno.speed_modifier += speed_buff
-	xeno.recalculate_speed()
+		xeno.speed_modifier += speed_buff
+		xeno.recalculate_speed()
 
-	var/datum/behavior_delegate/lurker_base/behavior = xeno.behavior_delegate
-	if(!istype(behavior))
-		CRASH("lurker_base behavior_delegate missing/invalid for [xeno]!")
-
-	var/recharge_time = behavior.invis_recharge_time
-	if(behavior.invis_start_time > 0) // Sanity
-		refund_multiplier = clamp(refund_multiplier, 0, 1)
-		var/remaining = 1 - (world.time - behavior.invis_start_time) / behavior.invis_duration
-		recharge_time = behavior.invis_recharge_time - remaining * refund_multiplier * behavior.invis_recharge_time
-	apply_cooldown_override(recharge_time)
-
-	behavior.on_invisibility_off()
+		var/datum/behavior_delegate/lurker_base/behavior = xeno.behavior_delegate
+		if (istype(behavior))
+			behavior.on_invisibility_off()
 
 /datum/action/xeno_action/onclick/lurker_invisibility/ability_cooldown_over()
 	to_chat(owner, SPAN_XENOHIGHDANGER("We are ready to use our invisibility again!"))
@@ -361,8 +341,7 @@
 	xeno.visible_message(SPAN_DANGER("[xeno] pierces [target_carbon]’s head with its inner jaw!"))
 	xeno.flick_attack_overlay(target_carbon, "headbite")
 	xeno.animation_attack_on(target_carbon, pixel_offset = 16)
-	target_carbon.apply_armoured_damage(60, ARMOR_MELEE, BRUTE, "head", 5) //DIE
-	target_carbon.death(create_cause_data("headbite execution", xeno), FALSE)
+	target_carbon.death(create_cause_data("headbite", xeno), FALSE)
 	xeno.gain_health(150)
 	xeno.xeno_jitter(1 SECONDS)
 	xeno.flick_heal_overlay(3 SECONDS, "#00B800")

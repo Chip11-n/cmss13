@@ -147,7 +147,7 @@
 	desc = "A segmented, lightweight whip made of durable, acid-resistant metal. Not very common among Yautja Hunters, but still a dangerous weapon capable of shredding prey."
 	icon_state = "whip"
 	item_state = "whip"
-	flags_atom = FPRINT|QUICK_DRAWABLE|CONDUCT
+	flags_atom = FPRINT|CONDUCT
 	flags_item = ITEM_PREDATOR
 	flags_equip_slot = SLOT_WAIST
 	embeddable = FALSE
@@ -172,7 +172,7 @@
 	name = "clan sword"
 	desc = "An expertly crafted Yautja blade carried by hunters who wish to fight up close. Razor sharp and capable of cutting flesh into ribbons. Commonly carried by aggressive and lethal hunters."
 	icon_state = "clansword"
-	flags_atom = FPRINT|QUICK_DRAWABLE|CONDUCT
+	flags_atom = FPRINT|CONDUCT
 	flags_item = ITEM_PREDATOR
 	flags_equip_slot = SLOT_BACK
 	force = MELEE_FORCE_TIER_7
@@ -197,7 +197,7 @@
 	desc = "A huge, incredibly sharp dual blade used for hunting dangerous prey. This weapon is commonly carried by Yautja who wish to disable and slice apart their foes."
 	icon_state = "predscythe"
 	item_state = "scythe_dual"
-	flags_atom = FPRINT|QUICK_DRAWABLE|CONDUCT
+	flags_atom = FPRINT|CONDUCT
 	flags_item = ITEM_PREDATOR
 	flags_equip_slot = SLOT_WAIST
 	force = MELEE_FORCE_TIER_6
@@ -234,7 +234,7 @@
 	name = "combi-stick"
 	desc = "A compact yet deadly personal weapon. Can be concealed when folded. Functions well as a throwing weapon or defensive tool. A common sight in Yautja packs due to its versatility."
 	icon_state = "combistick"
-	flags_atom = FPRINT|QUICK_DRAWABLE|CONDUCT
+	flags_atom = FPRINT|CONDUCT
 	flags_equip_slot = SLOT_BACK
 	flags_item = TWOHANDED|ITEM_PREDATOR
 	w_class = SIZE_LARGE
@@ -475,7 +475,7 @@
 	desc = "A viciously sharp dagger inscribed with ancient Yautja markings. Smells thickly of blood. Carried by some hunters."
 	icon_state = "predknife"
 	item_state = "knife"
-	flags_atom = FPRINT|QUICK_DRAWABLE|CONDUCT
+	flags_atom = FPRINT|CONDUCT
 	flags_item = ITEM_PREDATOR|CAN_DIG_SHRAPNEL
 	flags_equip_slot = SLOT_STORE
 	sharp = IS_SHARP_ITEM_ACCURATE
@@ -759,9 +759,9 @@
 	throwforce = MELEE_FORCE_TIER_3
 	embeddable = FALSE //so predators don't lose their glaive when thrown.
 	sharp = IS_SHARP_ITEM_BIG
-	flags_atom = FPRINT|QUICK_DRAWABLE|CONDUCT
+	flags_atom = FPRINT|CONDUCT
 	attack_verb = list("sliced", "slashed", "carved", "diced", "gored")
-	attack_speed = 14 //Default is 7.
+	attack_speed = 1.4 SECONDS
 
 /obj/item/weapon/twohanded/yautja/glaive/attack(mob/living/target, mob/living/carbon/human/user)
 	. = ..()
@@ -1132,9 +1132,11 @@
 	w_class = SIZE_HUGE
 	force = 0
 	fire_delay = 3
-	flags_atom = FPRINT|QUICK_DRAWABLE|CONDUCT
-	flags_item = NOBLUDGEON|DELONDROP|IGNITING_ITEM //Can't bludgeon with this.
+	throw_speed = MIN_SPEED
+	flags_atom = FPRINT|CONDUCT
+	flags_item = NOBLUDGEON|DELONDROP|IGNITING_ITEM|ITEM_UNCATCHABLE //Can't bludgeon with this.
 	flags_gun_features = GUN_UNUSUAL_DESIGN
+	has_special_table_placement = TRUE //Что-б обиднее было
 	has_empty_icon = FALSE
 	indestructible = TRUE
 
@@ -1155,6 +1157,7 @@
 	verbs -= /obj/item/weapon/gun/verb/field_strip
 	verbs -= /obj/item/weapon/gun/verb/use_toggle_burst
 	verbs -= /obj/item/weapon/gun/verb/empty_mag
+	RegisterSignal(src, COMSIG_ITEM_DROPPED, PROC_REF(delete_on_drop_flag))
 
 /obj/item/weapon/gun/energy/yautja/plasma_caster/Destroy()
 	. = ..()
@@ -1215,6 +1218,9 @@
 					ammo = GLOB.ammo_list[/datum/ammo/energy/yautja/caster/bolt]
 
 /obj/item/weapon/gun/energy/yautja/plasma_caster/use_unique_action()
+	switch_mode()
+
+/obj/item/weapon/gun/energy/yautja/plasma_caster/proc/switch_mode()
 	switch(mode)
 		if("stun")
 			mode = "lethal"
@@ -1244,6 +1250,9 @@
 	else
 		. += SPAN_ORANGE(msg)
 
+/obj/item/weapon/gun/energy/yautja/plasma_caster/set_to_table(obj/structure/surface/target)
+	return
+
 /obj/item/weapon/gun/energy/yautja/plasma_caster/dropped(mob/living/carbon/human/M)
 	playsound(M, 'sound/weapons/pred_plasmacaster_off.ogg', 15, 1)
 	to_chat(M, SPAN_NOTICE("You deactivate your plasma caster."))
@@ -1260,6 +1269,48 @@
 		return
 	..()
 
+	var/obj/item/clothing/gloves/yautja/hunter/bracers = M.gloves
+	if(!istype(bracers))
+		return
+
+	addtimer(CALLBACK(src, PROC_REF(hide_caster), M), 1)
+
+/obj/item/weapon/gun/energy/yautja/plasma_caster/proc/hide_caster(mob/living/carbon/human/M)
+	if(src == M.r_hand || src == M.l_hand)
+		return
+
+	var/obj/item/clothing/gloves/yautja/hunter/bracers = M.gloves
+	if(!istype(bracers))
+		return
+
+	forceMove(bracers)
+	bracers.caster_deployed = FALSE
+
+	var/datum/action/predator_action/bracer/caster/caster_action
+	for(caster_action as anything in M.actions)
+		if(istypestrict(caster_action, /datum/action/predator_action/bracer/caster))
+			caster_action.update_button_icon(FALSE)
+			break
+
+	to_chat(M, SPAN_NOTICE("You deactivate your plasma caster."))
+	playsound(M, 'sound/weapons/pred_plasmacaster_off.ogg', 15, 1)
+
+/obj/item/weapon/gun/energy/yautja/plasma_caster/proc/delete_on_drop_flag()
+	SIGNAL_HANDLER
+
+	flags_item |= DELONDROP
+/*
+/obj/item/weapon/gun/energy/yautja/plasma_caster/attack_hand(mob/user)
+	var/mob/living/carbon/human/H = user
+	if(istype(H))
+		if(H.s_store == src)
+			if(strength == "plasma immobilizers" || strength ==  "plasma spheres")
+				switch_mode()
+			else
+				attack_self(user)
+			return
+	..()
+*/
 /obj/item/weapon/gun/energy/yautja/plasma_caster/able_to_fire(mob/user)
 	if(!source)
 		return

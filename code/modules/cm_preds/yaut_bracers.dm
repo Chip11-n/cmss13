@@ -569,7 +569,7 @@
 
 	if(HAS_TRAIT(caller, TRAIT_CLOAKED)) //Turn it off.
 		if(cloak_timer > world.time)
-			to_chat(M, SPAN_WARNING("Your cloaking device is busy! Time left: <B>[max(floor((cloak_timer - world.time) / 10), 1)]</b> seconds."))
+			to_chat(M, SPAN_WARNING("Your cloaking device is busy! Time left: <B>[max(round((cloak_timer - world.time) / 10), 1)]</b> seconds."))
 			return FALSE
 		decloak(caller)
 	else //Turn it on!
@@ -582,7 +582,7 @@
 			return FALSE
 
 		if(cloak_timer > world.time)
-			to_chat(M, SPAN_WARNING("Your cloaking device is still recharging! Time left: <B>[max(floor((cloak_timer - world.time) / 10), 1)]</b> seconds."))
+			to_chat(M, SPAN_WARNING("Your cloaking device is still recharging! Time left: <B>[max(round((cloak_timer - world.time) / 10), 1)]</b> seconds."))
 			return FALSE
 
 		if(!drain_power(M, 50))
@@ -680,10 +680,12 @@
 			caller.drop_inv_item_to_loc(caster, src, FALSE, TRUE)
 		caster_deployed = FALSE
 	else
+		if(QDELETED(caster))
+			caster = new(src, FALSE, caster_material)
 		if(!drain_power(caller, 50))
 			return
 		if(caller.get_active_hand())
-			to_chat(caller, SPAN_WARNING("Your hand must be free to activate your wristblade!"))
+			to_chat(caller, SPAN_WARNING("Your hand must be free to activate your plasma caster!"))
 			return
 		var/obj/limb/hand = caller.get_limb(caller.hand ? "l_hand" : "r_hand")
 		if(!istype(hand) || !hand.is_usable())
@@ -1050,7 +1052,7 @@
 	if(!drain_power(caller, 50))
 		return
 
-	log_say("[caller.name != "Unknown" ? caller.name : "([caller.real_name])"] \[Yautja Translator\]: [msg] (CKEY: [caller.key]) (JOB: [caller.job]) (AREA: [get_area_name(caller)])")
+	log_say("[caller.name != "Unknown" ? caller.name : "([caller.real_name])"] \[Yautja Translator\]: [msg] (CKEY: [caller.key]) (JOB: [caller.job])")
 
 	var/list/heard = get_mobs_in_view(7, caller)
 	for(var/mob/M in heard)
@@ -1069,6 +1071,14 @@
 		msg = replacetext(msg, "o", "0")
 		msg = replacetext(msg, "s", "5")
 		msg = replacetext(msg, "l", "1")
+		/// RUS [CYRILLIC]
+		msg = replacetext(msg, "а", "@")
+		msg = replacetext(msg, "б", "6")
+		msg = replacetext(msg, "д", "∆")
+		msg = replacetext(msg, "з", "3")
+		msg = replacetext(msg, "о", "0")
+		msg = replacetext(msg, "ф", "%")
+		msg = replacetext(msg, "э", "3")
 
 	caller.langchat_speech(msg, heard, GLOB.all_languages, overhead_color, TRUE)
 

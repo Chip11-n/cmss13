@@ -61,7 +61,6 @@ GLOBAL_VAR_INIT(players_preassigned, 0)
 											/datum/job/special/uaac,
 											/datum/job/special/uaac/tis,
 											/datum/job/special/uscm,
-											/datum/job/command/tank_crew //Rip VC
 											)
 	var/squads_all[] = typesof(/datum/squad) - /datum/squad
 	var/castes_all[] = subtypesof(/datum/caste_datum)
@@ -165,7 +164,6 @@ I hope it's easier to tell what the heck this proc is even doing, unlike previou
 
 	unassigned_players = shuffle(unassigned_players, 1) //Shuffle the players.
 
-
 	// How many positions do we open based on total pop
 	for(var/i in roles_by_name)
 		var/datum/job/J = roles_by_name[i]
@@ -210,8 +208,9 @@ I hope it's easier to tell what the heck this proc is even doing, unlike previou
 	if(istype(CO_surv_job))
 		CO_surv_job.set_spawn_positions(GLOB.players_preassigned)
 
-	if(SSnightmare.get_scenario_value("predator_round") && !Check_WO())
+	if(SSnightmare.get_scenario_value("predator_round") && MODE_HAS_FLAG(MODE_FOG_ACTIVATED))
 		SSticker.mode.flags_round_type |= MODE_PREDATOR
+		send2chat("Predator round!", CONFIG_GET(string/new_round_alert_channel))
 		// Set predators starting amount based on marines assigned
 		var/datum/job/PJ = temp_roles_for_mode[JOB_PREDATOR]
 		if(istype(PJ))
@@ -376,65 +375,48 @@ I hope it's easier to tell what the heck this proc is even doing, unlike previou
 		J.current_positions--
 		return 1
 
-/datum/authority/branch/role/proc/free_role_admin(datum/job/J, latejoin = 1, user) //Specific proc that used for admin "Free Job Slots" verb (round tab)
-	if(!istype(J) || J.total_positions == -1)
+/datum/authority/branch/role/proc/free_role_admin(datum/job/job, latejoin = TRUE, user) //Specific proc that used for admin "Free Job Slots" verb (round tab)
+	if(!istype(job) || job.total_positions == -1)
 		return
-	if(J.current_positions < 1) //this should be filtered earlier, but we still check just in case
-		to_chat(user, "There are no [J] job slots occupied.")
+	if(job.current_positions < 1) //this should be filtered earlier, but we still check just in case
+		to_chat(user, "There are no [job] job slots occupied.")
 		return
 
 //here is the main reason this proc exists - to remove freed squad jobs from squad,
 //so latejoining person ends in the squad which's job was freed and not random one
-	var/datum/squad/sq = null
-	if(GLOB.job_squad_roles.Find(J.title))
+	var/datum/squad/squad = null
+	if(GLOB.job_squad_roles.Find(job.title))
 		var/list/squad_list = list()
-		for(sq in GLOB.RoleAuthority.squads)
-			if(sq.usable)
-				squad_list += sq
-		sq = null
-		sq = input(user, "Select squad you want to free [J.title] slot from.", "Squad Selection")  as null|anything in squad_list
-		if(!sq)
+		for(squad in GLOB.RoleAuthority.squads)
+			if(squad.roundstart && squad.usable && squad.name != "Root")
+				squad_list += squad
+		squad = null
+		squad = tgui_input_list(user, "Select squad you want to free [job.title] slot from.", "Squad Selection", squad_list)
+		if(!squad)
 			return
-		switch(J.title)
-			if(JOB_SQUAD_ENGI)
-				if(sq.num_engineers > 0)
-					sq.num_engineers--
-				else
-					to_chat(user, "There are no [J.title] slots occupied in [sq.name] Squad.")
-					return
-			if(JOB_SQUAD_MEDIC)
-				if(sq.num_medics > 0)
-					sq.num_medics--
-				else
-					to_chat(user, "There are no [J.title] slots occupied in [sq.name] Squad.")
-					return
-			if(JOB_SQUAD_SPECIALIST)
-				if(sq.num_specialists > 0)
-					sq.num_specialists--
-				else
-					to_chat(user, "There are no [J.title] slots occupied in [sq.name] Squad.")
-					return
-			if(JOB_SQUAD_SMARTGUN)
-				if(sq.num_smartgun > 0)
-					sq.num_smartgun--
-				else
-					to_chat(user, "There are no [J.title] slots occupied in [sq.name] Squad.")
-					return
+		var/slot_check
+		switch(job.title)
 			if(JOB_SQUAD_TEAM_LEADER)
-				if(sq.num_tl > 0)
-					sq.num_tl--
-				else
-					to_chat(user, "There are no [J.title] slots occupied in [sq.name] Squad.")
-					return
-			if(JOB_SQUAD_LEADER)
-				if(sq.num_leaders > 0)
-					sq.num_leaders--
-				else
-					to_chat(user, "There are no [J.title] slots occupied in [sq.name] Squad.")
-					return
-	J.current_positions--
-	message_admins("[key_name(user)] freed the [J.title] job slot[sq ? " in [sq.name] Squad" : ""].")
-	return 1
+				slot_check = "leaders"
+			if(JOB_SQUAD_SPECIALIST)
+				slot_check = "specialists"
+			if(JOB_SQUAD_SMARTGUN)
+				slot_check = "smartgun"
+			if(JOB_SQUAD_TEAM_LEADER)
+				slot_check = "tl"
+			if(JOB_SQUAD_MEDIC)
+				slot_check = "medics"
+			if(JOB_SQUAD_ENGI)
+				slot_check = "engineers"
+
+		if(squad.vars["num_[slot_check]"] > 0)
+			squad.vars["num_[slot_check]"]--
+		else
+			to_chat(user, "There are no [job.title] slots occupied in [squad.name] Squad.")
+			return
+	job.current_positions--
+	message_admins("[key_name(user)] freed the [job.title] job slot[squad ? " in [squad.name] Squad" : ""].")
+	return TRUE
 
 /datum/authority/branch/role/proc/modify_role(datum/job/J, amount)
 	if(!istype(J))
@@ -487,7 +469,7 @@ I hope it's easier to tell what the heck this proc is even doing, unlike previou
 	if(new_job.flags_startup_parameters & ROLE_ADD_TO_SQUAD) //Are we a muhreen? Randomize our squad. This should go AFTER IDs. //TODO Robust this later.
 		randomize_squad(new_human)
 
-	if(Check_WO() && GLOB.job_squad_roles.Find(GET_DEFAULT_ROLE(new_human.job))) //activates self setting proc for marine headsets for WO
+	if(check_wo() && GLOB.job_squad_roles.Find(GET_DEFAULT_ROLE(new_human.job))) //activates self setting proc for marine headsets for WO
 		var/datum/game_mode/whiskey_outpost/WO = SSticker.mode
 		WO.self_set_headset(new_human)
 
@@ -532,188 +514,79 @@ I hope it's easier to tell what the heck this proc is even doing, unlike previou
 	SEND_SIGNAL(new_human, COMSIG_POST_SPAWN_UPDATE)
 	SSround_recording.recorder.track_player(new_human)
 
-//Find which squad has the least population. If all 4 squads are equal it should just use a random one
-/datum/authority/branch/role/proc/get_lowest_squad(mob/living/carbon/human/H)
-	if(!squads.len) //Something went wrong, our squads aren't set up.
-		to_world("Warning, something messed up in get_lowest_squad(). No squads set up!")
-		return null
-
-
-	//we make a list of squad that is randomized so alpha isn't always lowest squad.
-	var/list/squads_copy = squads.Copy()
-	var/list/mixed_squads = list()
-
-	for(var/i= 1 to squads_copy.len)
-		var/datum/squad/S = pick_n_take(squads_copy)
-		if (S.roundstart && S.usable && S.faction == H.faction && S.name != "Root")
-			mixed_squads += S
-
-	var/datum/squad/lowest = pick(mixed_squads)
-
-	var/datum/pref_squad_name
-	if(H && H.client && H.client.prefs.preferred_squad && H.client.prefs.preferred_squad != "None")
-		pref_squad_name = H.client.prefs.preferred_squad
-
-	for(var/datum/squad/L in mixed_squads)
-		if(L.usable)
-			if(pref_squad_name && L.name == pref_squad_name)
-				lowest = L
-				break
-
-
-	if(!lowest)
-		to_world("Warning! Bug in get_random_squad()!")
-		return null
-
-	var/lowest_count = lowest.count
-	var/current_count = 0
-
-	if(!pref_squad_name)
-		//Loop through squads.
-		for(var/datum/squad/S in mixed_squads)
-			if(!S)
-				to_world("Warning: Null squad in get_lowest_squad. Call a coder!")
-				break //null squad somehow, let's just abort
-			current_count = S.count //Grab our current squad's #
-			if(current_count >= (lowest_count - 2)) //Current squad count is not much lower than the chosen one. Skip it.
-				continue
-			lowest_count = current_count //We found a winner! This squad is much lower than our default. Make it the new default.
-			lowest = S //'Select' this squad.
-
-	return lowest //Return whichever squad won the competition.
-
 //This proc is a bit of a misnomer, since there's no actual randomization going on.
-/datum/authority/branch/role/proc/randomize_squad(mob/living/carbon/human/H, skip_limit = FALSE)
-	if(!H)
+/datum/authority/branch/role/proc/randomize_squad(mob/living/carbon/human/human, skip_limit = FALSE)
+	if(!human)
 		return
 
-	if(!squads.len)
-		to_chat(H, "Something went wrong with your squad randomizer! Tell a coder!")
+	if(!length(squads))
+		to_chat(human, "Something went wrong with your squad randomizer! Tell a coder!")
 		return //Shit, where's our squad data
 
-	if(H.assigned_squad) //Wait, we already have a squad. Get outta here!
+	if(human.assigned_squad) //Wait, we already have a squad. Get outta here!
 		return
-
-	//we make a list of squad that is randomized so alpha isn't always lowest squad.
-	var/list/squads_copy = squads.Copy()
-	var/list/mixed_squads = list()
-	// The following code removes non useable squads from the lists of squads we assign marines too.
-	for(var/i= 1 to squads_copy.len)
-		var/datum/squad/S = pick_n_take(squads_copy)
-		if (S.roundstart && S.usable && S.faction == H.faction && S.name != "Root")
-			mixed_squads += S
 
 	//Deal with IOs first
-	if(H.job == JOB_INTEL)
+	if(human.job == JOB_INTEL)
 		var/datum/squad/intel_squad = get_squad_by_name(SQUAD_MARINE_INTEL)
 		if(!intel_squad || !istype(intel_squad)) //Something went horribly wrong!
-			to_chat(H, "Something went wrong with randomize_squad()! Tell a coder!")
+			to_chat(human, "Something went wrong with randomize_squad()! Tell a coder!")
 			return
-		intel_squad.put_marine_in_squad(H) //Found one, finish up
+		intel_squad.put_marine_in_squad(human)
 		return
 
-	//Deal with non-standards first.
-	//Non-standards are distributed regardless of squad population.
-	//If the number of available positions for the job are more than max_whatever, it will break.
-	//Ie. 8 squad medic jobs should be available, and total medics in squads should be 8.
-	if(H.job != JOB_SQUAD_MARINE && H.job != "Reinforcements")
-		var/pref_squad_name
-		if(H && H.client && H.client.prefs.preferred_squad && H.client.prefs.preferred_squad != "None")
-			pref_squad_name = H.client.prefs.preferred_squad
-
-		var/datum/squad/lowest
-
-		switch(H.job)
+	//dirty mess with code, sorry guidelines
+	var/slot_check
+	if(human.job != "Reinforcements")
+		switch(GET_DEFAULT_ROLE(human.job))
 			if(JOB_SQUAD_ENGI)
-				for(var/datum/squad/S in mixed_squads)
-					if(S.usable && S.roundstart)
-						if(!skip_limit && S.num_engineers >= S.max_engineers) continue
-						if(pref_squad_name && S.name == pref_squad_name)
-							S.put_marine_in_squad(H) //fav squad has a spot for us, no more searching needed.
-							return
-
-						if(!lowest)
-							lowest = S
-						else if(S.num_engineers < lowest.num_engineers)
-							lowest = S
-
+				slot_check = "engineers"
 			if(JOB_SQUAD_MEDIC)
-				for(var/datum/squad/S in mixed_squads)
-					if(S.usable && S.roundstart)
-						if(!skip_limit && S.num_medics >= S.max_medics) continue
-						if(pref_squad_name && S.name == pref_squad_name)
-							S.put_marine_in_squad(H) //fav squad has a spot for us.
-							return
-
-						if(!lowest)
-							lowest = S
-						else if(S.num_medics < lowest.num_medics)
-							lowest = S
-
-			if(JOB_SQUAD_LEADER)
-				for(var/datum/squad/S in mixed_squads)
-					if(S.usable && S.roundstart)
-						if(!skip_limit && S.num_leaders >= S.max_leaders) continue
-						if(pref_squad_name && S.name == pref_squad_name)
-							S.put_marine_in_squad(H) //fav squad has a spot for us.
-							return
-
-						if(!lowest)
-							lowest = S
-						else if(S.num_leaders < lowest.num_leaders)
-							lowest = S
-
-			if(JOB_SQUAD_SPECIALIST)
-				for(var/datum/squad/S in mixed_squads)
-					if(S.usable && S.roundstart)
-						if(!skip_limit && S.num_specialists >= S.max_specialists) continue
-						if(pref_squad_name && S.name == pref_squad_name)
-							S.put_marine_in_squad(H) //fav squad has a spot for us.
-							return
-
-						if(!lowest)
-							lowest = S
-						else if(S.num_specialists < lowest.num_specialists)
-							lowest = S
-
+				slot_check = "medics"
 			if(JOB_SQUAD_TEAM_LEADER)
-				for(var/datum/squad/S in mixed_squads)
-					if(S.usable && S.roundstart)
-						if(!skip_limit && S.num_tl >= S.max_tl) continue
-						if(pref_squad_name && S.name == pref_squad_name)
-							S.put_marine_in_squad(H) //fav squad has a spot for us.
-							return
-
-						if(!lowest)
-							lowest = S
-						else if(S.num_tl < lowest.num_tl)
-							lowest = S
-
+				slot_check = "tl"
 			if(JOB_SQUAD_SMARTGUN)
-				for(var/datum/squad/S in mixed_squads)
-					if(S.usable && S.roundstart)
-						if(!skip_limit && S.num_smartgun >= S.max_smartgun) continue
-						if(pref_squad_name && S.name == pref_squad_name)
-							S.put_marine_in_squad(H) //fav squad has a spot for us.
-							return
+				slot_check = "smartgun"
+			if(JOB_SQUAD_SPECIALIST)
+				slot_check = "specialists"
+			if(JOB_SQUAD_LEADER)
+				slot_check = "leaders"
 
-						if(!lowest)
-							lowest = S
-						else if(S.num_smartgun < lowest.num_smartgun)
-							lowest = S
+	//we make a list of squad that is randomized so alpha isn't always lowest squad.
+	var/list/mixed_squads = list()
+	for(var/datum/squad/squad in squads)
+		if(squad.roundstart && squad.usable && squad.faction == human.faction && squad.name != "Root")
+			mixed_squads += squad
+
+	var/preferred_squad
+	if(human?.client?.prefs?.preferred_squad)
+		preferred_squad = human.client.prefs.preferred_squad
+
+	var/datum/squad/lowest
+	for(var/datum/squad/squad in mixed_squads)
+		if(slot_check && !skip_limit)
+			if(squad.vars["num_[slot_check]"] >= squad.vars["max_[slot_check]"])
+				continue
+
+		if(preferred_squad == "None")
+			if(squad.put_marine_in_squad(human))
+				return
+
+		else if(squad.name == preferred_squad) //fav squad has a spot for us, no more searching needed.
+			if(squad.put_marine_in_squad(human))
+				return
+
 		if(!lowest)
-			var/ranpick = rand(1,4)
-			lowest = mixed_squads[ranpick]
-		if(lowest) lowest.put_marine_in_squad(H)
-		else to_chat(H, "Something went badly with randomize_squad()! Tell a coder!")
+			lowest = squad
 
-	else
-		//Deal with marines. They get distributed to the lowest populated squad.
-		var/datum/squad/given_squad = get_lowest_squad(H)
-		if(!given_squad || !istype(given_squad)) //Something went horribly wrong!
-			to_chat(H, "Something went wrong with randomize_squad()! Tell a coder!")
-			return
-		given_squad.put_marine_in_squad(H) //Found one, finish up
+		else if(slot_check)
+			if(squad.vars["num_[slot_check]"] < lowest.vars["num_[slot_check]"])
+				lowest = squad
+
+	if(!lowest || !lowest.put_marine_in_squad(human))
+		to_world("Warning! Bug in get_random_squad()!")
+		return
+	return
 
 /datum/authority/branch/role/proc/get_caste_by_text(name)
 	var/mob/living/carbon/xenomorph/M

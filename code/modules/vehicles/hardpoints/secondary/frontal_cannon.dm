@@ -13,7 +13,7 @@
 	health = 350
 	firing_arc = 120
 
-	origins = list(0, -1)
+	origins = list(0, -2)
 
 	ammo = new /obj/item/ammo_magazine/hardpoint/m56_cupola/frontal_cannon
 	max_clips = 1

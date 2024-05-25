@@ -29,7 +29,6 @@
 	var/automated_lz_id
 	var/automated_delay
 	var/automated_timer
-	var/datum/cas_signal/paradrop_signal
 
 
 /obj/docking_port/mobile/marine_dropship/Initialize(mapload)
@@ -119,7 +118,7 @@
 				continue
 
 			var/name = "Unidentified Lifesigns"
-			var/input = "Unidentified lifesigns detected onboard. Recommendation: lockdown of exterior access ports, including ducting and ventilation."
+			var/input = "Неизвестные организмы зафиксированы на борту. Рекомендация: блокировка всех внешних шлюзов, включая воздуховоды и вентиляцию."
 			shipwide_ai_announcement(input, name, 'sound/AI/unidentified_lifesigns.ogg', ares_logging = ARES_LOG_SECURITY)
 			set_security_level(SEC_LEVEL_RED)
 			return
@@ -172,7 +171,7 @@
 		return
 
 	if(automated_hangar_id && automated_lz_id && automated_delay && !automated_timer && mode == SHUTTLE_IDLE)
-		ai_silent_announcement("The [name] will automatically depart in [automated_delay * 0.1] seconds")
+		ai_silent_announcement("Автоматическое отбытие '[name]' через [automated_delay * 0.1] секунд")
 		automated_timer = addtimer(CALLBACK(src, PROC_REF(automated_fly)), automated_delay, TIMER_STOPPABLE)
 
 /obj/docking_port/mobile/marine_dropship/proc/automated_fly()
@@ -189,7 +188,7 @@
 		SSshuttle.moveShuttle(id, automated_lz_id, TRUE)
 	else
 		SSshuttle.moveShuttle(id, automated_hangar_id, TRUE)
-	ai_silent_announcement("Dropship '[name]' departing.")
+	ai_silent_announcement("Десантный корабль '[name]' отбывает.")
 
 /obj/docking_port/stationary/marine_dropship
 	dir = NORTH
@@ -305,7 +304,7 @@
 
 /obj/docking_port/stationary/marine_dropship/crash_site/on_arrival(obj/docking_port/mobile/arriving_shuttle)
 	. = ..()
-	arriving_shuttle.set_mode(SHUTTLE_CRASHED)
+	arriving_shuttle.mode = SHUTTLE_CRASHED
 	for(var/mob/living/carbon/affected_mob in (GLOB.alive_human_list + GLOB.living_xeno_list)) //knock down mobs
 		if(affected_mob.z != z)
 			continue

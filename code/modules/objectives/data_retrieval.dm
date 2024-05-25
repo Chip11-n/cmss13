@@ -40,7 +40,7 @@
 /datum/cm_objective/retrieve_data/terminal
 	var/obj/structure/machinery/computer/objective/terminal
 	var/uploading = FALSE
-	value = OBJECTIVE_EXTREME_VALUE
+	value = OBJECTIVE_ABSOLUTE_VALUE
 
 /datum/cm_objective/retrieve_data/terminal/New(obj/structure/machinery/computer/objective/D)
 	. = ..()
@@ -117,14 +117,29 @@
 /datum/cm_objective/retrieve_data/disk/process()
 	var/obj/structure/machinery/computer/disk_reader/reader = disk.loc
 	if(!reader.powered())
-		SEND_SIGNAL(reader, COMSIG_INTEL_DISK_LOST_POWER)
+		reader.visible_message(SPAN_WARNING("\The [reader] powers down mid-operation as the area looses power."))
+		playsound(reader, 'sound/machines/terminal_shutdown.ogg', 25, 1)
+		SSobjectives.stop_processing_objective(src)
+		disk.forceMove(reader.loc)
+		reader.disk = null
 		return
 
 	..()
 
 /datum/cm_objective/retrieve_data/disk/complete()
 	state = OBJECTIVE_COMPLETE
-	SEND_SIGNAL(disk.loc, COMSIG_INTEL_DISK_COMPLETED)
+	var/obj/structure/machinery/computer/disk_reader/reader = disk.loc
+	reader.visible_message("\The [reader] pings softly as the upload finishes and ejects the disk.")
+	playsound(reader, 'sound/machines/screen_output1.ogg', 25, 1)
+	disk.forceMove(reader.loc)
+	disk.name = "[disk.name] (complete)"
+	reader.disk = null
+	award_points()
+
+	// Now enable the objective to store this disk in the lab.
+	disk.retrieve_objective.state = OBJECTIVE_ACTIVE
+	disk.retrieve_objective.activate()
+
 	..()
 
 /datum/cm_objective/retrieve_data/disk/get_tgui_data()
@@ -280,6 +295,34 @@
 	unslashable = TRUE
 	unacidable = TRUE
 
-/obj/structure/machinery/computer/disk_reader/Initialize()
-	. = ..()
-	AddComponent(/datum/component/disk_reader)
+/obj/structure/machinery/computer/disk_reader/attack_hand(mob/living/user)
+	if(isxeno(user))
+		return
+	if(disk)
+		to_chat(user, SPAN_NOTICE("[disk] is currently being uploaded to ARES."))
+
+/obj/structure/machinery/computer/disk_reader/attackby(obj/item/W, mob/living/user)
+	if(istype(W, /obj/item/disk/objective))
+		if(istype(disk))
+			to_chat(user, SPAN_WARNING("There is a disk in the drive being uploaded already!"))
+			return FALSE
+		var/obj/item/disk/objective/newdisk = W
+		if(newdisk.objective.state == OBJECTIVE_COMPLETE)
+			to_chat(user, SPAN_WARNING("The reader displays a message stating this disk has already been read and refuses to accept it."))
+			return FALSE
+		if(input(user,"Enter the encryption key","Decrypting [newdisk]","") != newdisk.objective.decryption_password)
+			to_chat(user, SPAN_WARNING("The reader asks for the encryption key for this disk, not having the correct key you eject the disk."))
+			return FALSE
+		if(istype(disk))
+			to_chat(user, SPAN_WARNING("There is a disk in the drive being uploaded already!"))
+			return FALSE
+
+		if(!(newdisk in user.contents))
+			return FALSE
+
+		newdisk.objective.activate()
+
+		user.drop_inv_item_to_loc(W, src)
+		disk = W
+		to_chat(user, SPAN_NOTICE("You insert \the [W] and enter the decryption key."))
+		user.count_niche_stat(STATISTICS_NICHE_DISK)

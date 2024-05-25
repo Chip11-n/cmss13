@@ -121,7 +121,7 @@
 					return TRUE
 				if(!client.prefs?.preview_dummy)
 					client.prefs.update_preview_icon()
-				var/mob/dead/observer/observer = new /mob/dead/observer(get_turf(pick(GLOB.latejoin)), client.prefs.preview_dummy)
+				var/mob/dead/observer/observer = new /mob/dead/observer(null, client.prefs.preview_dummy)
 				observer.set_lighting_alpha_from_pref(client)
 				spawning = TRUE
 				observer.started_as_observer = TRUE
@@ -267,13 +267,8 @@
 			sq.max_engineers = engi_slot_formula(GLOB.clients.len)
 			sq.max_medics = medic_slot_formula(GLOB.clients.len)
 
-	var/latejoin_larva_drop = SSticker.mode.latejoin_larva_drop
-
-	if (ROUND_TIME < XENO_ROUNDSTART_PROGRESS_TIME_2)
-		latejoin_larva_drop = SSticker.mode.latejoin_larva_drop_early
-
-	if(latejoin_larva_drop && SSticker.mode.latejoin_tally - SSticker.mode.latejoin_larva_used >= latejoin_larva_drop)
-		SSticker.mode.latejoin_larva_used += latejoin_larva_drop
+	if(SSticker.mode.latejoin_larva_drop && SSticker.mode.latejoin_tally - SSticker.mode.latejoin_larva_used >= SSticker.mode.latejoin_larva_drop)
+		SSticker.mode.latejoin_larva_used += SSticker.mode.latejoin_larva_drop
 		var/datum/hive_status/hive
 		for(var/hivenumber in GLOB.hive_datum)
 			hive = GLOB.hive_datum[hivenumber]
@@ -304,7 +299,7 @@
 	var/hours = mills / 36000
 
 	var/dat = "<html><body onselectstart='return false;'><center>"
-	dat += "Round Duration: [floor(hours)]h [floor(mins)]m<br>"
+	dat += "Round Duration: [round(hours)]h [round(mins)]m<br>"
 
 	if(SShijack)
 		switch(SShijack.evac_status)
@@ -456,7 +451,7 @@
 
 	var/time_remaining = SSticker.GetTimeLeft()
 	if(time_remaining > 0)
-		. += "Time To Start: [floor(time_remaining)]s[SSticker.delay_start ? " (DELAYED)" : ""]"
+		. += "Time To Start: [round(time_remaining)]s"
 	else if(time_remaining == -10)
 		. += "Time To Start: DELAYED"
 	else

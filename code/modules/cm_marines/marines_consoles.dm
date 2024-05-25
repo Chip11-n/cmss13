@@ -43,12 +43,12 @@
 		ui = new(user, src, "CardMod", name)
 		ui.open()
 
-/obj/structure/machinery/computer/card/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
+/obj/structure/machinery/computer/card/ui_act(action, params)
 	. = ..()
 	if(.)
 		return
 
-	var/mob/user = ui.user
+	var/mob/user = usr
 
 	playsound(src, pick('sound/machines/computer_typing4.ogg', 'sound/machines/computer_typing5.ogg', 'sound/machines/computer_typing6.ogg'), 5, 1)
 	switch(action)
@@ -91,11 +91,18 @@
 					printing = TRUE
 					playsound(src.loc, 'sound/machines/fax.ogg', 15, 1)
 					sleep(40)
+					var/faction = "N/A"
+					if(target_id_card.faction_group && islist(target_id_card.faction_group))
+						faction = jointext(target_id_card.faction_group, ", ")
+					if(isnull(target_id_card.faction_group))
+						target_id_card.faction_group = list()
+					else
+						faction = target_id_card.faction_group
 					var/contents = {"<center><h4>Access Report</h4></center>
 								<u>Prepared By:</u> [user_id_card?.registered_name ? user_id_card.registered_name : "Unknown"]<br>
 								<u>For:</u> [target_id_card.registered_name ? target_id_card.registered_name : "Unregistered"]<br>
 								<hr>
-								<u>Faction:</u> [target_id_card.faction ? target_id_card.faction : "N/A"]<br>
+								<u>Faction:</u> [faction]<br>
 								<u>Assignment:</u> [target_id_card.assignment]<br>
 								<u>Account Number:</u> #[target_id_card.associated_account_number]<br>
 								<u>Blood Type:</u> [target_id_card.blood_type]<br><br>
@@ -105,10 +112,7 @@
 					var/known_access_rights = get_access(ACCESS_LIST_MARINE_ALL)
 					for(var/A in target_id_card.access)
 						if(A in known_access_rights)
-							contents += "  [get_access_desc(A)]<br>"
-					contents += "<br><u>Modification Log:</u><br>"
-					for(var/change in target_id_card.modification_log)
-						contents += "  [change]<br>"
+							contents += "  [get_access_desc(A)]"
 
 					var/obj/item/paper/P = new /obj/item/paper(src.loc)
 					P.name = "Access Report"
@@ -135,9 +139,9 @@
 					GLOB.data_core.manifest_modify(target_id_card.registered_name, target_id_card.registered_ref, target_id_card.assignment, target_id_card.rank)
 					target_id_card.name = text("[target_id_card.registered_name]'s ID Card ([target_id_card.assignment])")
 					if(target_id_card.registered_name != origin_name)
-						log_idmod(target_id_card, "<font color='orange'> [user.real_name] changed the registered name of the ID to '[target_id_card.registered_name]'. </font>", key_name_admin(user))
+						log_idmod(target_id_card, "<font color='orange'> [key_name_admin(usr)] changed the registered name of the ID to '[target_id_card.registered_name]'. </font>")
 					if(target_id_card.assignment != origin_assignment)
-						log_idmod(target_id_card, "<font color='orange'> [user.real_name] changed the assignment of the ID to the custom position '[target_id_card.assignment]'. </font>", key_name_admin(user))
+						log_idmod(target_id_card, "<font color='orange'> [key_name_admin(usr)] changed the assignment of the ID to the custom position '[target_id_card.assignment]'. </font>")
 				if(ishuman(user))
 					target_id_card.forceMove(user.loc)
 					if(!user.get_active_hand())
@@ -166,8 +170,8 @@
 
 			target_id_card.assignment = "Terminated"
 			target_id_card.access = list()
-			log_idmod(target_id_card, "<font color='red'> [user.real_name] terminated the ID. </font>", key_name_admin(user))
-			message_admins("[user.real_name] terminated the ID of [target_id_card.registered_name].", key_name_admin(user))
+			log_idmod(target_id_card, "<font color='red'> [key_name_admin(usr)] terminated the ID. </font>")
+			message_admins("[key_name_admin(usr)] terminated the ID of [target_id_card.registered_name].")
 			return TRUE
 		if("PRG_edit")
 			if(!authenticated || !target_id_card)
@@ -217,19 +221,19 @@
 					target_id_card.faction_group = list()
 				if(params["access_target"] in target_id_card.faction_group)
 					target_id_card.faction_group -= params["access_target"]
-					log_idmod(target_id_card, "<font color='red'> [user.real_name] revoked [access_type] IFF. </font>", key_name_admin(user))
+					log_idmod(target_id_card, "<font color='red'> [key_name_admin(usr)] revoked [access_type] IFF. </font>")
 				else
 					target_id_card.faction_group |= params["access_target"]
-					log_idmod(target_id_card, "<font color='green'> [user.real_name] granted [access_type] IFF. </font>", key_name_admin(user))
+					log_idmod(target_id_card, "<font color='green'> [key_name_admin(usr)] granted [access_type] IFF. </font>")
 				return TRUE
 			access_type = text2num(params["access_target"])
 			if(access_type in (is_centcom ? get_access(ACCESS_LIST_WY_ALL) : get_access(ACCESS_LIST_MARINE_MAIN)))
 				if(access_type in target_id_card.access)
 					target_id_card.access -= access_type
-					log_idmod(target_id_card, "<font color='red'> [user.real_name] revoked access '[get_access_desc(access_type)]'. </font>", key_name_admin(user))
+					log_idmod(target_id_card, "<font color='red'> [key_name_admin(usr)] revoked access '[access_type]'. </font>")
 				else
 					target_id_card.access |= access_type
-					log_idmod(target_id_card, "<font color='green'> [user.real_name] granted access '[get_access_desc(access_type)]'. </font>", key_name_admin(user))
+					log_idmod(target_id_card, "<font color='green'> [key_name_admin(usr)] granted access '[access_type]'. </font>")
 				return TRUE
 		if("PRG_grantall")
 			if(!authenticated || !target_id_card)
@@ -237,7 +241,7 @@
 
 			target_id_card.access |= (is_centcom ? get_access(ACCESS_LIST_WY_ALL) : get_access(ACCESS_LIST_MARINE_MAIN))
 			target_id_card.faction_group |= factions
-			log_idmod(target_id_card, "<font color='green'> [user.real_name] granted the ID all access and USCM IFF. </font>", key_name_admin(user))
+			log_idmod(target_id_card, "<font color='green'> [key_name_admin(usr)] granted the ID all access and USCM IFF. </font>")
 			return TRUE
 		if("PRG_denyall")
 			if(!authenticated || !target_id_card)
@@ -246,7 +250,7 @@
 			var/list/access = target_id_card.access
 			access.Cut()
 			target_id_card.faction_group -= factions
-			log_idmod(target_id_card, "<font color='red'> [user.real_name] removed all accesses and USCM IFF. </font>", key_name_admin(user))
+			log_idmod(target_id_card, "<font color='red'> [key_name_admin(usr)] removed all accesses and USCM IFF. </font>")
 			return TRUE
 		if("PRG_grantregion")
 			if(!authenticated || !target_id_card)
@@ -254,14 +258,14 @@
 
 			if(params["region"] == "Faction (IFF system)")
 				target_id_card.faction_group |= factions
-				log_idmod(target_id_card, "<font color='green'> [user.real_name] granted USCM IFF. </font>", key_name_admin(user))
+				log_idmod(target_id_card, "<font color='green'> [key_name_admin(usr)] granted USCM IFF. </font>")
 				return TRUE
 			var/region = text2num(params["region"])
 			if(isnull(region))
 				return
 			target_id_card.access |= get_region_accesses(region)
 			var/additions = get_region_accesses_name(region)
-			log_idmod(target_id_card, "<font color='green'> [user.real_name] granted all [additions] accesses. </font>", key_name_admin(user))
+			log_idmod(target_id_card, "<font color='green'> [key_name_admin(usr)] granted all [additions] accesses. </font>")
 			return TRUE
 		if("PRG_denyregion")
 			if(!authenticated || !target_id_card)
@@ -269,14 +273,14 @@
 
 			if(params["region"] == "Faction (IFF system)")
 				target_id_card.faction_group -= factions
-				log_idmod(target_id_card, "<font color='red'> [user.real_name] revoked USCM IFF. </font>", key_name_admin(user))
+				log_idmod(target_id_card, "<font color='red'> [key_name_admin(usr)] revoked USCM IFF. </font>")
 				return TRUE
 			var/region = text2num(params["region"])
 			if(isnull(region))
 				return
 			target_id_card.access -= get_region_accesses(region)
 			var/additions = get_region_accesses_name(region)
-			log_idmod(target_id_card, "<font color='red'> [user.real_name] revoked all [additions] accesses. </font>", key_name_admin(user))
+			log_idmod(target_id_card, "<font color='red'> [key_name_admin(usr)] revoked all [additions] accesses. </font>")
 			return TRUE
 		if("PRG_account")
 			if(!authenticated || !target_id_card)
@@ -284,7 +288,7 @@
 
 			var/account = text2num(params["account"])
 			target_id_card.associated_account_number = account
-			log_idmod(target_id_card, "<font color='orange'> [user.real_name] changed the account number to '[account]'. </font>", key_name_admin(user))
+			log_idmod(target_id_card, "<font color='orange'> [key_name_admin(usr)] changed the account number to '[account]'. </font>")
 			return TRUE
 
 /obj/structure/machinery/computer/card/ui_static_data(mob/user)
@@ -296,7 +300,7 @@
 	var/list/departments
 	if(is_centcom)
 		departments = list("CentCom" = get_all_centcom_jobs())
-	else if(Check_WO())
+	else if(check_wo())
 		// I am not sure about WOs departments so it may need adjustment
 		departments = list(
 			CARDCON_DEPARTMENT_COMMAND = GLOB.ROLES_CIC & GLOB.ROLES_WO,
@@ -308,15 +312,27 @@
 			CARDCON_DEPARTMENT_MEDICAL = GLOB.ROLES_MEDICAL & GLOB.ROLES_WO,
 			CARDCON_DEPARTMENT_MARINE = GLOB.ROLES_MARINES
 		)
+	else if(check_crash())
+		// I am not sure about WOs departments so it may need adjustment
+		departments = list(
+			CARDCON_DEPARTMENT_COMMAND = GLOB.ROLES_CIC & GLOB.ROLES_CRASH,
+			CARDCON_DEPARTMENT_AUXCOM = GLOB.ROLES_AUXIL_SUPPORT & GLOB.ROLES_CRASH,
+			CARDCON_DEPARTMENT_MISC = GLOB.ROLES_MISC & GLOB.ROLES_CRASH,
+			CARDCON_DEPARTMENT_SECURITY = GLOB.ROLES_POLICE & GLOB.ROLES_CRASH,
+			CARDCON_DEPARTMENT_ENGINEERING = GLOB.ROLES_ENGINEERING & GLOB.ROLES_CRASH,
+			CARDCON_DEPARTMENT_SUPPLY = GLOB.ROLES_REQUISITION & GLOB.ROLES_CRASH,
+			CARDCON_DEPARTMENT_MEDICAL = GLOB.ROLES_MEDICAL & GLOB.ROLES_CRASH,
+			CARDCON_DEPARTMENT_MARINE = GLOB.ROLES_MARINES
+		)
 	else
 		departments = list(
-			CARDCON_DEPARTMENT_COMMAND = GLOB.ROLES_CIC - GLOB.ROLES_WO,
-			CARDCON_DEPARTMENT_AUXCOM = GLOB.ROLES_AUXIL_SUPPORT - GLOB.ROLES_WO,
-			CARDCON_DEPARTMENT_MISC = GLOB.ROLES_MISC - GLOB.ROLES_WO,
-			CARDCON_DEPARTMENT_SECURITY = GLOB.ROLES_POLICE - GLOB.ROLES_WO,
-			CARDCON_DEPARTMENT_ENGINEERING = GLOB.ROLES_ENGINEERING - GLOB.ROLES_WO,
-			CARDCON_DEPARTMENT_SUPPLY = GLOB.ROLES_REQUISITION - GLOB.ROLES_WO,
-			CARDCON_DEPARTMENT_MEDICAL = GLOB.ROLES_MEDICAL - GLOB.ROLES_WO,
+			CARDCON_DEPARTMENT_COMMAND = GLOB.ROLES_CIC & GLOB.ROLES_REGULAR,
+			CARDCON_DEPARTMENT_AUXCOM = GLOB.ROLES_AUXIL_SUPPORT & GLOB.ROLES_REGULAR,
+			CARDCON_DEPARTMENT_MISC = GLOB.ROLES_MISC & GLOB.ROLES_REGULAR,
+			CARDCON_DEPARTMENT_SECURITY = GLOB.ROLES_POLICE & GLOB.ROLES_REGULAR,
+			CARDCON_DEPARTMENT_ENGINEERING = GLOB.ROLES_ENGINEERING & GLOB.ROLES_REGULAR,
+			CARDCON_DEPARTMENT_SUPPLY = GLOB.ROLES_REQUISITION & GLOB.ROLES_REGULAR,
+			CARDCON_DEPARTMENT_MEDICAL = GLOB.ROLES_MEDICAL & GLOB.ROLES_REGULAR,
 			CARDCON_DEPARTMENT_MARINE = GLOB.ROLES_MARINES
 		)
 	data["jobs"] = list()
@@ -900,9 +916,9 @@ GLOBAL_LIST_EMPTY_TYPED(crewmonitor, /datum/crewmonitor)
 				// 20-29: Aux Command
 				JOB_AUXILIARY_OFFICER = 20,
 				JOB_SYNTH = 21,
-				JOB_CAS_PILOT = 22,
-				JOB_DROPSHIP_PILOT = 23,
-				JOB_DROPSHIP_CREW_CHIEF = 24,
+				JOB_PILOT = 22,
+				JOB_DROPSHIP_CREW_CHIEF = 23,
+				JOB_CREWMAN = 24,
 				JOB_INTEL = 25,
 				// 30-39: Security
 				JOB_CHIEF_POLICE = 30,
@@ -1005,6 +1021,7 @@ GLOBAL_LIST_EMPTY_TYPED(crewmonitor, /datum/crewmonitor)
 					"[squad_name][JOB_SQUAD_SPECIALIST] (Demo)" = (squad_number + 2),
 					"[squad_name][JOB_SQUAD_SPECIALIST] (Grenadier)" = (squad_number + 2),
 					"[squad_name][JOB_SQUAD_SPECIALIST] (Pyro)" = (squad_number + 2),
+					"[squad_name][JOB_SQUAD_SPECIALIST] (ST)" = (squad_number + 2),
 					"[squad_name][JOB_SQUAD_SMARTGUN]" = (squad_number + 3),
 					"[squad_name][JOB_SQUAD_ENGI]" = (squad_number + 4),
 					"[squad_name][JOB_SQUAD_MEDIC]" = (squad_number + 5),
@@ -1080,7 +1097,6 @@ GLOBAL_LIST_EMPTY_TYPED(crewmonitor, /datum/crewmonitor)
 				// 50-59: Engineering
 				JOB_UPP_COMBAT_SYNTH = 50,
 				JOB_UPP_CREWMAN = 51,
-				JOB_UPP_SUPPORT_SYNTH = 52,
 				// 60-69: Soldiers
 				JOB_UPP_LEADER = 60,
 				JOB_UPP_SPECIALIST = 61,

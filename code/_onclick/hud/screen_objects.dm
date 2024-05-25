@@ -75,7 +75,7 @@
 	return ..()
 
 /atom/movable/screen/action_button/proc/get_button_screen_loc(button_number)
-	var/row = floor((button_number-1)/13) //13 is max amount of buttons per row
+	var/row = round((button_number-1)/13) //13 is max amount of buttons per row
 	var/col = ((button_number - 1)%(13)) + 1
 	var/coord_col = "+[col-1]"
 	var/coord_col_offset = 4+2*col
@@ -129,9 +129,9 @@
 		//Calculate fullness for etiher max storage, or for storage slots if the container has them
 		var/fullness = 0
 		if (master_storage.storage_slots == null)
-			fullness = floor(10*total_w/master_storage.max_storage_space)
+			fullness = round(10*total_w/master_storage.max_storage_space)
 		else
-			fullness = floor(10*master_storage.contents.len/master_storage.storage_slots)
+			fullness = round(10*master_storage.contents.len/master_storage.storage_slots)
 		switch(fullness)
 			if(10)
 				color = "#ff0000"
@@ -148,6 +148,7 @@
 /atom/movable/screen/zone_sel/update_icon(mob/living/user)
 	overlays.Cut()
 	overlays += image('icons/mob/hud/zone_sel.dmi', "[selecting]")
+	user.zone_selected = selecting
 
 /atom/movable/screen/zone_sel/clicked(mob/user, list/mods)
 	if (..())
@@ -209,7 +210,6 @@
 							selecting = "eyes"
 
 	if(old_selecting != selecting)
-		user.zone_selected = selecting
 		update_icon(user)
 	return 1
 
@@ -468,6 +468,11 @@
 	else if(mods["alt"])
 		earpiece.switch_tracker_target()
 		return
+	if(isyautja(user))
+		var/obj/item/clothing/gloves/yautja/hunter/bracers = user.gloves
+		if(istype(bracers))
+			bracers.track_gear()
+			return
 	if(user.get_active_hand())
 		return
 	if(user.assigned_squad)

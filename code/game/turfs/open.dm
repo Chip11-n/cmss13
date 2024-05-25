@@ -95,10 +95,6 @@
 				edge_overlay.SwapColor(rgb(255, 0, 255, 255), rgb(0, 0, 0, 0))
 				overlays += edge_overlay
 
-	var/area/my_area = loc
-	if(my_area.lighting_effect)
-		overlays += my_area.lighting_effect
-
 /turf/open/proc/scorch(heat_level)
 	// All scorched icons should be in the dmi that their unscorched bases are
 	// "name_scorched#" where # is the scorchedness level 0 - 1 - 2 - 3
@@ -1014,6 +1010,7 @@
 	name = "floor"
 	icon = 'icons/turf/vehicle_interior.dmi'
 	icon_state = "floor_0"
+	supports_surgery = TRUE
 
 //vehicle interior floors
 /turf/open/shuttle/vehicle/med

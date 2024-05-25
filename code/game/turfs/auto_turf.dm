@@ -75,19 +75,6 @@
 			if(bleed_layer)
 				addtimer(CALLBACK(src, PROC_REF(changing_layer), 0), 1)
 
-/turf/open/auto_turf/scorch(heat_level)
-	if(bleed_layer <= 0)
-		return
-	switch(heat_level)
-		if(1 to 19)
-			var/new_bleed_layer = min(0, bleed_layer - 1)
-			addtimer(CALLBACK(src, PROC_REF(changing_layer), new_bleed_layer), 1)
-		if(20 to 39)
-			var/new_bleed_layer = max(bleed_layer - 2, 0)
-			addtimer(CALLBACK(src, PROC_REF(changing_layer), new_bleed_layer), 1)
-		if(40 to INFINITY)
-			addtimer(CALLBACK(src, PROC_REF(changing_layer), 0), 1)
-
 
 //Actual auto-turfs now
 
@@ -159,7 +146,6 @@
 
 //Ice colony snow
 /turf/open/auto_turf/snow
-	scorchable = TRUE
 	name = "auto-snow"
 	icon = 'icons/turf/floors/snow2.dmi'
 	icon_state = "snow_0"
@@ -212,8 +198,7 @@
 
 	while(bleed_layer > 0)
 		xeno_attack_delay(M)
-		var/size = max(M.mob_size, 1)
-		if(!do_after(M, 12/size, INTERRUPT_ALL, BUSY_ICON_FRIENDLY))
+		if(!do_after(M, 0.5 SECONDS, INTERRUPT_ALL, BUSY_ICON_FRIENDLY))
 			return XENO_NO_DELAY_ACTION
 
 		if(!bleed_layer)
@@ -229,17 +214,17 @@
 	if(bleed_layer > 0)
 		if(iscarbon(AM))
 			var/mob/living/carbon/C = AM
-			var/slow_amount = 0.35
+			var/slow_amount = 0.2
 			var/can_stuck = 1
 			if(istype(C, /mob/living/carbon/xenomorph)||isyautja(C))
-				slow_amount = 0.15
+				slow_amount = 0.1
 				can_stuck = 0
 			var/new_slowdown = C.next_move_slowdown + (slow_amount * bleed_layer)
 			if(prob(2))
 				to_chat(C, SPAN_WARNING("Moving through [src] slows you down.")) //Warning only
 			else if(can_stuck && bleed_layer == 4 && prob(2))
 				to_chat(C, SPAN_WARNING("You get stuck in [src] for a moment!"))
-				new_slowdown += 10
+				new_slowdown += 5
 			C.next_move_slowdown = new_slowdown
 	..()
 

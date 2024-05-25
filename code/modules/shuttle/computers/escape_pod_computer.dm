@@ -22,9 +22,6 @@
 /obj/structure/machinery/computer/shuttle/escape_pod_panel/attack_hand(mob/user)
 	if(..())
 		return
-	if(!allowed(user))
-		to_chat(user, SPAN_WARNING("Access denied!"))
-		return
 	tgui_interact(user)
 
 /obj/structure/machinery/computer/shuttle/escape_pod_panel/tgui_interact(mob/user, datum/tgui/ui)
@@ -89,7 +86,6 @@
 			. = TRUE
 
 /obj/structure/machinery/computer/shuttle/escape_pod_panel/liaison
-	req_access = list(ACCESS_WY_GENERAL)
 	launch_without_evac = TRUE
 
 //=========================================================================================
@@ -242,7 +238,7 @@
 
 /obj/structure/machinery/door/airlock/evacuation/Destroy()
 	if(linked_shuttle)
-		linked_shuttle.set_mode(SHUTTLE_CRASHED)
+		linked_shuttle.mode = SHUTTLE_CRASHED
 		linked_shuttle.door_handler.doors -= list(src)
 	. = ..()
 

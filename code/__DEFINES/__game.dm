@@ -26,9 +26,11 @@
 #define MAP_PRISON_STATION_V3 "Fiorina Science Annex"
 #define MAP_WHISKEY_OUTPOST "Whiskey Outpost" // Unused
 #define MAP_DESERT_DAM "Trijent Dam"  // Highpop only
+#define MAP_DOCK_RED "Dock Red"
 #define MAP_SOROKYNE_STRATA "Sorokyne Strata"
 #define MAP_CORSAT "CORSAT" // Highpop only
 #define MAP_KUTJEVO "Kutjevo Refinery"
+#define MAP_KHAMI_BARRENS "Khami Barrens"
 #define MAP_ICE_COLONY_V3 "Shivas Snowball" //Ice Rework, low pop enabled.
 #define MAP_RUNTIME "USS Runtime"
 #define MAP_LV522_CHANCES_CLAIM "LV-522 Chance's Claim" // Highpop Only
@@ -78,8 +80,6 @@
 #define SEE_INVISIBLE_LEVEL_TWO 45 //Used by some other stuff in code. It's really poorly organized.
 #define INVISIBILITY_LEVEL_TWO 45 //Used by some other stuff in code. It's really poorly organized.
 
-#define HIDE_INVISIBLE_OBSERVER 59 // define for when we want to hide all observer mobs.
-
 #define INVISIBILITY_OBSERVER 60
 #define SEE_INVISIBLE_OBSERVER 60
 
@@ -104,7 +104,6 @@
 #define SOUND_ADMIN_MEME (1<<6)
 #define SOUND_ADMIN_ATMOSPHERIC (1<<7)
 #define SOUND_ARES_MESSAGE (1<<8)
-#define SOUND_OBSERVER_ANNOUNCEMENTS (1<<9)
 
 //toggles_chat
 #define CHAT_OOC (1<<0)
@@ -159,7 +158,7 @@
 
 #define TOGGLES_LANGCHAT_DEFAULT (LANGCHAT_SEE_EMOTES)
 
-#define TOGGLES_SOUND_DEFAULT (SOUND_ADMINHELP|SOUND_MIDI|SOUND_AMBIENCE|SOUND_LOBBY|SOUND_INTERNET|SOUND_ADMIN_MEME|SOUND_ADMIN_ATMOSPHERIC|SOUND_OBSERVER_ANNOUNCEMENTS)
+#define TOGGLES_SOUND_DEFAULT (SOUND_ADMINHELP|SOUND_MIDI|SOUND_AMBIENCE|SOUND_LOBBY|SOUND_INTERNET|SOUND_ADMIN_MEME|SOUND_ADMIN_ATMOSPHERIC)
 
 #define TOGGLES_FLASHING_DEFAULT (FLASH_ROUNDSTART|FLASH_ROUNDEND|FLASH_CORPSEREVIVE|FLASH_ADMINPM|FLASH_UNNEST)
 
@@ -376,7 +375,6 @@
 #define WALL_DEVWALL "devwall"
 #define WALL_DEVWALL_R "devwall_r"
 #define WALL_HUNTERSHIP "metal"//DMI specific name
-#define WALL_AICORE "aiwall"
 
 //Defines for dropship weapon gimbals
 #define GIMBAL_LEFT -1

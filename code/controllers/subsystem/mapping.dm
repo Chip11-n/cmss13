@@ -37,17 +37,14 @@ SUBSYSTEM_DEF(mapping)
 	/// list of traits and their associated z leves
 	var/list/z_trait_levels = list()
 
-	/// list of lazy templates that have been loaded
-	var/list/loaded_lazy_templates
-
 //dlete dis once #39770 is resolved
 /datum/controller/subsystem/mapping/proc/HACK_LoadMapConfig()
-	if(!configs)
-		configs = load_map_configs(ALL_MAPTYPES, error_if_missing = FALSE)
-		world.name = "[CONFIG_GET(string/title)] - [SSmapping.configs[SHIP_MAP].map_name]"
+	configs = load_map_configs(ALL_MAPTYPES, error_if_missing = FALSE)
+	world.name = "[CONFIG_GET(string/title)] - [SSmapping.configs[SHIP_MAP].map_name]"
 
 /datum/controller/subsystem/mapping/Initialize(timeofday)
-	HACK_LoadMapConfig()
+	if(!configs)
+		HACK_LoadMapConfig()
 	if(initialized)
 		return SS_INIT_SUCCESS
 
@@ -67,6 +64,11 @@ SUBSYSTEM_DEF(mapping)
 	var/datum/space_level/base_transit = add_reservation_zlevel()
 	initialize_reserved_level(base_transit.z_value)
 	repopulate_sorted_areas()
+
+	if(configs[GROUND_MAP])
+		send2chat(new /datum/tgs_message_content("<@&[CONFIG_GET(string/new_round_alert_role_id)]> Round restarted! Map is [configs[GROUND_MAP].map_name]"), CONFIG_GET(string/new_round_alert_channel))
+	else
+		send2chat(new /datum/tgs_message_content("<@&[CONFIG_GET(string/new_round_alert_role_id)]> Round started!"), CONFIG_GET(string/new_round_alert_channel))
 
 	if(configs[GROUND_MAP])
 		send2chat(new /datum/tgs_message_content("<@&[CONFIG_GET(string/new_round_alert_role_id)]> Round restarted! Map is [configs[GROUND_MAP].map_name]"), CONFIG_GET(string/new_round_alert_channel))
@@ -187,9 +189,9 @@ SUBSYSTEM_DEF(mapping)
 		var/x_offset = 1
 		var/y_offset = 1
 		if(bounds && world.maxx > bounds[MAP_MAXX])
-			x_offset = floor(world.maxx / 2 - bounds[MAP_MAXX] / 2) + 1
+			x_offset = round(world.maxx / 2 - bounds[MAP_MAXX] / 2) + 1
 		if(bounds && world.maxy > bounds[MAP_MAXY])
-			y_offset = floor(world.maxy / 2 - bounds[MAP_MAXY] / 2) + 1
+			y_offset = round(world.maxy / 2 - bounds[MAP_MAXY] / 2) + 1
 		if (!pm.load(x_offset, y_offset, start_z + parsed_maps[pm], no_changeturf = TRUE, new_z = TRUE))
 			errorList |= pm.original_path
 		// CM Snowflake for Mass Screenshot dimensions auto detection
@@ -226,7 +228,7 @@ SUBSYSTEM_DEF(mapping)
 		ground_base_path = "data/"
 	Loadground(FailedZs, ground_map.map_name, ground_map.map_path, ground_map.map_file, ground_map.traits, ZTRAITS_GROUND, override_map_path = ground_base_path)
 
-	if(!ground_map.disable_ship_map)
+	if(!ground_map.disable_ship_map && !MODE_HAS_FLAG(MODE_NO_SHIP_MAP))
 		var/datum/map_config/ship_map = configs[SHIP_MAP]
 		var/ship_base_path = "maps/"
 		if(ship_map.override_map)
@@ -363,7 +365,9 @@ SUBSYSTEM_DEF(mapping)
 	if(!level_trait(z,ZTRAIT_RESERVED))
 		clearing_reserved_turfs = FALSE
 		CRASH("Invalid z level prepared for reservations.")
-	var/block = block(SHUTTLE_TRANSIT_BORDER, SHUTTLE_TRANSIT_BORDER, z, world.maxx - SHUTTLE_TRANSIT_BORDER, world.maxy - SHUTTLE_TRANSIT_BORDER, z)
+	var/turf/A = get_turf(locate(SHUTTLE_TRANSIT_BORDER,SHUTTLE_TRANSIT_BORDER,z))
+	var/turf/B = get_turf(locate(world.maxx - SHUTTLE_TRANSIT_BORDER,world.maxy - SHUTTLE_TRANSIT_BORDER,z))
+	var/block = block(A, B)
 	for(var/turf/T as anything in block)
 		// No need to empty() these, because they just got created and are already /turf/open/space/basic.
 		T.turf_flags = UNUSED_RESERVATION_TURF
@@ -424,28 +428,3 @@ SUBSYSTEM_DEF(mapping)
 	if(!MC)
 		return MAIN_SHIP_DEFAULT_NAME
 	return MC.map_name
-
-/datum/controller/subsystem/mapping/proc/lazy_load_template(datum/lazy_template/template_to_load, force = FALSE)
-	RETURN_TYPE(/datum/turf_reservation)
-
-	UNTIL(initialized)
-	var/static/lazy_loading = FALSE
-	UNTIL(!lazy_loading)
-
-	lazy_loading = TRUE
-	. = _lazy_load_template(template_to_load, force)
-	lazy_loading = FALSE
-	return .
-
-/datum/controller/subsystem/mapping/proc/_lazy_load_template(datum/lazy_template/template_to_load, force = FALSE)
-	PRIVATE_PROC(TRUE)
-
-	if(LAZYACCESS(loaded_lazy_templates, template_to_load) && !force)
-		var/datum/lazy_template/template = GLOB.lazy_templates[template_to_load]
-		return template.reservations[1]
-	LAZYSET(loaded_lazy_templates, template_to_load, TRUE)
-
-	var/datum/lazy_template/target = GLOB.lazy_templates[template_to_load]
-	if(!target)
-		CRASH("Attempted to lazy load a template key that does not exist: '[template_to_load]'")
-	return target.lazy_load()

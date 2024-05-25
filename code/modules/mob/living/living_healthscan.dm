@@ -77,13 +77,7 @@ GLOBAL_LIST_INIT(known_implants, subtypesof(/obj/item/implant))
 	var/total_mob_damage = target_mob.getBruteLoss() + target_mob.getFireLoss() + target_mob.getToxLoss() + target_mob.getCloneLoss()
 
 	// Fake death will make the scanner think they died of oxygen damage, thus it returns enough damage to kill minus already received damage.
-	return floor(POSITIVE(200 - total_mob_damage))
-
-/datum/health_scan/proc/get_holo_card_color(mob/living/target_mob)
-	if(!ishuman(target_mob))
-		return
-	var/mob/living/carbon/human/human_mob = target_mob
-	return human_mob.holo_card_color
+	return round(POSITIVE(200 - total_mob_damage))
 
 /datum/health_scan/proc/get_health_value(mob/living/target_mob)
 	if(!(target_mob.status_flags & FAKEDEATH))
@@ -96,14 +90,15 @@ GLOBAL_LIST_INIT(known_implants, subtypesof(/obj/item/implant))
 		"patient" = target_mob.name,
 		"dead" = get_death_value(target_mob),
 		"health" = get_health_value(target_mob),
-		"total_brute" = floor(target_mob.getBruteLoss()),
-		"total_burn" = floor(target_mob.getFireLoss()),
-		"toxin" = floor(target_mob.getToxLoss()),
+		"total_brute" = round(target_mob.getBruteLoss()),
+		"total_burn" = round(target_mob.getFireLoss()),
+		"toxin" = round(target_mob.getToxLoss()),
 		"oxy" = get_oxy_value(target_mob),
-		"clone" = floor(target_mob.getCloneLoss()),
+		"clone" = round(target_mob.getCloneLoss()),
 		"blood_type" = target_mob.blood_type,
 		"blood_amount" = target_mob.blood_volume,
-		"holocard" = get_holo_card_color(target_mob),
+		"nutrition" = target_mob.nutrition,
+
 		"hugged" = (locate(/obj/item/alien_embryo) in target_mob),
 	)
 
@@ -189,8 +184,8 @@ GLOBAL_LIST_INIT(known_implants, subtypesof(/obj/item/implant))
 			var/list/core_body_parts = list("head", "chest", "groin")
 			var/list/current_list = list(
 				"name" = limb.display_name,
-				"brute" = floor(limb.brute_dam),
-				"burn" = floor(limb.burn_dam),
+				"brute" = round(limb.brute_dam),
+				"burn" = round(limb.burn_dam),
 				"bandaged" = limb.is_bandaged(),
 				"salved" = limb.is_salved(),
 				"missing" = (limb.status & LIMB_DESTROYED),
@@ -277,6 +272,7 @@ GLOBAL_LIST_INIT(known_implants, subtypesof(/obj/item/implant))
 		data["limbs_damaged"] = length(limb_data_lists)
 		data["internal_bleeding"] = internal_bleeding
 		data["body_temperature"] = "[round(human_target_mob.bodytemperature-T0C, 0.1)]℃ ([round(human_target_mob.bodytemperature*1.8-459.67, 0.1)]℉)" // METRIC RULES IMPERIAL DROOLS
+		data["nutrition"] = "[round(human_target_mob.nutrition / NUTRITION_MAX * 100)]%"
 		data["pulse"] = "[human_target_mob.get_pulse(GETPULSE_TOOL)] bpm"
 		data["implants"] = unknown_implants
 		data["core_fracture"] = core_fracture_detected
@@ -473,17 +469,6 @@ GLOBAL_LIST_INIT(known_implants, subtypesof(/obj/item/implant))
 
 	return data
 
-/datum/health_scan/ui_act(action, list/params, datum/tgui/ui, datum/ui_state/state)
-	. = ..()
-	if(.)
-		return
-	switch(action)
-		if("change_holo_card")
-			if(ishuman(target_mob))
-				var/mob/living/carbon/human/target_human = target_mob
-				target_human.change_holo_card(ui.user)
-				return TRUE
-
 /// legacy proc for to_chat messages on health analysers
 /mob/living/proc/health_scan(mob/living/carbon/human/user, ignore_delay = FALSE, show_limb_damage = TRUE, show_browser = TRUE, alien = FALSE, do_checks = TRUE) // ahem. FUCK WHOEVER CODED THIS SHIT AS NUMBERS AND NOT DEFINES.
 	if(do_checks)
@@ -518,6 +503,7 @@ GLOBAL_LIST_INIT(known_implants, subtypesof(/obj/item/implant))
 			user.show_message("\tType: [SET_CLASS("Oxygen", INTERFACE_BLUE)]-[SET_CLASS("Toxin", INTERFACE_GREEN)]-[SET_CLASS("Burns", INTERFACE_ORANGE)]-[SET_CLASS("Brute", INTERFACE_RED)]", 1)
 			user.show_message("\tDamage: [SET_CLASS("?", INTERFACE_BLUE)] - [SET_CLASS("?", INTERFACE_GREEN)] - [SET_CLASS("?", INTERFACE_ORANGE)] - [SET_CLASS("?", INTERFACE_RED)]")
 			user.show_message(SPAN_NOTICE("Body Temperature: [src.bodytemperature-T0C]&deg;C ([src.bodytemperature*1.8-459.67]&deg;F)"), 1)
+			user.show_message(SPAN_DANGER("<b>Warning: Nutrition Level ERROR: --%"))
 			user.show_message(SPAN_DANGER("<b>Warning: Blood Level ERROR: --% --cl.Type: ERROR"))
 			user.show_message(SPAN_NOTICE("Subject's pulse: [SET_CLASS("-- bpm", INTERFACE_RED)]"))
 			return
@@ -574,9 +560,9 @@ GLOBAL_LIST_INIT(known_implants, subtypesof(/obj/item/implant))
 			else if(org.status & LIMB_SYNTHSKIN)
 				org_name += " (Synthskin)"
 
-			var/burn_info = org.burn_dam > 0 ? "<span class='scannerburnb'> [floor(org.burn_dam)]</span>" : "<span class='scannerburn'>0</span>"
+			var/burn_info = org.burn_dam > 0 ? "<span class='scannerburnb'> [round(org.burn_dam)]</span>" : "<span class='scannerburn'>0</span>"
 			burn_info += "[burn_treated ? "" : "{B}"]"
-			var/brute_info =  org.brute_dam > 0 ? "<span class='scannerb'> [floor(org.brute_dam)]</span>" : "<span class='scanner'>0</span>"
+			var/brute_info =  org.brute_dam > 0 ? "<span class='scannerb'> [round(org.brute_dam)]</span>" : "<span class='scanner'>0</span>"
 			brute_info += "[brute_treated ? "" : "{T}"]"
 			var/fracture_info = ""
 			if(org.status & LIMB_BROKEN)
@@ -675,12 +661,16 @@ GLOBAL_LIST_INIT(known_implants, subtypesof(/obj/item/implant))
 	// Show body temp
 	dat += "\n\tBody Temperature: [src.bodytemperature-T0C]&deg;C ([src.bodytemperature*1.8-459.67]&deg;F)\n"
 
+
 	if (ishuman(src))
 		var/mob/living/carbon/human/H = src
+		// Show nutrition
+		dat += "\n\tNutrition: [round(H.nutrition / NUTRITION_MAX * 100)]%\n"
+
 		// Show blood level
 		var/blood_volume = BLOOD_VOLUME_NORMAL
 		if(!(H.species && H.species.flags & NO_BLOOD))
-			blood_volume = floor(H.blood_volume)
+			blood_volume = round(H.blood_volume)
 
 			var/blood_percent =  blood_volume / 560
 			var/blood_type = H.blood_type
@@ -691,6 +681,7 @@ GLOBAL_LIST_INIT(known_implants, subtypesof(/obj/item/implant))
 				dat += "\t<span class='scanner'> <b>Warning: Blood Level CRITICAL: [blood_percent]% [blood_volume]cl.</span> [SET_CLASS("Type: [blood_type]", INTERFACE_BLUE)]\n"
 			else
 				dat += "\tBlood Level normal: [blood_percent]% [blood_volume]cl. Type: [blood_type]\n"
+
 		// Show pulse
 		dat += "\tPulse: <span class='[H.pulse == PULSE_THREADY || H.pulse == PULSE_NONE ? INTERFACE_RED : ""]'>[H.get_pulse(GETPULSE_TOOL)] bpm.</span>\n"
 		if((H.stat == DEAD && !H.client))

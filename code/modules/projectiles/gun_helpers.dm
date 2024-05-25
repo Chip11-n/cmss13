@@ -184,14 +184,14 @@ DEFINES in setup.dm, referenced here.
 	to_chat(user, SPAN_WARNING("[src] flashes a warning sign indicating unauthorized use!"))
 
 // Checks whether there is anything to put your harness
-/obj/item/weapon/gun/proc/retrieval_check(mob/living/carbon/human/user, retrieval_slot)
+/obj/item/weapon/proc/retrieval_check(mob/living/carbon/human/user, retrieval_slot)
 	if(retrieval_slot == WEAR_J_STORE)
 		var/obj/item/suit = user.wear_suit
 		if(!istype(suit, /obj/item/clothing/suit/storage/marine))
 			return FALSE
 	return TRUE
 
-/obj/item/weapon/gun/proc/retrieve_to_slot(mob/living/carbon/human/user, retrieval_slot)
+/obj/item/weapon/proc/retrieve_to_slot(mob/living/carbon/human/user, retrieval_slot)
 	if (!loc || !user)
 		return FALSE
 	if (!isturf(loc))
@@ -460,9 +460,9 @@ DEFINES in setup.dm, referenced here.
 		else attack_verb = list("slashed", "stabbed", "speared", "torn", "punctured", "pierced", "gored") //Greater than 35
 
 /obj/item/weapon/gun/proc/get_active_firearm(mob/user, restrictive = TRUE)
-	if(user.is_mob_incapacitated() || !isturf(usr.loc))
+	if(!ishuman(usr))
 		return
-	if(!ishuman(user) && !HAS_TRAIT(user, TRAIT_OPPOSABLE_THUMBS))
+	if(user.is_mob_incapacitated() || !isturf(usr.loc))
 		to_chat(user, SPAN_WARNING("Not right now."))
 		return
 
@@ -517,11 +517,11 @@ DEFINES in setup.dm, referenced here.
 		return FALSE
 
 	if(istype(slot) && (slot.storage_flags & STORAGE_ALLOW_QUICKDRAW))
-		for(var/obj/cycled_object in slot.return_inv())
-			if(cycled_object.flags_atom & QUICK_DRAWABLE)
+		for(var/obj/cycled_weapon in slot.return_inv())
+			if(isweapon(cycled_weapon))
 				return slot
 
-	if(slot.flags_atom & QUICK_DRAWABLE)
+	if(isweapon(slot)) //then check for weapons
 		return slot
 
 	return FALSE
@@ -765,6 +765,7 @@ DEFINES in setup.dm, referenced here.
 
 	unique_action(usr)
 
+
 /obj/item/weapon/gun/verb/toggle_gun_safety()
 	set category = "Weapons"
 	set name = "Toggle Gun Safety"
@@ -781,7 +782,7 @@ DEFINES in setup.dm, referenced here.
 	if(flags_gun_features & GUN_BURST_FIRING)
 		return
 
-	if(!ishuman(usr) && !HAS_TRAIT(usr, TRAIT_OPPOSABLE_THUMBS))
+	if(!ishuman(usr))
 		return
 
 	if(usr.is_mob_incapacitated() || !usr.loc || !isturf(usr.loc))
@@ -931,15 +932,6 @@ DEFINES in setup.dm, referenced here.
 	if(!istype(target, /atom/movable/screen/click_catcher))
 		return null
 	return params2turf(modifiers["screen-loc"], get_turf(user), user.client)
-
-/// check if the gun contains any light source that is currently turned on.
-/obj/item/weapon/gun/proc/light_sources()
-	var/obj/item/attachable/flashlight/torch
-	for(var/slot in attachments)
-		torch = attachments[slot]
-		if(istype(torch) && torch.light_on == TRUE)
-			return TRUE // an attachment has light enabled.
-	return FALSE
 
 /// If this gun has a relevant flashlight attachable attached, (de)activate it
 /obj/item/weapon/gun/proc/force_light(on)

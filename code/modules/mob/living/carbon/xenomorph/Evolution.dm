@@ -40,7 +40,7 @@
 
 	var/datum/caste_datum/caste_datum = GLOB.xeno_datum_list[castepick]
 	if(caste_datum && caste_datum.minimum_evolve_time > ROUND_TIME)
-		to_chat(src, SPAN_WARNING("The Hive cannot support this caste yet! ([floor((caste_datum.minimum_evolve_time - ROUND_TIME) / 10)] seconds remaining)"))
+		to_chat(src, SPAN_WARNING("The Hive cannot support this caste yet! ([round((caste_datum.minimum_evolve_time - ROUND_TIME) / 10)] seconds remaining)"))
 		return
 
 	if(!evolve_checks())
@@ -51,7 +51,7 @@
 		return
 
 	if(castepick == XENO_CASTE_QUEEN) //Special case for dealing with queenae
-		if(!hardcore)
+		if(!hardcore && hive.allow_queen_evolve)
 			if(SSticker.mode && hive.xeno_queen_timer > world.time)
 				to_chat(src, SPAN_WARNING("We must wait about [DisplayTimeText(hive.xeno_queen_timer - world.time, 1)] for the hive to recover from the previous Queen's death."))
 				return
@@ -391,7 +391,7 @@
 				used_tier_3_slots -= min(slots_used, slots_free)
 
 	var/burrowed_factor = min(hive.stored_larva, sqrt(4*hive.stored_larva))
-	var/totalXenos = floor(burrowed_factor)
+	var/totalXenos = round(burrowed_factor)
 	for(var/mob/living/carbon/xenomorph/xeno as anything in hive.totalXenos)
 		if(xeno.counts_for_slots)
 			totalXenos++
